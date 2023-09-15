@@ -18,6 +18,9 @@
 		649D947F2AB19F200092BF0D /* DiaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D947E2AB19F200092BF0D /* DiaryViewController.swift */; };
 		649D94812AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94802AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift */; };
 		649D94832AB1A6550092BF0D /* UserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94822AB1A6550092BF0D /* UserListViewController.swift */; };
+		649D94852AB416A00092BF0D /* WriteDiaryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94842AB4169F0092BF0D /* WriteDiaryController.swift */; };
+		649D94882AB41CC10092BF0D /* Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94872AB41CC10092BF0D /* Extentions.swift */; };
+		649D948A2AB41D7B0092BF0D /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94892AB41D7B0092BF0D /* InputTextView.swift */; };
 		AB19DA4ACF04F045E70B1060 /* Pods_Memoir_Mate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD75905DB84546C8A59E468C /* Pods_Memoir_Mate.framework */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +39,9 @@
 		649D947E2AB19F200092BF0D /* DiaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryViewController.swift; sourceTree = "<group>"; };
 		649D94802AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryCommunityFeedViewController.swift; sourceTree = "<group>"; };
 		649D94822AB1A6550092BF0D /* UserListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListViewController.swift; sourceTree = "<group>"; };
+		649D94842AB4169F0092BF0D /* WriteDiaryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteDiaryController.swift; sourceTree = "<group>"; };
+		649D94872AB41CC10092BF0D /* Extentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extentions.swift; sourceTree = "<group>"; };
+		649D94892AB41D7B0092BF0D /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		C3393A76B538D59770AD4234 /* Pods-Memoir-Mate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Memoir-Mate.release.xcconfig"; path = "Target Support Files/Pods-Memoir-Mate/Pods-Memoir-Mate.release.xcconfig"; sourceTree = "<group>"; };
 		CD75905DB84546C8A59E468C /* Pods_Memoir_Mate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Memoir_Mate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -84,6 +90,7 @@
 				649D94662AB0A55B0092BF0D /* LaunchScreen.storyboard */,
 				649D94692AB0A55B0092BF0D /* Info.plist */,
 				649D94732AB192210092BF0D /* GoogleService-Info.plist */,
+				649D94862AB41C9F0092BF0D /* Utils */,
 			);
 			path = "Memoir-Mate";
 			sourceTree = "<group>";
@@ -105,6 +112,7 @@
 		649D94772AB19D340092BF0D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				649D94892AB41D7B0092BF0D /* InputTextView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -115,6 +123,7 @@
 				649D94792AB19E400092BF0D /* Login */,
 				649D947C2AB19E840092BF0D /* MainTabController.swift */,
 				649D947E2AB19F200092BF0D /* DiaryViewController.swift */,
+				649D94842AB4169F0092BF0D /* WriteDiaryController.swift */,
 				649D94802AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift */,
 				649D94822AB1A6550092BF0D /* UserListViewController.swift */,
 			);
@@ -127,6 +136,14 @@
 				649D947A2AB19E5E0092BF0D /* LoginViewController.swift */,
 			);
 			path = Login;
+			sourceTree = "<group>";
+		};
+		649D94862AB41C9F0092BF0D /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				649D94872AB41CC10092BF0D /* Extentions.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		71020CBAD3141C93DB0C947E /* Pods */ = {
@@ -267,8 +284,11 @@
 				649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */,
 				649D94812AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift in Sources */,
 				649D947F2AB19F200092BF0D /* DiaryViewController.swift in Sources */,
+				649D94852AB416A00092BF0D /* WriteDiaryController.swift in Sources */,
+				649D948A2AB41D7B0092BF0D /* InputTextView.swift in Sources */,
 				649D947D2AB19E840092BF0D /* MainTabController.swift in Sources */,
 				649D945E2AB0A5590092BF0D /* SceneDelegate.swift in Sources */,
+				649D94882AB41CC10092BF0D /* Extentions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

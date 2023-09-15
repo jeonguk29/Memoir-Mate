@@ -24,6 +24,20 @@ class DiaryViewController: UIViewController{
         calendarView.scrollDirection = .horizontal
         return calendarView
     }()
+    
+    private lazy var writeButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.backgroundColor = .white
+        button.layer.cornerRadius = 5
+        button.layer.borderWidth = 1 // 보더의 넓이 설정
+        button.layer.borderColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1) // 보더 컬러 설정
+        button.setTitle("일기쓰기", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        
+        button.addTarget(self, action: #selector(handleWriteTapped), for: .touchUpInside)
+        return button
+    }()
 
 
 
@@ -56,6 +70,17 @@ class DiaryViewController: UIViewController{
         calendarView.locale = Locale(identifier: "ko_KR")
     }
     
+    
+    @objc func handleWriteTapped(){
+        print("handleWriteTapped")
+        //guard let user = user else {return}
+        let controller = WriteDiaryController()
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
+    
+    
     private func setupAutoLayout() {
         
 //        view.addSubview(scrollView)
@@ -67,8 +92,11 @@ class DiaryViewController: UIViewController{
 //        scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
         
         view.addSubview(calendarView)
+        view.addSubview(writeButton)
         
         calendarView.translatesAutoresizingMaskIntoConstraints = false
+        writeButton.translatesAutoresizingMaskIntoConstraints = false
+        
         
         // Safe Area 제약 조건 설정
         let safeArea = view.safeAreaLayoutGuide
@@ -86,6 +114,15 @@ class DiaryViewController: UIViewController{
             //세로크기를 100
             calendarView.heightAnchor.constraint(equalToConstant: 380),
             
+    
+            writeButton.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 2),
+            writeButton.leadingAnchor.constraint(equalTo: calendarView.leadingAnchor, constant: 2),
+            writeButton.trailingAnchor.constraint(equalTo: calendarView.trailingAnchor, constant: -2),
+            writeButton.heightAnchor.constraint(equalToConstant: 30),
+            //writeButton.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 2),
+            
+            
+                      
             
         ])
         
