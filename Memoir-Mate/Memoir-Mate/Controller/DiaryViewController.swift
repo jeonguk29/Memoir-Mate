@@ -13,17 +13,28 @@ class DiaryViewController: UIViewController{
     
     // MARK: - Properties
     
-    let scrollView: UIScrollView = {
-      let scrollView = UIScrollView()
-      scrollView.translatesAutoresizingMaskIntoConstraints = false
-      return scrollView
-    }()
+//    let scrollView: UIScrollView = {
+//      let scrollView = UIScrollView()
+//      scrollView.translatesAutoresizingMaskIntoConstraints = false
+//      return scrollView
+//    }()
+    
+    var user: User?
+    { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
+        didSet {
+            //configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
+            print("DiaryViewController : \(user?.email)")
+        }
+    }
     
     private var calendarView: FSCalendar = {
         let calendarView = FSCalendar()
         calendarView.scrollDirection = .horizontal
         return calendarView
     }()
+    
+    let formatter = DateFormatter()
+    var selectDate: String = "" // didset 사용해서 화면 새로고침해서 일기 목록 뿌려주기
     
     private lazy var writeButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -44,10 +55,10 @@ class DiaryViewController: UIViewController{
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        navigationController?.hidesBarsOnSwipe = true
-//        view.backgroundColor = .red
         
+        // 즉, 사용자가 화면을 아래로 스크롤하면 (스와이프하면) 네비게이션 바가 자동으로 사라지고, 다시 위로 스크롤하면 (스와이프하면) 네비게이션 바가 다시 나타납니다.
+        navigationController?.hidesBarsOnSwipe = true
+
         // UIScrollView의 delegate 설정
         //ScrollView.delegate = self // 여기서 "yourScrollView"는 스크롤뷰의 변수명입니다. 스토리보드에서 스크롤 뷰와 연결해야 합니다.
         
@@ -58,6 +69,11 @@ class DiaryViewController: UIViewController{
         
         setupFSCalendar()
         setupAutoLayout()
+        configureLeftBarButton()
+        
+        let currentDate = Date()  // 현재 날짜 가져오기
+            formatter.dateFormat = "yyyy-MM-dd"
+            selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
     }
 
 
@@ -74,7 +90,7 @@ class DiaryViewController: UIViewController{
     @objc func handleWriteTapped(){
         print("handleWriteTapped")
         //guard let user = user else {return}
-        let controller = WriteDiaryController()
+        let controller = WriteDiaryController(user: user!, userSelectDate: selectDate, config: .diary)
         let nav = UINavigationController(rootViewController: controller)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true, completion: nil)
@@ -84,9 +100,7 @@ class DiaryViewController: UIViewController{
     private func setupAutoLayout() {
         
 //        view.addSubview(scrollView)
-//
 //        scrollView.addSubview(calendarView)
-//
 //        let contentHeight = CGFloat(280) // Adjust this value as needed
 //            let contentWidth = UIScreen.main.bounds.width // Use the width of the screen or adjust as needed
 //        scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
@@ -103,11 +117,6 @@ class DiaryViewController: UIViewController{
         
         NSLayoutConstraint.activate([
             
-//            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-//            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//
             calendarView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             calendarView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
             calendarView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
@@ -121,14 +130,29 @@ class DiaryViewController: UIViewController{
             writeButton.heightAnchor.constraint(equalToConstant: 30),
             //writeButton.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 2),
             
-            
-                      
-            
+    
         ])
         
-
     }
     
+    func configureLeftBarButton(){
+        //guard let user = user else {return}
+        
+        let profileImageView = UIImageView()
+        profileImageView.setDimensions(width: 32, height: 32)
+        profileImageView.layer.cornerRadius = 32 / 2
+        profileImageView.layer.masksToBounds = true
+        profileImageView.backgroundColor = .blue
+        //profileImageView.sd_setImage(with: user.profileImageUrl, completed: nil)
+        
+        // 피드에서 자신의 프로파일 이미지 누를시 사용자 프로필로 이동
+//        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게
+//
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTap))
+//                profileImageView.addGestureRecognizer(tap)
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+    }
     
 }
 
@@ -153,4 +177,17 @@ extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillDefaultColorFor date: Date) -> UIColor? {
         return UIColor.white
     }
+    
+    // 날짜 선택 시 콜백 메소드
+       func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+           formatter.dateFormat = "yyyy-MM-dd"
+           print(formatter.string(from: date) + " 선택됨")
+           
+           /* 유저가 날짜 선택시 날짜 정보에 따라서 현제 화면에 일기 트윗 보여줘야함
+             일기 쓰기 클릭시 날짜와, 유저정보를 던지고 거기서 일기 처리 하기
+             돌아오면 현제 날짜에 맞춰서 트윗 뿌리기
+           */
+           self.selectDate = formatter.string(from: date)
+           
+       }
 }
