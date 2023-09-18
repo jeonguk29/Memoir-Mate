@@ -61,7 +61,7 @@ class DiaryCell:UICollectionViewCell {
     
     private let captionLabel: ActiveLabel = {
         let label = ActiveLabel()
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont(name: "NanumMuGungHwa", size: 25)
         label.numberOfLines = 0 // 여러줄 표시 가능 하게
         label.text = "Test caption"
         label.mentionColor = .mainColor

@@ -43,6 +43,9 @@ class DiaryViewController: UICollectionViewController{
     let formatter = DateFormatter()
     var selectDate: String = "" // didset 사용해서 화면 새로고침해서 일기 목록 뿌려주기
     
+    var isNavigationBarHidden = false
+    
+    
     private lazy var writeButton: UIButton = {
         let button = UIButton(type: .custom)
         button.backgroundColor = .white
@@ -50,8 +53,14 @@ class DiaryViewController: UICollectionViewController{
         button.layer.borderWidth = 1 // 보더의 넓이 설정
         button.layer.borderColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1) // 보더 컬러 설정
         button.setTitle("일기쓰기", for: .normal)
+        
+        if let roseOfSharonFont = UIFont(name: "Rose-of-Sharon", size: 16) {
+            button.titleLabel?.font = roseOfSharonFont
+        } else {
+            print("폰트 적용 안됨")
+            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        }
         button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         
         button.addTarget(self, action: #selector(handleWriteTapped), for: .touchUpInside)
         return button
@@ -73,6 +82,9 @@ class DiaryViewController: UICollectionViewController{
         
         calendarView.delegate = self
         calendarView.dataSource = self
+        
+        // UIScrollView의 delegate를 설정합니다.
+        collectionView.delegate = self
         
         setupFSCalendar()
         setupAutoLayout()
@@ -327,4 +339,38 @@ extension DiaryViewController: DiaryCellDelegate {
         
     }
     
+}
+
+
+
+// MARK: - 스크롤 애니메이션 부분
+extension DiaryViewController {
+    
+    
+    // scrollViewDidScroll(_:) 메서드를 구현하여 스크롤 이벤트를 처리합니다.
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+          let yOffset = scrollView.contentOffset.y
+
+          if yOffset > 0 {
+              // 아래로 스크롤하는 중
+              if !isNavigationBarHidden {
+                  isNavigationBarHidden = true
+                  UIView.animate(withDuration: 0.3) {
+                      self.navigationController?.setNavigationBarHidden(true, animated: true)
+                      self.calendarView.alpha = 0.0
+                      self.writeButton.alpha = 0.0
+                  }
+              }
+          } else {
+              // 위로 스크롤하는 중
+              if isNavigationBarHidden {
+                  isNavigationBarHidden = false
+                  UIView.animate(withDuration: 0.3) {
+                      self.navigationController?.setNavigationBarHidden(false, animated: true)
+                      self.calendarView.alpha = 1.0
+                      self.writeButton.alpha = 1.0
+                  }
+              }
+          }
+      }
 }
