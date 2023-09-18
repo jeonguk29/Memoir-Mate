@@ -44,8 +44,9 @@ class MainTabController: UITabBarController {
     
     func configureViewControllers() {
         
-        // 일기
-        let diary = DiaryViewController()
+        
+        
+        let diary = DiaryViewController(collectionViewLayout: UICollectionViewFlowLayout())
         // UINavigationController 가져와서 그안에 feed 를 붙여줌
         let nav1 = templeteNavigationController(image: UIImage(systemName: "note.text.badge.plus"), rootViewController: diary)
         
