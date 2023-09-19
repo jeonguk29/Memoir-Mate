@@ -95,13 +95,56 @@ class DiaryCell:UICollectionViewCell {
         return button
     }()
     
+    // 백그라운드 뷰
+    private lazy var backgroundContentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .mainColor // 원하는 배경색상으로 변경
+        view.layer.cornerRadius = 20 // 원하는 값을 지정하여 둥글게 만듭니다.
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowRadius = 4
+        return view
+    }()
+
+    // 백그라운드 뷰
+    private lazy var backgroundContentView2: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white // 원하는 배경색상으로 변경
+        view.layer.cornerRadius = 15 // 원하는 값을 지정하여 둥글게 만듭니다.
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowRadius = 4
+        return view
+    }()
+    
     // MARK: - Lifecycle
     override init(frame:CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .clear
+
+        addSubview(backgroundContentView) // 백그라운드 뷰를 가장 처음에 추가
+        backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
+           
+        backgroundContentView.addSubview(backgroundContentView2)
+        backgroundContentView2.translatesAutoresizingMaskIntoConstraints = false
+           
         
-        //        addSubview(profileImageView)
-        //        profileImageView.anchor(top: topAnchor, left: leftAnchor, paddingTop: 8, paddingLeft: 8)
+        NSLayoutConstraint.activate([
+            backgroundContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
+             backgroundContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+             backgroundContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+             backgroundContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+          
+            backgroundContentView2.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 6),
+          backgroundContentView2.leadingAnchor.constraint(equalTo: backgroundContentView.leadingAnchor, constant: 6),
+          backgroundContentView2.trailingAnchor.constraint(equalTo: backgroundContentView.trailingAnchor, constant: -6),
+          backgroundContentView2.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
+        ])
+         
+        
+        
         let captionStack = UIStackView(arrangedSubviews: [infoLabel, captionLabel])
         captionStack.axis = .vertical
         captionStack.distribution = .fillProportionally
@@ -112,28 +155,29 @@ class DiaryCell:UICollectionViewCell {
         imageCaptionStack.spacing = 12
         imageCaptionStack.alignment = .leading
         
-        let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
-        stack.axis = .vertical
-        stack.distribution = .fillProportionally
-        stack.spacing = 8
+       let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
+       stack.axis = .vertical
+       stack.distribution = .fillProportionally
+       stack.spacing = 8
+       
+       stack.translatesAutoresizingMaskIntoConstraints = false
         
-        addSubview(stack)
-        stack.translatesAutoresizingMaskIntoConstraints = false
-    
-        // Safe Area 제약 조건 설정
-        //let safeArea = view.safeAreaLayoutGuide
+    backgroundContentView2.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
         
+
         NSLayoutConstraint.activate([
-            
-            stack.topAnchor.constraint(equalTo: self.topAnchor, constant: 4),
-            stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
-            stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+
+            stack.topAnchor.constraint(equalTo: self.topAnchor, constant: 18),
+            stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 18),
+            stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -18),
+            stack.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
             //세로크기를 100
-            
+
         ])
-   
+
         
-        infoLabel.font = UIFont.systemFont(ofSize: 14)
+       infoLabel.font = UIFont.systemFont(ofSize: 14)
+        
         
         let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
         actionStack.axis = .horizontal

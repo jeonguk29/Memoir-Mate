@@ -128,6 +128,13 @@ class DiaryViewController: UICollectionViewController{
         //            let contentWidth = UIScreen.main.bounds.width // Use the width of the screen or adjust as needed
         //        scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
         
+        // 배경 이미지 설정
+        let backgroundImage = UIImage(named: "back")
+        let backgroundImageView = UIImageView(image: backgroundImage)
+        backgroundImageView.contentMode = .scaleAspectFill
+        collectionView.backgroundView = backgroundImageView
+        
+        
         view.addSubview(calendarView)
         view.addSubview(writeButton)
         
@@ -274,6 +281,15 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
         return CGSize(width: view.frame.width, height: height + 72) // height + 72 이유 : 캡션과 아래 4가지 버튼들 사이 여백을 주기 위함
+    }
+    
+    // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if section == 0 { // 첫 번째 섹션인 경우에만 Safe Area 상단에 여백 추가
+            return UIEdgeInsets(top: 200, left: 0, bottom: 0, right: 0)
+        } else {
+            return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
+        }
     }
 }
 

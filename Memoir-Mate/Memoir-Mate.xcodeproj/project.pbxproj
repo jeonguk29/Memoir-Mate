@@ -30,6 +30,7 @@
 		64FA49F12AB80BEF0007A263 /* DiaryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FA49F02AB80BEF0007A263 /* DiaryCell.swift */; };
 		64FA49F32AB815170007A263 /* DiaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FA49F22AB815170007A263 /* DiaryViewModel.swift */; };
 		64FA49FF2AB83F4A0007A263 /* 나눔손글씨 무궁화.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 64FA49FE2AB83F490007A263 /* 나눔손글씨 무궁화.ttf */; };
+		64FA4A1B2AB9D0410007A263 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FA4A1A2AB9D0410007A263 /* ChatMessageCell.swift */; };
 		AB19DA4ACF04F045E70B1060 /* Pods_Memoir_Mate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD75905DB84546C8A59E468C /* Pods_Memoir_Mate.framework */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +61,7 @@
 		64FA49F02AB80BEF0007A263 /* DiaryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryCell.swift; sourceTree = "<group>"; };
 		64FA49F22AB815170007A263 /* DiaryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryViewModel.swift; sourceTree = "<group>"; };
 		64FA49FE2AB83F490007A263 /* 나눔손글씨 무궁화.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "나눔손글씨 무궁화.ttf"; sourceTree = "<group>"; };
+		64FA4A1A2AB9D0410007A263 /* ChatMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
 		C3393A76B538D59770AD4234 /* Pods-Memoir-Mate.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Memoir-Mate.release.xcconfig"; path = "Target Support Files/Pods-Memoir-Mate/Pods-Memoir-Mate.release.xcconfig"; sourceTree = "<group>"; };
 		CD75905DB84546C8A59E468C /* Pods_Memoir_Mate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Memoir_Mate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -136,6 +138,7 @@
 		649D94772AB19D340092BF0D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				64FA4A1A2AB9D0410007A263 /* ChatMessageCell.swift */,
 				649D94892AB41D7B0092BF0D /* InputTextView.swift */,
 				64FA49F02AB80BEF0007A263 /* DiaryCell.swift */,
 			);
@@ -339,6 +342,7 @@
 				649D947D2AB19E840092BF0D /* MainTabController.swift in Sources */,
 				64FA49F12AB80BEF0007A263 /* DiaryCell.swift in Sources */,
 				649D945E2AB0A5590092BF0D /* SceneDelegate.swift in Sources */,
+				64FA4A1B2AB9D0410007A263 /* ChatMessageCell.swift in Sources */,
 				649D94882AB41CC10092BF0D /* Extentions.swift in Sources */,
 				64FA49EF2AB7DF0B0007A263 /* Diary.swift in Sources */,
 			);
