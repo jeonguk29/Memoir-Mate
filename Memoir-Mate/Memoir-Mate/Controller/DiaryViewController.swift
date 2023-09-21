@@ -85,6 +85,7 @@ class DiaryViewController: UICollectionViewController{
         
         // UIScrollView의 delegate를 설정합니다.
         collectionView.delegate = self
+        collectionView.alwaysBounceVertical = true // 이 부분을 추가하면 스크롤이 항상 가능하게 됩니다. (cell 하나만 있어도 스크롤이 가능하게)
         
         setupFSCalendar()
         setupAutoLayout()
@@ -111,8 +112,9 @@ class DiaryViewController: UICollectionViewController{
     
     
     @objc func handleWriteTapped(){
-        print("handleWriteTapped")
+
         //guard let user = user else {return}
+        print("DiaryViewController \(selectDate)")
         let controller = WriteDiaryController(user: user!, userSelectDate: selectDate, config: .diary)
         let nav = UINavigationController(rootViewController: controller)
         nav.modalPresentationStyle = .fullScreen
@@ -188,24 +190,29 @@ class DiaryViewController: UICollectionViewController{
     
     
     // MARK: - API
-    func fetchDiarys(){
-        collectionView.refreshControl?.beginRefreshing() // 새로고침 컨트롤러 추가
-        DiaryService.shared.fatchDiarys{ diarys in
-            self.diarys = diarys
+    func fetchDiarys() {
+
+        DiaryService.shared.fatchDiarys { diarys in
+            var selectdiarys = [Diary]() // 선택된 날짜의 일기를 담을 배열 생성
             
+            for selectdiary in diarys {
+                if selectdiary.userSelectDate == self.selectDate { // 오늘 날짜와 선택된 날짜가 같은 경우에만 추가
+                    selectdiarys.append(selectdiary)
+                }
+            }
             
             // 날짜 순으로 트윗 정렬
-            self.diarys = diarys.sorted(by: { $0.timestamp > $1.timestamp })
+            self.diarys = selectdiarys.sorted(by: { $0.timestamp > $1.timestamp })
 
             self.collectionView.refreshControl?.endRefreshing()
             
-            for diary in diarys {
-                print(diary.caption)
-                print(diary.timestamp)
-            }
-          
+    //      for diary in diarys {
+    //          print(diary.caption)
+    //          print(diary.timestamp)
+    //      }
         }
     }
+
     
 }
     
@@ -227,6 +234,7 @@ extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
              돌아오면 현제 날짜에 맞춰서 트윗 뿌리기
            */
            self.selectDate = formatter.string(from: date)
+           fetchDiarys()
            
        }
 }

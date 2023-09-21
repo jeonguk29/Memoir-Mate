@@ -17,11 +17,7 @@ class WriteDiaryController: UIViewController{
     }
     private let config: UploadDiaryConfiguration
     
-    private var userSelectDate: String{
-        didSet {
-            print("\(userSelectDate)")
-        }
-    }
+    private var userSelectDate: String
     
     private lazy var actionButton: UIButton = {
         let button = UIButton(type: .system)
@@ -72,7 +68,7 @@ class WriteDiaryController: UIViewController{
     @objc func handleUploadDiary() {
         //print("업로드 트윗")
         guard let caption = captionTextView.text else {return}
-        DiaryService.shared.uploadDiary(caption: caption, type: config) { (error, ref)in
+        DiaryService.shared.uploadDiary(userSelectDate: userSelectDate, caption: caption, type: config) { (error, ref)in
                        if let error = error {
                            print("DEBUG: 일기 업로드에 실패했습니다. error\(error.localizedDescription)")
                            return

@@ -15,12 +15,12 @@ struct DiaryService {
     static let shared = DiaryService()
     
     // 별명 적용 : DatabaseCompletion
-    func uploadDiary(caption: String, type: UploadDiaryConfiguration, completion: @escaping(DatabaseCompletion)) {
+    func uploadDiary(userSelectDate: String,caption: String, type: UploadDiaryConfiguration, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else {return}
         // 누가 트윗을 남겼는지 uid를 저장해줘야함
         
         var values = ["uid": uid, "timestamp" : Int(NSDate().timeIntervalSince1970),
-                      "likes" : 0, "retweets": 0, "caption": caption] as [String : Any]
+                      "likes" : 0, "retweets": 0, "caption": caption, "userSelectDate": userSelectDate] as [String : Any]
         
         // 파이어 베이스에 답장 업로드하기
         switch type {

@@ -37,8 +37,8 @@ class DiaryCell:UICollectionViewCell {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
-        iv.setDimensions(width: 48, height: 48)
-        iv.layer.cornerRadius = 48/2
+        iv.setDimensions(width: 34, height: 34)
+        iv.layer.cornerRadius = 34/2
         iv.backgroundColor = .mainColor
         
         // 버튼이 아닌 view 객체를 탭 이벤트 처리하는 방법 : 사용자 프로필 작업하기
@@ -145,20 +145,26 @@ class DiaryCell:UICollectionViewCell {
          
         
         
-        let captionStack = UIStackView(arrangedSubviews: [infoLabel, captionLabel])
-        captionStack.axis = .vertical
-        captionStack.distribution = .fillProportionally
-        captionStack.spacing = 4
-        
-        let imageCaptionStack = UIStackView(arrangedSubviews: [profileImageView, captionStack])
+        let imageCaptionStack = UIStackView(arrangedSubviews: [profileImageView, infoLabel, replyLabel])
+        imageCaptionStack.axis = .horizontal
         imageCaptionStack.distribution = .fillProportionally
         imageCaptionStack.spacing = 12
-        imageCaptionStack.alignment = .leading
+        imageCaptionStack.alignment = .center
         
-       let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
-       stack.axis = .vertical
-       stack.distribution = .fillProportionally
-       stack.spacing = 8
+        let separatorView = UIView()
+        separatorView.backgroundColor = .mainColor // 구분선의 색상 설정
+        separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이 설정
+
+        let stack = UIStackView(arrangedSubviews: [imageCaptionStack, separatorView, captionLabel]) // 구분선을 stack에 추가
+        stack.axis = .vertical
+        stack.distribution = .fillProportionally
+        stack.spacing = 4
+      
+//
+//       let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
+//       stack.axis = .vertical
+//       stack.distribution = .fillProportionally
+//       stack.spacing = 8
        
        stack.translatesAutoresizingMaskIntoConstraints = false
         
@@ -167,7 +173,7 @@ class DiaryCell:UICollectionViewCell {
 
         NSLayoutConstraint.activate([
 
-            stack.topAnchor.constraint(equalTo: self.topAnchor, constant: 18),
+            stack.topAnchor.constraint(equalTo: self.topAnchor, constant: 25),
             stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 18),
             stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -18),
             stack.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
