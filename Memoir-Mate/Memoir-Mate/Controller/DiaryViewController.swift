@@ -163,6 +163,9 @@ class DiaryViewController: UICollectionViewController{
             calendarView.isHidden = false
             writeButton.isHidden = false
         }
+        
+        // calendarHidden 상태가 변경될 때마다 셀을 다시 로드
+        collectionView.performBatchUpdates(nil, completion: nil) // 달력 첫번째 셀의 위치를 조절 하기 위해
     }
     
     
@@ -343,8 +346,16 @@ extension DiaryViewController {
         cell.delegate = self
         cell.diary = diarys[indexPath.row]
         
+        // 셀에 대한 초기 설정
+        // 애니메이션 적용
+        cell.alpha = 0.0
+        UIView.animate(withDuration: 0.5) {
+            cell.alpha = 1.0
+        }
+        
         return cell
     }
+    
     
 //    // 셀하나 선택시 일어나는 작업을 설정하는 메서드
 //    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -370,12 +381,19 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
     
     // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        if section == 0 { // 첫 번째 섹션인 경우에만 Safe Area 상단에 여백 추가
-            return UIEdgeInsets(top: 200, left: 0, bottom: 0, right: 0)
+        if section == 0 { // 첫 번째 섹션인 경우
+            if self.calendarView.isHidden == true {
+                // calendarHidden이 true인 경우 공백 제거
+                return UIEdgeInsets.zero
+            } else {
+                // calendarHidden이 false인 경우 공백 추가
+                return UIEdgeInsets(top: 400, left: 0, bottom: 0, right: 0)
+            }
         } else {
             return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
         }
     }
+    
 }
 
 
@@ -460,6 +478,7 @@ extension DiaryViewController {
                       self.navigationController?.setNavigationBarHidden(true, animated: true)
                       self.calendarView.alpha = 0.0
                       self.writeButton.alpha = 0.0
+                      
                   }
               }
           } else {
