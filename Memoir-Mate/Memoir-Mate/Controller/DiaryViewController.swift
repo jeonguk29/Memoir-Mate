@@ -16,11 +16,6 @@ class DiaryViewController: UICollectionViewController{
     
     // MARK: - Properties
     
-    //    let scrollView: UIScrollView = {
-    //      let scrollView = UIScrollView()
-    //      scrollView.translatesAutoresizingMaskIntoConstraints = false
-    //      return scrollView
-    //    }()
     
     var user: User?
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
@@ -43,8 +38,11 @@ class DiaryViewController: UICollectionViewController{
     let formatter = DateFormatter()
     var selectDate: String = "" // didset 사용해서 화면 새로고침해서 일기 목록 뿌려주기
     
-    var isNavigationBarHidden = false
+    // 날짜를 키로 하고 다이어리 항목이 있는지 여부를 값으로 하는 딕셔너리를 저장할 변수
+    private var diaryData: [String: Bool] = [:]
     
+    var isNavigationBarHidden = false
+    var calendarHidden = false
     
     private lazy var writeButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -65,6 +63,37 @@ class DiaryViewController: UICollectionViewController{
         button.addTarget(self, action: #selector(handleWriteTapped), for: .touchUpInside)
         return button
     }()
+    
+    
+//    private lazy var closeCalendarButton: UIButton = {
+//        let button = UIButton(type: .custom)
+//        button.backgroundColor = .white
+//        button.layer.cornerRadius = 5
+//        button.layer.borderWidth = 1 // 보더의 넓이 설정
+//        button.layer.borderColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1) // 보더 컬러 설정
+//        button.setImage(UIImage(systemName: "xmark.circle"), for: .normal)
+//
+//        if let roseOfSharonFont = UIFont(name: "Rose-of-Sharon", size: 16) {
+//            button.titleLabel?.font = roseOfSharonFont
+//        } else {
+//            print("폰트 적용 안됨")
+//            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+//        }
+//        button.setTitleColor(.black, for: .normal)
+//
+//        button.addTarget(self, action: #selector(closeCalendarTapped), for: .touchUpInside)
+//        return button
+//    }()
+    
+    
+    private lazy var actionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "calendar.circle"), for: .normal)
+        // 버튼 액션 추가
+        button.addTarget(self, action: #selector(closeCalendarTapped), for: .touchUpInside)
+        return button
+    }()
+
     
     
     
@@ -96,6 +125,7 @@ class DiaryViewController: UICollectionViewController{
         selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
         
         fetchDiarys()
+        fetchDiaryData()
         
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier:DiaryCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
     }
@@ -122,6 +152,20 @@ class DiaryViewController: UICollectionViewController{
     }
     
     
+    @objc func closeCalendarTapped(){
+        if self.calendarHidden == true {
+            calendarHidden = false
+            calendarView.isHidden = true
+            writeButton.isHidden = true
+        }
+        else{
+            calendarHidden = true
+            calendarView.isHidden = false
+            writeButton.isHidden = false
+        }
+    }
+    
+    
     private func setupAutoLayout() {
         
         //        view.addSubview(scrollView)
@@ -139,11 +183,13 @@ class DiaryViewController: UICollectionViewController{
         
         view.addSubview(calendarView)
         view.addSubview(writeButton)
-        
+        view.addSubview(actionButton)
+           
         calendarView.translatesAutoresizingMaskIntoConstraints = false
         writeButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        
+        actionButton.translatesAutoresizingMaskIntoConstraints = false
+            
+            
         // Safe Area 제약 조건 설정
         let safeArea = view.safeAreaLayoutGuide
         
@@ -162,8 +208,18 @@ class DiaryViewController: UICollectionViewController{
             writeButton.heightAnchor.constraint(equalToConstant: 30),
             //writeButton.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 2),
             
+            // ⭐️ 해당 한줄의 코드가 위 코드를 대체함
+            // safeAreaLayoutGuide는 safeArea를 말함
             
+            actionButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -64),
+            actionButton.widthAnchor.constraint(equalToConstant: 56),
+        
+                        
         ])
+        actionButton.layer.cornerRadius = 56/2 // 높이 나누기 2 하면 원형 모양이 됨
+            
+    
         
     }
     
@@ -212,6 +268,18 @@ class DiaryViewController: UICollectionViewController{
     //      }
         }
     }
+    
+    // 다이어리 데이터를 가져와서 diaryData 딕셔너리를 채우는 함수
+    private func fetchDiaryData() {
+        DiaryService.shared.fatchDiarys { diarys in
+            for selectdiary in diarys {
+                // 해당 날짜에 다이어리 항목이 있는 경우 딕셔너리에 값을 true로 설정합니다.
+                self.diaryData[selectdiary.userSelectDate] = true
+            }
+            // 업데이트된 데이터를 반영하기 위해 달력을 다시 로드합니다.
+            self.calendarView.reloadData()
+        }
+    }
 
     
 }
@@ -237,6 +305,15 @@ extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
            fetchDiarys()
            
        }
+
+    // 달력에서 날짜에 '*'를 추가할지 여부를 결정하는 함수
+    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
+        let dateString = formatter.string(from: date)
+        if let hasDiaryEntry = diaryData[dateString], hasDiaryEntry {
+            return "*"
+        }
+        return nil
+    }
 }
 
 
