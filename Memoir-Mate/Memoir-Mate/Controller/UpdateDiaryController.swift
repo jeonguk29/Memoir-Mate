@@ -1,24 +1,14 @@
 //
-//  WriteDiaryController.swift
+//  UpdateDiaryController.swift
 //  Memoir-Mate
 //
-//  Created by 정정욱 on 2023/09/15.
+//  Created by 정정욱 on 2023/09/25.
 //
 
 import UIKit
 import SDWebImage
 
-enum DiaryType: String { // 어떤 종류의 알림인지 숫자로 파악하기 위함
-    case Write
-    case Update
-}
-
-protocol WriteDiaryControllerDelegate: class {
-    func didTaphandleCancel()
-    func didTaphandleUpdate()
-}
-
-class WriteDiaryController: UIViewController{
+class UpdateDiaryController: UIViewController{
     
     private var user: User{ // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
@@ -26,20 +16,13 @@ class WriteDiaryController: UIViewController{
         }
     }
     private let config: UploadDiaryConfiguration
-    private var userSelectDate: String
-    private var userSelectstate: DiaryType
-    private var userSelectDiary: Diary?
     
-    weak var delegate: WriteDiaryControllerDelegate?
+    private var userSelectDate: String
     
     private lazy var actionButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .mainColor
-        if userSelectstate == .Write {
-            button.setTitle("작성", for: .normal)
-        }else{
-            button.setTitle("수정", for: .normal)
-        }
+        button.setTitle("작성", for: .normal)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.setTitleColor(.white, for: .normal)
@@ -48,12 +31,7 @@ class WriteDiaryController: UIViewController{
         button.layer.cornerRadius = 32 / 2
         
         //addTarget을 설정할 경우 lazy var로 만들어야함
-        if userSelectstate == .Write {
-            button.addTarget(self, action: #selector(handleUploadDiary), for: .touchUpInside)
-        }else{
-            button.addTarget(self, action: #selector(handleUpdateDiary), for: .touchUpInside)
-        }
-      
+        button.addTarget(self, action: #selector(handleUploadDiary), for: .touchUpInside)
         return button
     }()
     
@@ -62,13 +40,13 @@ class WriteDiaryController: UIViewController{
     
     // MARK: - Lifecycle
     
-    init(user: User, userSelectDate: String, config: UploadDiaryConfiguration, userSelectstate : DiaryType, userSelectDiary: Diary?) {
+    init(user: User, userSelectDate: String, config: UploadDiaryConfiguration) {
         self.user = user
         self.userSelectDate = userSelectDate
         self.config = config
-        self.userSelectstate = userSelectstate
-        self.userSelectDiary = userSelectDiary
-    
+        print("WriteDiaryController : \(self.user.email)")
+        print("WriteDiaryController : \(self.userSelectDate)")
+        
         super.init(nibName: nil, bundle: nil)
     }   // 사용자 이미지를 가져오기 위해 불필요한 API 요청 할필요가 없음 이전화면에서 이미 사용자 데이터를 호출해 불러왔으니까 받기만 하면 되는 것임
     
@@ -82,46 +60,22 @@ class WriteDiaryController: UIViewController{
         
     }
     
-    
     // MARK: - Selectors
     @objc func handleCancel(){
         dismiss(animated: true, completion: nil)
-        if userSelectstate == .Update {
-            delegate?.didTaphandleCancel()
-        }
     }
     
     @objc func handleUploadDiary() {
-        guard let caption = captionTextView.text else { return }
+        //print("업로드 트윗")
+        guard let caption = captionTextView.text else {return}
+        DiaryService.shared.uploadDiary(userSelectDate: userSelectDate, caption: caption, type: config) { (error, ref)in
+                       if let error = error {
+                           print("DEBUG: 일기 업로드에 실패했습니다. error\(error.localizedDescription)")
+                           return
+                       }
         
-        // 메인 스레드에서 실행되도록 DispatchQueue를 사용
-        DispatchQueue.main.async {
-            DiaryService.shared.uploadDiary(userSelectDate: self.userSelectDate, caption: caption, type: self.config) { (error, ref) in
-                if let error = error {
-                    print("DEBUG: 일기 업로드에 실패했습니다. error \(error.localizedDescription)")
-                    return
-                }
-                
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-    }
-
-    @objc func handleUpdateDiary() {
-        guard let caption = captionTextView.text else { return }
-        
-        // 메인 스레드에서 실행되도록 DispatchQueue를 사용
-        DispatchQueue.main.async {
-            DiaryService.shared.updateDiary(diary: self.userSelectDiary, userSelectDate: self.userSelectDate, caption: caption) { (error, ref) in
-                if let error = error {
-                    print("DEBUG: 일기 업데이트에 실패했습니다. error \(error.localizedDescription)")
-                    return
-                }
-                self.delegate?.didTaphandleUpdate()
-                self.dismiss(animated: true, completion: nil)
-                
-            }
-        }
+                       self.dismiss(animated: true, completion: nil)
+                   }
     }
     
     
@@ -132,16 +86,6 @@ class WriteDiaryController: UIViewController{
     // MARK: - Helpers
     
     func configureUI(){
-        
-        if userSelectstate == .Update {
-            if let userSelectDiary {
-                DispatchQueue.main.async {
-                    self.captionTextView.text = userSelectDiary.caption
-                    self.captionTextView.placeholderLabel.isHidden = true
-                }
-            }
-        }
-        
         view.backgroundColor = .white
         configureNavigationBar()
         
@@ -158,6 +102,8 @@ class WriteDiaryController: UIViewController{
             captionTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             captionTextView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             captionTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+            
         ])
         
     }
@@ -178,4 +124,5 @@ class WriteDiaryController: UIViewController{
         
     }
 }
+
 

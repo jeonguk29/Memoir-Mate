@@ -40,13 +40,18 @@ class DiaryCell:UICollectionViewCell {
         iv.setDimensions(width: 34, height: 34)
         iv.layer.cornerRadius = 34/2
         iv.backgroundColor = .mainColor
-        
+
         // 버튼이 아닌 view 객체를 탭 이벤트 처리하는 방법 : 사용자 프로필 작업하기
         // lazy var로 profileImageView를 수정해야함 아래 함수가 만들어지기 전에 인스턴스를 찍을 수 있어서
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTapped))
         iv.addGestureRecognizer(tap)
         iv.isUserInteractionEnabled = true
-        
+
+        // 프로필 이미지의 Auto Layout 설정
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.widthAnchor.constraint(equalToConstant: 34).isActive = true // 너비 제약 조건 추가
+        iv.heightAnchor.constraint(equalToConstant: 34).isActive = true // 높이 제약 조건 추가
+
         return iv
     }()
     
@@ -144,10 +149,14 @@ class DiaryCell:UICollectionViewCell {
         ])
          
         
+        infoLabel.translatesAutoresizingMaskIntoConstraints = false
+        replyLabel.translatesAutoresizingMaskIntoConstraints = false
+        captionLabel.translatesAutoresizingMaskIntoConstraints = false
         
         let imageCaptionStack = UIStackView(arrangedSubviews: [profileImageView, infoLabel, replyLabel])
         imageCaptionStack.axis = .horizontal
         imageCaptionStack.distribution = .fillProportionally
+        //imageCaptionStack.distribution = .fillProportionally
         imageCaptionStack.spacing = 12
         imageCaptionStack.alignment = .center
         
@@ -168,15 +177,15 @@ class DiaryCell:UICollectionViewCell {
        
        stack.translatesAutoresizingMaskIntoConstraints = false
         
-    backgroundContentView2.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
+    backgroundContentView.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
         
 
         NSLayoutConstraint.activate([
 
-            stack.topAnchor.constraint(equalTo: self.topAnchor, constant: 25),
-            stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 18),
-            stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -18),
-            stack.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            stack.topAnchor.constraint(equalTo: backgroundContentView2.topAnchor, constant: 6),
+            stack.bottomAnchor.constraint(equalTo: backgroundContentView2.bottomAnchor, constant: -6),
+            stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
+            stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             //세로크기를 100
 
         ])
@@ -184,33 +193,33 @@ class DiaryCell:UICollectionViewCell {
         
        infoLabel.font = UIFont.systemFont(ofSize: 14)
         
+//        
+//        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
+//        actionStack.axis = .horizontal
+//        actionStack.spacing = 72
+//        
+//        addSubview(actionStack)
+//
+//        let underlineView = UIView()
+//        underlineView.backgroundColor = .systemGroupedBackground
+//        addSubview(underlineView)
+//
+//        
+//        
+//        NSLayoutConstraint.activate([
+//            
+//            actionStack.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor), // centerX 오토레이아웃 추가
+//            actionStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 8),
+//
+//            underlineView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+//            underlineView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+//            underlineView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+//            underlineView.heightAnchor.constraint(equalToConstant: 1),
+//
+//            
+//        ])
         
-        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
-        actionStack.axis = .horizontal
-        actionStack.spacing = 72
-        
-        addSubview(actionStack)
-
-        let underlineView = UIView()
-        underlineView.backgroundColor = .systemGroupedBackground
-        addSubview(underlineView)
-
-        
-        
-        NSLayoutConstraint.activate([
-            
-            actionStack.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor), // centerX 오토레이아웃 추가
-            actionStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 8),
-
-            underlineView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-            underlineView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            underlineView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-            underlineView.heightAnchor.constraint(equalToConstant: 1),
-
-            
-        ])
-        
-        configureMentionHandler()
+    //configureMentionHandler()
     }
     
     required init?(coder: NSCoder) {

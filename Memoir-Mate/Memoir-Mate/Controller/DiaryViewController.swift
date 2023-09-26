@@ -111,6 +111,7 @@ class DiaryViewController: UICollectionViewController{
         
         calendarView.delegate = self
         calendarView.dataSource = self
+    
         
         // UIScrollView의 delegate를 설정합니다.
         collectionView.delegate = self
@@ -145,7 +146,7 @@ class DiaryViewController: UICollectionViewController{
 
         //guard let user = user else {return}
         print("DiaryViewController \(selectDate)")
-        let controller = WriteDiaryController(user: user!, userSelectDate: selectDate, config: .diary)
+        let controller = WriteDiaryController(user: user!, userSelectDate: selectDate, config: .diary, userSelectstate: .Write, userSelectDiary: nil)
         let nav = UINavigationController(rootViewController: controller)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true, completion: nil)
@@ -250,7 +251,6 @@ class DiaryViewController: UICollectionViewController{
     
     // MARK: - API
     func fetchDiarys() {
-
         DiaryService.shared.fatchDiarys { diarys in
             var selectdiarys = [Diary]() // 선택된 날짜의 일기를 담을 배열 생성
             
@@ -262,16 +262,14 @@ class DiaryViewController: UICollectionViewController{
             
             // 날짜 순으로 트윗 정렬
             self.diarys = selectdiarys.sorted(by: { $0.timestamp > $1.timestamp })
-
-            self.collectionView.refreshControl?.endRefreshing()
             
-    //      for diary in diarys {
-    //          print(diary.caption)
-    //          print(diary.timestamp)
-    //      }
+            // 업데이트된 데이터를 반영하기 위해 collectionView를 업데이트
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
         }
     }
-    
+
     // 다이어리 데이터를 가져와서 diaryData 딕셔너리를 채우는 함수
     private func fetchDiaryData() {
         DiaryService.shared.fatchDiarys { diarys in
@@ -280,11 +278,12 @@ class DiaryViewController: UICollectionViewController{
                 self.diaryData[selectdiary.userSelectDate] = true
             }
             // 업데이트된 데이터를 반영하기 위해 달력을 다시 로드합니다.
-            self.calendarView.reloadData()
+            DispatchQueue.main.async {
+                self.calendarView.reloadData()
+            }
         }
     }
 
-    
 }
     
 
@@ -355,14 +354,23 @@ extension DiaryViewController {
         
         return cell
     }
-    
-    
-//    // 셀하나 선택시 일어나는 작업을 설정하는 메서드
-//    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let controller = TweetController(tweet: tweets[indexPath.row])
-//        navigationController?.pushViewController(controller, animated: true)
-//    }
-//
+  
+    // 셀하나 선택시 일어나는 작업을 설정하는 메서드
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let controller = WriteDiaryController(user: user!,
+                                              userSelectDate: diarys[indexPath.row].userSelectDate,
+                                              config: .diary,
+                                              userSelectstate:.Update,
+                                              userSelectDiary: diarys[indexPath.row])
+        controller.delegate = self
+        //navigationController?.pushViewController(controller, animated: true)
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+        
+        
+    }
+
     
     
 }
@@ -376,7 +384,7 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
         let diary = diarys[indexPath.row]
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
-        return CGSize(width: view.frame.width, height: height + 72) // height + 72 이유 : 캡션과 아래 4가지 버튼들 사이 여백을 주기 위함
+        return CGSize(width: view.frame.width, height: height + 100) // height + 72 이유 : 캡션과 아래 4가지 버튼들 사이 여백을 주기 위함
     }
     
     // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)
@@ -463,34 +471,51 @@ extension DiaryViewController: DiaryCellDelegate {
 
 
 // MARK: - 스크롤 애니메이션 부분
+// 스크롤 애니메이션 부분 수정
 extension DiaryViewController {
-    
-    
     // scrollViewDidScroll(_:) 메서드를 구현하여 스크롤 이벤트를 처리합니다.
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-          let yOffset = scrollView.contentOffset.y
+        let yOffset = scrollView.contentOffset.y
 
-          if yOffset > 0 {
-              // 아래로 스크롤하는 중
-              if !isNavigationBarHidden {
-                  isNavigationBarHidden = true
-                  UIView.animate(withDuration: 0.3) {
-                      self.navigationController?.setNavigationBarHidden(true, animated: true)
-                      self.calendarView.alpha = 0.0
-                      self.writeButton.alpha = 0.0
-                      
-                  }
-              }
-          } else {
-              // 위로 스크롤하는 중
-              if isNavigationBarHidden {
-                  isNavigationBarHidden = false
-                  UIView.animate(withDuration: 0.3) {
-                      self.navigationController?.setNavigationBarHidden(false, animated: true)
-                      self.calendarView.alpha = 1.0
-                      self.writeButton.alpha = 1.0
-                  }
-              }
-          }
-      }
+        if yOffset > 0 {
+            // 아래로 스크롤하는 중
+            if !isNavigationBarHidden {
+                isNavigationBarHidden = true
+                UIView.animate(withDuration: 0.3) {
+                    self.navigationController?.setNavigationBarHidden(true, animated: true)
+                    self.animateCalendarAndWriteButton(alpha: 0.0) // calendarView와 writeButton을 투명하게 처리
+                }
+            }
+        } else {
+            // 위로 스크롤하는 중
+            if isNavigationBarHidden {
+                isNavigationBarHidden = false
+                UIView.animate(withDuration: 0.3) {
+                    self.navigationController?.setNavigationBarHidden(false, animated: true)
+                    self.animateCalendarAndWriteButton(alpha: 1.0) // calendarView와 writeButton을 나타나게 처리
+                }
+            }
+        }
+    }
+
+    // calendarView와 writeButton의 alpha 값을 변경하는 메서드
+    private func animateCalendarAndWriteButton(alpha: CGFloat) {
+        UIView.animate(withDuration: 0.3) {
+            self.calendarView.alpha = alpha
+            self.writeButton.alpha = alpha
+        }
+    }
+}
+
+
+extension DiaryViewController: WriteDiaryControllerDelegate{
+    func didTaphandleCancel() {
+        collectionView.reloadData()
+    }
+    
+    func didTaphandleUpdate() {
+        self.fetchDiarys()
+        self.fetchDiaryData()
+        collectionView.reloadData()
+    }
 }
