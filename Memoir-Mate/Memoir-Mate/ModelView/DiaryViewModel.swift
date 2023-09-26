@@ -16,6 +16,12 @@ struct DiaryViewModel {
     let diary: Diary
     let user: User
     
+    
+    // 삭제 버튼을 표시해야하는지 여부를 나타내는 프로퍼티
+    var shouldShowDeleteButton: Bool {
+        return true
+    }
+    
     var profileImageUrl: URL?{
         return user.profileImageUrl
     }

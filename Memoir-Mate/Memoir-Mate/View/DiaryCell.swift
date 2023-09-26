@@ -25,7 +25,7 @@ class DiaryCell:UICollectionViewCell {
     
     static let reuseIdentifier = "DiaryCell" // 재사용 식별자 정의
     
-    
+
     // 데이터를 가져오기 전일수도 있기때문에 옵셔널로 선언
     var diary: Diary? {
         didSet { configure() }
@@ -124,11 +124,30 @@ class DiaryCell:UICollectionViewCell {
         return view
     }()
     
+    
+//    // 추가: 삭제 버튼을 나타내는 UIButton
+//    private let deleteButton: UIButton = {
+//        let button = UIButton(type: .system)
+//        button.setImage(UIImage(systemName: "trash"), for: .normal)
+//        button.tintColor = .red
+//        button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+//        return button
+//    }()
+    
     // MARK: - Lifecycle
     override init(frame:CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
 
+        // 삭제 버튼을 셀에 추가하고 Auto Layout을 설정
+//        addSubview(deleteButton)
+//        NSLayoutConstraint.activate([
+//            deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor), // 세로 중앙 정렬
+//            deleteButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8), // 오른쪽으로 여백을 줌
+//            deleteButton.widthAnchor.constraint(equalToConstant: 30),
+//            deleteButton.heightAnchor.constraint(equalToConstant: 30)
+//        ])
+//        
         addSubview(backgroundContentView) // 백그라운드 뷰를 가장 처음에 추가
         backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
            
@@ -192,34 +211,7 @@ class DiaryCell:UICollectionViewCell {
 
         
        infoLabel.font = UIFont.systemFont(ofSize: 14)
-        
-//        
-//        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
-//        actionStack.axis = .horizontal
-//        actionStack.spacing = 72
-//        
-//        addSubview(actionStack)
-//
-//        let underlineView = UIView()
-//        underlineView.backgroundColor = .systemGroupedBackground
-//        addSubview(underlineView)
-//
-//        
-//        
-//        NSLayoutConstraint.activate([
-//            
-//            actionStack.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor), // centerX 오토레이아웃 추가
-//            actionStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 8),
-//
-//            underlineView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
-//            underlineView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-//            underlineView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-//            underlineView.heightAnchor.constraint(equalToConstant: 1),
-//
-//            
-//        ])
-        
-    //configureMentionHandler()
+    
     }
     
     required init?(coder: NSCoder) {
@@ -251,6 +243,15 @@ class DiaryCell:UICollectionViewCell {
         
     }
     
+//    @objc func deleteButtonTapped() {
+//        // 삭제 버튼 클릭 시 호출되는 메서드
+//        // 이 부분에서 해당 일기를 삭제하는 코드를 작성하세요.
+//        // indexPath를 사용하여 어떤 일기를 삭제할지 결정할 수 있습니다.
+//        // 삭제가 완료되면 데이터를 업데이트하고 컬렉션 뷰를 새로고침해야 합니다.
+//    }
+    
+ 
+    
     
     
     // MARK: - Helpers
@@ -271,8 +272,34 @@ class DiaryCell:UICollectionViewCell {
         
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
+        
+//        // 여기에서 deleteButton의 가시성을 설정하거나 숨깁니다.
+//        if viewModel.shouldShowDeleteButton {
+//            showDeleteButton()
+//        } else {
+//            hideDeleteButton()
+//        }
     }
     
+//    // 삭제 버튼을 표시하는 메서드
+//    func showDeleteButton() {
+//        backgroundContentView2.addSubview(deleteButton)
+//        deleteButton.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        NSLayoutConstraint.activate([
+//            deleteButton.topAnchor.constraint(equalTo: backgroundContentView2.topAnchor, constant: 6),
+//            deleteButton.trailingAnchor.constraint(equalTo: backgroundContentView2.trailingAnchor, constant: -6),
+//            deleteButton.widthAnchor.constraint(equalToConstant: 20),
+//            deleteButton.heightAnchor.constraint(equalToConstant: 20),
+//        ])
+//    }
+//    
+//    // 삭제 버튼을 숨기는 메서드
+//    func hideDeleteButton() {
+//        // 삭제 버튼이 이미 표시되어 있다면 제거합니다.
+//        deleteButton.removeFromSuperview()
+//    }
+//    
     // 모든 버튼의 설정값이 동일하기 때문에 코드를 줄이기 위한 리팩토링 작업을 할 것임
     func createButton(withImageName imageName: String) -> UIButton {
         let button = UIButton(type: .system)

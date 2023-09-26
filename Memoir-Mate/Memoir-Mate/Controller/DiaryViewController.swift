@@ -115,6 +115,7 @@ class DiaryViewController: UICollectionViewController{
         
         // UIScrollView의 delegate를 설정합니다.
         collectionView.delegate = self
+       
         collectionView.alwaysBounceVertical = true // 이 부분을 추가하면 스크롤이 항상 가능하게 됩니다. (cell 하나만 있어도 스크롤이 가능하게)
         
         setupFSCalendar()
@@ -129,6 +130,11 @@ class DiaryViewController: UICollectionViewController{
         fetchDiaryData()
         
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier:DiaryCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
+        
+        
+//        // 스와이프 제스처 인식기를 셀에 추가
+//         let swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
+//         collectionView.addGestureRecognizer(swipeGesture)
     }
     
     
@@ -340,7 +346,10 @@ extension DiaryViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! DiaryCell
         
-        //print("DEBUGP: indexPath is \(indexPath.row)")
+//        // 스와이프 제스처 인식기 추가
+//        let swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
+//        cell.addGestureRecognizer(swipeGesture)
+//        
         
         cell.delegate = self
         cell.diary = diarys[indexPath.row]
@@ -354,6 +363,53 @@ extension DiaryViewController {
         
         return cell
     }
+    
+//    // 스와이프 동작을 처리하는 메서드
+//       @objc func handleSwipeGesture(_ gesture: UIPanGestureRecognizer) {
+//           guard let cell = gesture.view as? DiaryCell, let indexPath = collectionView.indexPath(for: cell) else {
+//               return
+//           }
+//
+//           let translation = gesture.translation(in: cell)
+//
+//           switch gesture.state {
+//           case .began:
+//               // 스와이프가 시작될 때 처리할 내용 (예: 셀을 선택 상태로 표시)
+//               break
+//
+//           case .changed:
+//               // 스와이프 중에 처리할 내용 (예: 셀의 위치 변경)
+//               if translation.x < 0 {
+//                   // 왼쪽으로 스와이프하는 경우
+//                   let offset = max(translation.x, -80) // 최대 스와이프 거리 제한 (임의로 설정)
+//                   cell.transform = CGAffineTransform(translationX: offset, y: 0)
+//                   cell.showDeleteButton() // 삭제 버튼 표시
+//               }
+//
+//           case .ended:
+//               // 스와이프가 종료될 때 처리할 내용
+//               if translation.x < -40 {
+//                   // 왼쪽으로 충분히 스와이프했을 경우 (임의의 값)
+//                   // 해당 셀을 삭제하는 메서드 호출
+//                   deleteDiary(at: indexPath)
+//               } else {
+//                   // 스와이프가 충분하지 않을 경우 셀을 초기 위치로 복원
+//                   UIView.animate(withDuration: 0.2) {
+//                       cell.transform = .identity
+//                       cell.hideDeleteButton() // 삭제 버튼 숨김
+//                   }
+//               }
+//
+//           default:
+//               break
+//           }
+//       }
+//       
+//       // 3. 스와이프 동작 처리
+//    func deleteDiary(at indexPath: IndexPath) {
+//
+//    }
+    
   
     // 셀하나 선택시 일어나는 작업을 설정하는 메서드
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -376,6 +432,8 @@ extension DiaryViewController {
 }
 // MARK: - UICollectionViewDelegateFlowLayout
 extension DiaryViewController: UICollectionViewDelegateFlowLayout {
+    
+    
     
     // 각 셀의 크기를 지정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -401,6 +459,7 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
             return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
         }
     }
+    
     
 }
 
@@ -519,3 +578,4 @@ extension DiaryViewController: WriteDiaryControllerDelegate{
         collectionView.reloadData()
     }
 }
+
