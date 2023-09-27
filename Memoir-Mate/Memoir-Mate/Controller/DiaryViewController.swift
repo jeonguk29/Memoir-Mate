@@ -7,6 +7,8 @@
 
 import UIKit
 import FSCalendar
+import AVKit
+
 
 
 private let reuseIdentifier = "DiaryCell"
@@ -95,7 +97,10 @@ class DiaryViewController: UICollectionViewController{
     }()
 
     
-    
+    private var selectedCell: DiaryCell? // 선택된 셀을 추적하기 위한 속성 추가
+    private var isCellCentered = false // 셀이 화면 중앙에 있는지 여부를 추적하기 위한 속성 추가
+    // 새로운 인스턴스 변수 overlayView를 추가
+    private var overlayView: UIView?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -132,9 +137,6 @@ class DiaryViewController: UICollectionViewController{
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier:DiaryCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
         
         
-//        // 스와이프 제스처 인식기를 셀에 추가
-//         let swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
-//         collectionView.addGestureRecognizer(swipeGesture)
     }
     
     
@@ -178,11 +180,7 @@ class DiaryViewController: UICollectionViewController{
     
     private func setupAutoLayout() {
         
-        //        view.addSubview(scrollView)
-        //        scrollView.addSubview(calendarView)
-        //        let contentHeight = CGFloat(280) // Adjust this value as needed
-        //            let contentWidth = UIScreen.main.bounds.width // Use the width of the screen or adjust as needed
-        //        scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
+
         
         // 배경 이미지 설정
         let backgroundImage = UIImage(named: "back")
@@ -252,7 +250,109 @@ class DiaryViewController: UICollectionViewController{
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
     }
     
-    
+    func centerSelectedCell() {
+           guard let cell = selectedCell else { return }
+
+           if !isCellCentered {
+               let overlayView = UIView(frame: self.view.bounds)
+               overlayView.alpha = 0.0
+               self.view.addSubview(overlayView)
+
+               // 비디오 파일 경로를 가져옵니다.
+               if let videoPath = Bundle.main.path(forResource: "backg", ofType: "mp4") {
+                   // AVPlayer 인스턴스를 생성합니다.
+                   let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
+
+                   // AVPlayerViewController 인스턴스를 생성하고 AVPlayer를 할당합니다.
+                   let playerController = AVPlayerViewController()
+                   playerController.player = player
+
+                   // AVPlayerViewController를 현재 뷰 컨트롤러에 추가합니다.
+                   self.addChild(playerController)
+                   playerController.view.frame = overlayView.bounds
+                   overlayView.addSubview(playerController.view)
+                   playerController.didMove(toParent: self)
+
+                   // 비디오를 반복 재생합니다.
+                   player.actionAtItemEnd = .none
+                   NotificationCenter.default.addObserver(self, selector: #selector(playerDidReachEnd(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+
+                   // 비디오 재생을 시작합니다.
+                   player.play()
+               }
+
+               // 투명한 뷰를 생성하여 overlayView 위에 추가합니다.
+               let transparentView = UIView(frame: overlayView.bounds)
+               transparentView.backgroundColor = .clear
+               overlayView.addSubview(transparentView)
+
+               let closeButton = UIButton(type: .custom)
+               closeButton.frame = overlayView.bounds
+               closeButton.addTarget(self, action: #selector(closeOverlayView), for: .touchUpInside)
+               overlayView.addSubview(closeButton)
+
+               // 선택한 셀을 화면 중앙으로 이동시킵니다.
+               cell.center = overlayView.center
+               overlayView.addSubview(cell)
+
+               UIView.animate(withDuration: 0.3) {
+                   overlayView.alpha = 1.0
+               }
+
+               isCellCentered = true
+               self.overlayView = overlayView
+           }
+       }
+
+
+
+    @objc func playerDidReachEnd(_ notification: Notification) {
+        if let playerItem = notification.object as? AVPlayerItem {
+            playerItem.seek(to: CMTime.zero, completionHandler: nil)
+        }
+    }
+
+    @objc func closeOverlayView() {
+        guard let overlayView = self.overlayView else { return }
+
+        // AVPlayer 재생 중지
+        for subview in overlayView.subviews {
+            if let playerControllerView = subview as? AVPlayerViewController {
+                playerControllerView.player?.pause()
+                playerControllerView.view.removeFromSuperview()
+            }
+        }
+
+        UIView.animate(withDuration: 0.3, animations: {
+            overlayView.alpha = 0.0
+        }) { _ in
+            overlayView.removeFromSuperview()
+
+            // 이미 화면 중앙에 있는 경우, 원래 위치로 이동
+            if let cell = self.selectedCell {
+                UIView.animate(withDuration: 0.3, animations: {
+                    cell.frame = cell.originalFrame ?? CGRect.zero
+                }) { _ in
+                    self.isCellCentered = false
+                    self.overlayView = nil
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+
+    // DiaryCellDelegate 메서드를 추가하여 셀을 길게 누를 때 호출됩니다.
+    // 이 메서드에서 centerSelectedCell 메서드를 호출합니다.
+    func handleLongPress(_ cell: DiaryCell) {
+        print("셀 2초 눌림 ")
+        selectedCell = cell
+        centerSelectedCell()
+        
+        // 진동을 주는 코드
+        let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+        feedbackGenerator.impactOccurred()
+    }
+
     
     
     // MARK: - API
@@ -329,27 +429,13 @@ extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
 
 extension DiaryViewController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        //print("DEBUG: Tweet count at time of collectionView function call is \(tweets.count)")
-        /*
-         private var tweets = [Tweet]() 으로만 코드 작성을 했을때
-         현제 0이 출력되는데 뷰가 로드되지마자 이함수가 호출 되기 때문임 뷰가 로드 될때는 tweets 배열이 빈 배열임
-         따라서 이 데이터 가져오기를 완료하고 결과로 이 트윗 배열을 실제로 설정하는 데 시간이 걸립니다.
-         그래서 화면에 보이는게 없지만 데이터를 가져와서 didSet을 통해 변경사항이 있을경우 리로드를하면 정상적으로 출력이 가능함
-         리로드시 확장으로 구현한 함수들은 다시 한번씩 호출 됨
-         +
-         이제 우리의 트윗 수는 2개가 될 것입니다.
-         따라서 두 개의 셀로 컬렉션 뷰를 다시 로드할 것입니다.
-         */
         return diarys.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! DiaryCell
         
-//        // 스와이프 제스처 인식기 추가
-//        let swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
-//        cell.addGestureRecognizer(swipeGesture)
-//        
+  
         
         cell.delegate = self
         cell.diary = diarys[indexPath.row]
@@ -364,52 +450,7 @@ extension DiaryViewController {
         return cell
     }
     
-//    // 스와이프 동작을 처리하는 메서드
-//       @objc func handleSwipeGesture(_ gesture: UIPanGestureRecognizer) {
-//           guard let cell = gesture.view as? DiaryCell, let indexPath = collectionView.indexPath(for: cell) else {
-//               return
-//           }
-//
-//           let translation = gesture.translation(in: cell)
-//
-//           switch gesture.state {
-//           case .began:
-//               // 스와이프가 시작될 때 처리할 내용 (예: 셀을 선택 상태로 표시)
-//               break
-//
-//           case .changed:
-//               // 스와이프 중에 처리할 내용 (예: 셀의 위치 변경)
-//               if translation.x < 0 {
-//                   // 왼쪽으로 스와이프하는 경우
-//                   let offset = max(translation.x, -80) // 최대 스와이프 거리 제한 (임의로 설정)
-//                   cell.transform = CGAffineTransform(translationX: offset, y: 0)
-//                   cell.showDeleteButton() // 삭제 버튼 표시
-//               }
-//
-//           case .ended:
-//               // 스와이프가 종료될 때 처리할 내용
-//               if translation.x < -40 {
-//                   // 왼쪽으로 충분히 스와이프했을 경우 (임의의 값)
-//                   // 해당 셀을 삭제하는 메서드 호출
-//                   deleteDiary(at: indexPath)
-//               } else {
-//                   // 스와이프가 충분하지 않을 경우 셀을 초기 위치로 복원
-//                   UIView.animate(withDuration: 0.2) {
-//                       cell.transform = .identity
-//                       cell.hideDeleteButton() // 삭제 버튼 숨김
-//                   }
-//               }
-//
-//           default:
-//               break
-//           }
-//       }
-//       
-//       // 3. 스와이프 동작 처리
-//    func deleteDiary(at indexPath: IndexPath) {
-//
-//    }
-    
+
   
     // 셀하나 선택시 일어나는 작업을 설정하는 메서드
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -475,54 +516,12 @@ extension DiaryViewController: DiaryCellDelegate {
     }
     
     func handleFetchUser(withUsername username: String) {
-        //        UserService.shared.fetchUser(WithUsername: username) { user in
-        //            print(user.username)
-        //            let controller = ProfileController(user: user)
-        //            self.navigationController?.pushViewController(controller, animated: true)
-        //        }
+      
     }
     
     func handleLikeTapped(_ cell: DiaryCell) {
         print("DEBUG: Handle like tapped..")
-        //
-        //        guard var tweet = cell.tweet else { return }
-        ////        cell.tweet?.didLike.toggle()
-        ////        print("DEBUG: Tweet is liked is \(cell.tweet?.didLike)")
-        //        TweetService.shared.likeTweet(tweet: tweet) { (err, ref) in
-        //            cell.tweet?.didLike.toggle()
-        //            // 셀에 있는 개체를 실제로 업데이트 하는 부분 API호출시 서버먼저 처리하고 여기서 화면 처리를 하는 것임
-        //            let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
-        //            cell.tweet?.likes = likes // 이코드 실행시 Cell의 didSet이 수행됨
-        //            //트윗을 설정하든, 트윗안에 사용자를 재설정하든, 트윗의 좋아요 수를 재설정하든, didSet이 호출되는 것임
-        //            //그런다음 configure()이 호출 되고 뷰모델러 트윗을 넘겨준 다음 화면에 정상적인 값을 표시할 수 있음
-        //
-        //            // 트윗이 좋아요인 경우에만 업로드 알림
-        //            guard cell.tweet?.didLike == true else { return }
-        //
-        //            NotificationService.shared.uploadNotification(toUser: tweet.user,
-        //                                                                      type: .like,
-        //                                                                      tweetID: tweet.tweetID)
-        //        }
-        //
-        //    }
-        
-        
-//        func handleReplyTapped(_ cell: DiaryCell) {
-//            //        guard let tweet = cell.tweet else { return }
-//            //
-//            //        // 이미지 표시 등을 위해 유저 정보를 전달, .reply 인것을 알려주기
-//            //        let controller = UploadTweetController(user: tweet.user, config: .reply(tweet))
-//            //        let nav = UINavigationController(rootViewController: controller)
-//            //        nav.modalPresentationStyle = .fullScreen
-//            //        present(nav, animated: true, completion: nil)
-//        }
-//
-//        func handelProfileImageTapped(_ cell: DiaryCell) {
-//            //        guard let user = cell.tweet?.user else { return }
-//            //        let controller = ProfileController(user: user)
-//            //        navigationController?.pushViewController(controller, animated: true)
-//        }// 해당 출력이 나온다면 트윗 셀에서 컨트롤러로 작업을 성공적으로 위임한것임
-        
+
     }
     
 }
