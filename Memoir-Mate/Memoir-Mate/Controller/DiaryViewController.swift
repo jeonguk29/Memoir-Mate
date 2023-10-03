@@ -101,6 +101,7 @@ class DiaryViewController: UICollectionViewController{
     private var isCellCentered = false // 셀이 화면 중앙에 있는지 여부를 추적하기 위한 속성 추가
     // 새로운 인스턴스 변수 overlayView를 추가
     private var overlayView: UIView?
+    var originalCellFrame: CGRect?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -257,9 +258,13 @@ class DiaryViewController: UICollectionViewController{
                let overlayView = UIView(frame: self.view.bounds)
                overlayView.alpha = 0.0
                self.view.addSubview(overlayView)
+               
+               // 기존 셀의 CGRect 값을 저장
+                originalCellFrame = cell.frame
+
 
                // 비디오 파일 경로를 가져옵니다.
-               if let videoPath = Bundle.main.path(forResource: "backg", ofType: "mp4") {
+               if let videoPath = Bundle.main.path(forResource: "back3", ofType: "mp4") {
                    // AVPlayer 인스턴스를 생성합니다.
                    let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
 
@@ -294,7 +299,13 @@ class DiaryViewController: UICollectionViewController{
                // 선택한 셀을 화면 중앙으로 이동시킵니다.
                cell.center = overlayView.center
                overlayView.addSubview(cell)
-
+                
+               
+               
+               // 공유, 삭제 버튼
+               
+               
+               
                UIView.animate(withDuration: 0.3) {
                    overlayView.alpha = 1.0
                }
@@ -312,6 +323,7 @@ class DiaryViewController: UICollectionViewController{
         }
     }
 
+    // closeOverlayView 함수 수정
     @objc func closeOverlayView() {
         guard let overlayView = self.overlayView else { return }
 
@@ -329,12 +341,11 @@ class DiaryViewController: UICollectionViewController{
             overlayView.removeFromSuperview()
 
             // 이미 화면 중앙에 있는 경우, 원래 위치로 이동
-            if let cell = self.selectedCell {
+            if let cell = self.selectedCell, let originalFrame = self.originalCellFrame {
                 UIView.animate(withDuration: 0.3, animations: {
-                    cell.frame = cell.originalFrame ?? CGRect.zero
+                    cell.frame = originalFrame
                 }) { _ in
                     self.isCellCentered = false
-                    self.overlayView = nil
                     self.collectionView.reloadData()
                 }
             }

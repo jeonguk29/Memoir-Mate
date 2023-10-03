@@ -65,6 +65,16 @@ struct DiaryService {
     
     }
     
+    
+    func deleteDiary(diary: Diary?, completion: @escaping(DatabaseCompletion)) {
+        guard let diary = diary else {return}
+        let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
+        
+        // 파이어 베이스에 일기 업데이트 하기
+        REF_DIARYS.child(diaryID).removeValue(completionBlock: completion)
+    }
+    
+    
     // 트윗 가져오는 메서드 만들기
     func fatchDiarys(completion: @escaping([Diary]) -> Void){
         var diarys = [Diary]()

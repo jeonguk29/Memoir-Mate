@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		642135592AC3ACB200E6E02D /* backg.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 642135582AC3ACB200E6E02D /* backg.mp4 */; };
+		642135632AC3BA1E00E6E02D /* back3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 642135622AC3BA1E00E6E02D /* back3.mp4 */; };
 		649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945B2AB0A5590092BF0D /* AppDelegate.swift */; };
 		649D945E2AB0A5590092BF0D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945D2AB0A5590092BF0D /* SceneDelegate.swift */; };
 		649D94632AB0A5590092BF0D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 649D94612AB0A5590092BF0D /* Main.storyboard */; };
@@ -38,6 +38,11 @@
 /* Begin PBXFileReference section */
 		511CF1AF3192634CF689C053 /* Pods-Memoir-Mate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Memoir-Mate.debug.xcconfig"; path = "Target Support Files/Pods-Memoir-Mate/Pods-Memoir-Mate.debug.xcconfig"; sourceTree = "<group>"; };
 		642135582AC3ACB200E6E02D /* backg.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = backg.mp4; sourceTree = "<group>"; };
+		6421355A2AC3B2CB00E6E02D /* backg.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = backg.mp4; sourceTree = "<group>"; };
+		6421355C2AC3B42B00E6E02D /* backg.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = backg.mp4; sourceTree = "<group>"; };
+		6421355E2AC3B74200E6E02D /* back.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back.mp4; sourceTree = "<group>"; };
+		642135602AC3B8B200E6E02D /* back2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back2.mp4; sourceTree = "<group>"; };
+		642135622AC3BA1E00E6E02D /* back3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back3.mp4; sourceTree = "<group>"; };
 		649D94582AB0A5590092BF0D /* Memoir-Mate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Memoir-Mate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		649D945B2AB0A5590092BF0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		649D945D2AB0A5590092BF0D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -83,7 +88,12 @@
 		649D944F2AB0A5590092BF0D = {
 			isa = PBXGroup;
 			children = (
+				642135622AC3BA1E00E6E02D /* back3.mp4 */,
+				642135602AC3B8B200E6E02D /* back2.mp4 */,
+				6421355E2AC3B74200E6E02D /* back.mp4 */,
 				642135582AC3ACB200E6E02D /* backg.mp4 */,
+				6421355A2AC3B2CB00E6E02D /* backg.mp4 */,
+				6421355C2AC3B42B00E6E02D /* backg.mp4 */,
 				649D945A2AB0A5590092BF0D /* Memoir-Mate */,
 				649D94592AB0A5590092BF0D /* Products */,
 				71020CBAD3141C93DB0C947E /* Pods */,
@@ -272,7 +282,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				642135592AC3ACB200E6E02D /* backg.mp4 in Resources */,
+				642135632AC3BA1E00E6E02D /* back3.mp4 in Resources */,
 				649D94682AB0A55B0092BF0D /* LaunchScreen.storyboard in Resources */,
 				649D94742AB192210092BF0D /* GoogleService-Info.plist in Resources */,
 				649D94652AB0A55B0092BF0D /* Assets.xcassets in Resources */,

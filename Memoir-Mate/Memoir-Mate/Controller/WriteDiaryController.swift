@@ -57,6 +57,30 @@ class WriteDiaryController: UIViewController{
         return button
     }()
     
+    private lazy var dleleteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "trash.fill"), for: .normal)
+        button.tintColor = .gray
+        //button.backgroundColor = .red
+//        button.setTitle("삭제", for: .normal)
+//        button.titleLabel?.textAlignment = .center
+//        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        //button.setTitleColor(.white, for: .normal)
+        
+//        button.frame = CGRect(x: 0, y: 0, width: 64, height: 32)
+//        button.layer.cornerRadius = 32 / 2
+        
+        //addTarget을 설정할 경우 lazy var로 만들어야함
+        if userSelectstate == .Write {
+            button.isHidden = true
+        }else{
+            button.addTarget(self, action: #selector(handleDeleteDiary), for: .touchUpInside)
+        }
+      
+        return button
+    }()
+    
+    
     
     private let captionTextView = InputTextView() // 하위 클래스를 만들어 코드를 분리 시켰음
     
@@ -106,6 +130,34 @@ class WriteDiaryController: UIViewController{
             }
         }
     }
+    
+    @objc func handleDeleteDiary() {
+        let alertController = UIAlertController(title: "일기 삭제", message: "정말로 이 일기를 삭제하시겠습니까?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
+            // 사용자가 확인을 선택한 경우에만 다이어리 삭제
+            DispatchQueue.main.async {
+                DiaryService.shared.deleteDiary(diary: self.userSelectDiary) { (error, ref) in
+                    if let error = error {
+                        print("DEBUG: 일기 삭제에 실패했습니다. error \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    self.delegate?.didTaphandleUpdate()
+                    self.dismiss(animated: true, completion: nil)
+                }
+            }
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(deleteAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
+    
 
     @objc func handleUpdateDiary() {
         guard let caption = captionTextView.text else { return }
@@ -174,7 +226,11 @@ class WriteDiaryController: UIViewController{
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: actionButton)
+        //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: actionButton)
+        // 네비게이션 바 오른쪽에 추가 버튼 (actionButton)과 (dleleteButton) 추가
+        let customButton =  UIBarButtonItem(customView: dleleteButton)
+        
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: actionButton), customButton]
         
     }
 }
