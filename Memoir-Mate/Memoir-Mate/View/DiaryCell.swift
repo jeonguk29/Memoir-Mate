@@ -94,7 +94,7 @@ class DiaryCell:UICollectionViewCell {
     }()
     
     // 백그라운드 뷰
-    private lazy var backgroundContentView: UIView = {
+   lazy var backgroundContentView: UIView = {
         let view = UIView()
         view.backgroundColor = .mainColor // 원하는 배경색상으로 변경
         view.layer.cornerRadius = 20 // 원하는 값을 지정하여 둥글게 만듭니다.
@@ -199,7 +199,7 @@ class DiaryCell:UICollectionViewCell {
         // 아래 코드를 추가하여 셀에 UILongPressGestureRecognizer를 추가합니다.
         // UILongPressGestureRecognizer를 추가하고 target을 self로 설정
            longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-           longPressGestureRecognizer.minimumPressDuration = 2.0 // 2초 동안 누를 때 동작
+           longPressGestureRecognizer.minimumPressDuration = 1.5 // 2초 동안 누를 때 동작
            addGestureRecognizer(longPressGestureRecognizer)
     
     }
