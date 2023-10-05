@@ -22,7 +22,7 @@ class DiaryViewController: UICollectionViewController{
     var user: User?
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
-            //configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
+            configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
             print("DiaryViewController : \(user?.email)")
         }
     }
@@ -34,6 +34,7 @@ class DiaryViewController: UICollectionViewController{
     private var calendarView: FSCalendar = {
         let calendarView = FSCalendar()
         calendarView.scrollDirection = .horizontal
+        //calendarView.appearance.selectionColor = .clear
         return calendarView
     }()
     
@@ -46,26 +47,27 @@ class DiaryViewController: UICollectionViewController{
     var isNavigationBarHidden = false
     var calendarHidden = false
     
+
     private lazy var writeButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.backgroundColor = .white
-        button.layer.cornerRadius = 5
-        button.layer.borderWidth = 1 // 보더의 넓이 설정
-        button.layer.borderColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1) // 보더 컬러 설정
-        button.setTitle("일기쓰기", for: .normal)
-        
-        if let roseOfSharonFont = UIFont(name: "Rose-of-Sharon", size: 16) {
-            button.titleLabel?.font = roseOfSharonFont
-        } else {
-            print("폰트 적용 안됨")
-            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        }
-        button.setTitleColor(.black, for: .normal)
-        
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "pencil.line"), for: .normal)
+        //button.backgroundColor = .mainColor
+        //button.setTitle("일기쓰기", for: .normal)
+
+//        button.titleLabel?.textAlignment = .center
+//        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+//        button.setTitleColor(.white, for: .normal)
+//        
+//        button.frame = CGRect(x: 0, y: 0, width: 64, height: 32)
+//        button.layer.cornerRadius = 32 / 2
+
         button.addTarget(self, action: #selector(handleWriteTapped), for: .touchUpInside)
+    
+      
         return button
     }()
     
+   
     
 //    private lazy var closeCalendarButton: UIButton = {
 //        let button = UIButton(type: .custom)
@@ -93,6 +95,8 @@ class DiaryViewController: UICollectionViewController{
         button.setImage(UIImage(systemName: "calendar.circle"), for: .normal)
         // 버튼 액션 추가
         button.addTarget(self, action: #selector(closeCalendarTapped), for: .touchUpInside)
+        
+          
         return button
     }()
 
@@ -117,7 +121,22 @@ class DiaryViewController: UICollectionViewController{
         
         calendarView.delegate = self
         calendarView.dataSource = self
-    
+       
+        // calendarView 둥글게
+        calendarView.layer.masksToBounds = true
+        calendarView.layer.cornerRadius = 20 // 원하는 라운드 값으로 설정
+        calendarView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
+        // calendarView 보더라인 주기
+        //calendarView.layer.borderWidth = 3.0
+
+        // mainColor를 CGColor로 변환
+        // mainColor를 UIColor로 정의
+        let mainColor = UIColor.rgb(red: 71, green: 115, blue: 181)
+        let mainCGColor = mainColor.cgColor
+        // calendarView에 보더 라인 색상 설정
+        //calendarView.layer.borderColor = mainCGColor
+       
         
         // UIScrollView의 delegate를 설정합니다.
         collectionView.delegate = self
@@ -126,7 +145,7 @@ class DiaryViewController: UICollectionViewController{
         
         setupFSCalendar()
         setupAutoLayout()
-        configureLeftBarButton()
+        //configureLeftBarButton()
         
         let currentDate = Date()  // 현재 날짜 가져오기
         formatter.dateFormat = "yyyy-MM-dd"
@@ -166,12 +185,12 @@ class DiaryViewController: UICollectionViewController{
         if self.calendarHidden == true {
             calendarHidden = false
             calendarView.isHidden = true
-            writeButton.isHidden = true
+         
         }
         else{
             calendarHidden = true
             calendarView.isHidden = false
-            writeButton.isHidden = false
+           
         }
         
         // calendarHidden 상태가 변경될 때마다 셀을 다시 로드
@@ -191,11 +210,9 @@ class DiaryViewController: UICollectionViewController{
         
         
         view.addSubview(calendarView)
-        view.addSubview(writeButton)
         view.addSubview(actionButton)
            
         calendarView.translatesAutoresizingMaskIntoConstraints = false
-        writeButton.translatesAutoresizingMaskIntoConstraints = false
         actionButton.translatesAutoresizingMaskIntoConstraints = false
             
             
@@ -207,15 +224,11 @@ class DiaryViewController: UICollectionViewController{
             calendarView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             calendarView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
             calendarView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
+            calendarView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor,constant: -370),
             //세로크기를 100
-            calendarView.heightAnchor.constraint(equalToConstant: 380),
             
             
-            writeButton.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 2),
-            writeButton.leadingAnchor.constraint(equalTo: calendarView.leadingAnchor, constant: 2),
-            writeButton.trailingAnchor.constraint(equalTo: calendarView.trailingAnchor, constant: -2),
-            writeButton.heightAnchor.constraint(equalToConstant: 30),
-            //writeButton.topAnchor.constraint(equalTo: calendarView.bottomAnchor, constant: 2),
+        
             
             // ⭐️ 해당 한줄의 코드가 위 코드를 대체함
             // safeAreaLayoutGuide는 safeArea를 말함
@@ -223,15 +236,16 @@ class DiaryViewController: UICollectionViewController{
             actionButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -64),
             actionButton.widthAnchor.constraint(equalToConstant: 56),
-        
+            actionButton.heightAnchor.constraint(equalToConstant: 56),
                         
         ])
-        actionButton.layer.cornerRadius = 56/2 // 높이 나누기 2 하면 원형 모양이 됨
+        //actionButton.layer.cornerRadius = 56/2 // 높이 나누기 2 하면 원형 모양이 됨
             
     
         
     }
     
+    // 네비게이션바 버튼
     func configureLeftBarButton(){
         //guard let user = user else {return}
         
@@ -239,8 +253,7 @@ class DiaryViewController: UICollectionViewController{
         profileImageView.setDimensions(width: 32, height: 32)
         profileImageView.layer.cornerRadius = 32 / 2
         profileImageView.layer.masksToBounds = true
-        profileImageView.backgroundColor = .blue
-        //profileImageView.sd_setImage(with: user.profileImageUrl, completed: nil)
+        profileImageView.sd_setImage(with: user!.profileImageUrl, completed: nil)
         
         // 피드에서 자신의 프로파일 이미지 누를시 사용자 프로필로 이동
         //        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게
@@ -249,121 +262,14 @@ class DiaryViewController: UICollectionViewController{
         //                profileImageView.addGestureRecognizer(tap)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+        
+        // "일기쓰기" 버튼을 customButton으로 감싼 다음, 이 버튼을 네비게이션 바의 오른쪽 버튼으로 설정
+        let customButton =  UIBarButtonItem(customView: writeButton)
+        navigationItem.rightBarButtonItem = customButton
+
     }
     
-    func centerSelectedCell() {
-           guard let cell = selectedCell else { return }
-
-           if !isCellCentered {
-               let overlayView = UIView(frame: self.view.bounds)
-               overlayView.alpha = 0.0
-               self.view.addSubview(overlayView)
-               
-               // 기존 셀의 CGRect 값을 저장
-                originalCellFrame = cell.frame
-
-
-               // 비디오 파일 경로를 가져옵니다.
-               if let videoPath = Bundle.main.path(forResource: "back3", ofType: "mp4") {
-                   // AVPlayer 인스턴스를 생성합니다.
-                   let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
-
-                   // AVPlayerViewController 인스턴스를 생성하고 AVPlayer를 할당합니다.
-                   let playerController = AVPlayerViewController()
-                   playerController.player = player
-
-                   // AVPlayerViewController를 현재 뷰 컨트롤러에 추가합니다.
-                   self.addChild(playerController)
-                   playerController.view.frame = overlayView.bounds
-                   overlayView.addSubview(playerController.view)
-                   playerController.didMove(toParent: self)
-
-                   // 비디오를 반복 재생합니다.
-                   player.actionAtItemEnd = .none
-                   NotificationCenter.default.addObserver(self, selector: #selector(playerDidReachEnd(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
-
-                   // 비디오 재생을 시작합니다.
-                   player.play()
-               }
-
-               // 투명한 뷰를 생성하여 overlayView 위에 추가합니다.
-               let transparentView = UIView(frame: overlayView.bounds)
-               transparentView.backgroundColor = .clear
-               overlayView.addSubview(transparentView)
-
-               let closeButton = UIButton(type: .custom)
-               closeButton.frame = overlayView.bounds
-               closeButton.addTarget(self, action: #selector(closeOverlayView), for: .touchUpInside)
-               overlayView.addSubview(closeButton)
-
-               // 선택한 셀을 화면 중앙으로 이동시킵니다.
-               cell.center = overlayView.center
-               overlayView.addSubview(cell)
-                
-               
-               
-               // 공유, 삭제 버튼
-               
-               
-               
-               UIView.animate(withDuration: 0.3) {
-                   overlayView.alpha = 1.0
-               }
-
-               isCellCentered = true
-               self.overlayView = overlayView
-           }
-       }
-
-
-
-    @objc func playerDidReachEnd(_ notification: Notification) {
-        if let playerItem = notification.object as? AVPlayerItem {
-            playerItem.seek(to: CMTime.zero, completionHandler: nil)
-        }
-    }
-
-    // closeOverlayView 함수 수정
-    @objc func closeOverlayView() {
-        guard let overlayView = self.overlayView else { return }
-
-        // AVPlayer 재생 중지
-        for subview in overlayView.subviews {
-            if let playerControllerView = subview as? AVPlayerViewController {
-                playerControllerView.player?.pause()
-                playerControllerView.view.removeFromSuperview()
-            }
-        }
-
-        UIView.animate(withDuration: 0.3, animations: {
-            overlayView.alpha = 0.0
-        }) { _ in
-            overlayView.removeFromSuperview()
-
-            // 이미 화면 중앙에 있는 경우, 원래 위치로 이동
-            if let cell = self.selectedCell, let originalFrame = self.originalCellFrame {
-                UIView.animate(withDuration: 0.3, animations: {
-                    cell.frame = originalFrame
-                }) { _ in
-                    self.isCellCentered = false
-                    self.collectionView.reloadData()
-                }
-            }
-        }
-    }
-
-    // DiaryCellDelegate 메서드를 추가하여 셀을 길게 누를 때 호출됩니다.
-    // 이 메서드에서 centerSelectedCell 메서드를 호출합니다.
-    func handleLongPress(_ cell: DiaryCell) {
-        print("셀 2초 눌림 ")
-        selectedCell = cell
-        centerSelectedCell()
-        
-        // 진동을 주는 코드
-        let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
-        feedbackGenerator.impactOccurred()
-    }
-
+  
     
     
     // MARK: - API
@@ -451,6 +357,7 @@ extension DiaryViewController {
         cell.delegate = self
         cell.diary = diarys[indexPath.row]
         
+        
         // 셀에 대한 초기 설정
         // 애니메이션 적용
         cell.alpha = 0.0
@@ -505,7 +412,7 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
                 return UIEdgeInsets.zero
             } else {
                 // calendarHidden이 false인 경우 공백 추가
-                return UIEdgeInsets(top: 400, left: 0, bottom: 0, right: 0)
+                return UIEdgeInsets(top: 300, left: 0, bottom: 0, right: 0)
             }
         } else {
             return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
@@ -518,21 +425,192 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - TweetCellDelegate
 extension DiaryViewController: DiaryCellDelegate {
+    
+    // DiaryCellDelegate 메서드를 추가하여 셀을 길게 누를 때 호출됩니다.
+    // 이 메서드에서 centerSelectedCell 메서드를 호출합니다.
+    func handleLongPress(_ cell: DiaryCell) {
+        print("셀 2초 눌림 ")
+        selectedCell = cell
+        centerSelectedCell()
+        
+        // 진동을 주는 코드
+        let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+        feedbackGenerator.impactOccurred()
+    }
+    
+    func centerSelectedCell() {
+           guard let cell = selectedCell else { return }
+
+           if !isCellCentered {
+               let overlayView = UIView(frame: self.view.bounds)
+               overlayView.alpha = 0.0
+               self.view.addSubview(overlayView)
+               
+               // 기존 셀의 CGRect 값을 저장
+                originalCellFrame = cell.frame
+
+
+               // 비디오 파일 경로를 가져옵니다.
+               if let videoPath = Bundle.main.path(forResource: "back3", ofType: "mp4") {
+                   // AVPlayer 인스턴스를 생성합니다.
+                   let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
+
+                   // AVPlayerViewController 인스턴스를 생성하고 AVPlayer를 할당합니다.
+                   let playerController = AVPlayerViewController()
+                   playerController.player = player
+
+                   // AVPlayerViewController를 현재 뷰 컨트롤러에 추가합니다.
+                   self.addChild(playerController)
+                   playerController.view.frame = overlayView.bounds
+                   overlayView.addSubview(playerController.view)
+                   playerController.didMove(toParent: self)
+
+                   // 비디오를 반복 재생합니다.
+                   player.actionAtItemEnd = .none
+                   NotificationCenter.default.addObserver(self, selector: #selector(playerDidReachEnd(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+
+                   // 비디오 재생을 시작합니다.
+                   player.play()
+               }
+
+               // 투명한 뷰를 생성하여 overlayView 위에 추가합니다.
+               let transparentView = UIView(frame: overlayView.bounds)
+               transparentView.backgroundColor = .clear
+               overlayView.addSubview(transparentView)
+
+               let closeButton = UIButton(type: .custom)
+               closeButton.frame = overlayView.bounds
+               closeButton.addTarget(self, action: #selector(closeOverlayView), for: .touchUpInside)
+               overlayView.addSubview(closeButton)
+
+               // 선택한 셀을 화면 중앙으로 이동시킵니다.
+               cell.center = overlayView.center
+               overlayView.addSubview(cell)
+                
+               
+               
+               // 공유 버튼
+               // squareButton 크기 및 색상 수정
+               lazy var squareButton: UIButton = {
+                   let button = UIButton(type: .system)
+                   let iconImage = UIImage(systemName: "square.and.arrow.up.fill")?.withRenderingMode(.alwaysTemplate)
+                   button.setImage(iconImage, for: .normal)
+                   
+                   // 버튼 액션 추가
+                   button.addTarget(self, action: #selector(squareButtonTapped(sharedCell:)), for: .touchUpInside)
+                   
+                   // 크기 및 색상 설정
+                   button.backgroundColor = .mainColor // 빨간색 배경
+                   button.tintColor = .white // 아이콘 색상
+                   
+                   // 아이콘 크기 조정 (예시로 30으로 설정)
+                   let iconSize = CGSize(width: 50, height: 50)
+                   button.imageEdgeInsets = UIEdgeInsets(top: (button.frame.height - iconSize.height) / 2,
+                                                         left: (button.frame.width - iconSize.width) / 2,
+                                                         bottom: (button.frame.height - iconSize.height) / 2,
+                                                         right:(button.frame.width - iconSize.width) / 2)
+
+                   
+                   button.layer.cornerRadius = 25 // 반원 모양으로 보이도록 설정 (크기의 절반)
+
+                   
+                  return button
+               }()
+
+               overlayView.addSubview(squareButton)
+               squareButton.translatesAutoresizingMaskIntoConstraints = false
+               NSLayoutConstraint.activate([
+                   squareButton.centerXAnchor.constraint(equalTo: overlayView.centerXAnchor),
+                   squareButton.bottomAnchor.constraint(equalTo: overlayView.bottomAnchor, constant: -120),
+                   squareButton.heightAnchor.constraint(equalToConstant: 50), // 세로 크기 100으로 설정
+                   squareButton.widthAnchor.constraint(equalToConstant: 50),  // 가로 크기 100으로 설정
+               ])
+
+               
+               UIView.animate(withDuration: 0.3) {
+                   overlayView.alpha = 1.0
+               }
+
+               isCellCentered = true
+               self.overlayView = overlayView
+           }
+       }
+    
+    @objc func squareButtonTapped(sharedCell:DiaryCell){
+        
+        guard let cell = selectedCell else { return }
+        let alertController = UIAlertController(title: "일기 공유", message: "해당 일기를 공유하시겠습니까?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+        
+        let shareAction = UIAlertAction(title: "공유", style: .cancel) { _ in
+            DispatchQueue.main.async {
+                DiaryService.shared.shareDiary(diary: cell.diary) { (error, ref) in
+                    if let error = error {
+                        print("DEBUG: 일기 공유에 실패했습니다. error \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    self.dismiss(animated: true, completion: nil)
+                    self.closeOverlayView()
+                }
+            }
+        }
+        
+        // "취소" 버튼의 텍스트 색상을 빨간색으로 설정
+//        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+        // "공유" 버튼의 텍스트 색상을 파란색으로 설정
+//        shareAction.setValue(UIColor.blue, forKey: "titleTextColor")
+        alertController.addAction(cancelAction)
+        alertController.addAction(shareAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
+
+    @objc func playerDidReachEnd(_ notification: Notification) {
+        if let playerItem = notification.object as? AVPlayerItem {
+            playerItem.seek(to: CMTime.zero, completionHandler: nil)
+        }
+    }
+
+    // closeOverlayView 함수 수정
+    @objc func closeOverlayView() {
+        guard let overlayView = self.overlayView else { return }
+
+        // AVPlayer 재생 중지
+        for subview in overlayView.subviews {
+            if let playerControllerView = subview as? AVPlayerViewController {
+                playerControllerView.player?.pause()
+                playerControllerView.view.removeFromSuperview()
+            }
+        }
+
+        UIView.animate(withDuration: 0.3, animations: {
+            overlayView.alpha = 0.0
+        }) { _ in
+            overlayView.removeFromSuperview()
+
+            // 이미 화면 중앙에 있는 경우, 원래 위치로 이동
+            if let cell = self.selectedCell, let originalFrame = self.originalCellFrame {
+                UIView.animate(withDuration: 0.3, animations: {
+                    cell.frame = originalFrame
+                }) { _ in
+                    self.isCellCentered = false
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+
+    
     func handelProfileImageTapped(_ cell: DiaryCell) {
         print("")
     }
     
-    func handleReplyTapped(_ cell: DiaryCell) {
-        print("")
-    }
-    
+
     func handleFetchUser(withUsername username: String) {
       
-    }
-    
-    func handleLikeTapped(_ cell: DiaryCell) {
-        print("DEBUG: Handle like tapped..")
-
     }
     
 }
@@ -571,7 +649,6 @@ extension DiaryViewController {
     private func animateCalendarAndWriteButton(alpha: CGFloat) {
         UIView.animate(withDuration: 0.3) {
             self.calendarView.alpha = alpha
-            self.writeButton.alpha = alpha
         }
     }
 }

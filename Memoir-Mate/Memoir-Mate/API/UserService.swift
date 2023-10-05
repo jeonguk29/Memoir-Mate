@@ -21,7 +21,7 @@ struct UserService {
         
         //💁 전달받는 uid에 따른 사용자를 가져오게 수정함
         // 데이터베이스에서 이 정보를 한번만 가져오려고 함, 단일 이벤트를 관찰
-        REF_USERS.child(uid).observeSingleEvent(of: .value) { snapshot in
+        REF_USERS.child(uid).observeSingleEvent(of: .value) { snapshot,err  in
             
             //print("DEBUG: Snapshot \(snapshot)")
             guard let dictionary = snapshot.value as? [String: AnyObject] else {return}

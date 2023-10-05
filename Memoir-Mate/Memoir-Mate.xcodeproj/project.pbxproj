@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		642135632AC3BA1E00E6E02D /* back3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 642135622AC3BA1E00E6E02D /* back3.mp4 */; };
+		6441F8592ACE8ACB000C3FD0 /* CommunityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */; };
 		649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945B2AB0A5590092BF0D /* AppDelegate.swift */; };
 		649D945E2AB0A5590092BF0D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945D2AB0A5590092BF0D /* SceneDelegate.swift */; };
 		649D94632AB0A5590092BF0D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 649D94612AB0A5590092BF0D /* Main.storyboard */; };
@@ -43,6 +44,7 @@
 		6421355E2AC3B74200E6E02D /* back.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back.mp4; sourceTree = "<group>"; };
 		642135602AC3B8B200E6E02D /* back2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back2.mp4; sourceTree = "<group>"; };
 		642135622AC3BA1E00E6E02D /* back3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back3.mp4; sourceTree = "<group>"; };
+		6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityCell.swift; sourceTree = "<group>"; };
 		649D94582AB0A5590092BF0D /* Memoir-Mate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Memoir-Mate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		649D945B2AB0A5590092BF0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		649D945D2AB0A5590092BF0D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				64FA4A1A2AB9D0410007A263 /* ChatMessageCell.swift */,
 				649D94892AB41D7B0092BF0D /* InputTextView.swift */,
 				64FA49F02AB80BEF0007A263 /* DiaryCell.swift */,
+				6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				649D94912AB6EFFD0092BF0D /* UserService.swift in Sources */,
 				649D94852AB416A00092BF0D /* WriteDiaryController.swift in Sources */,
 				649D948A2AB41D7B0092BF0D /* InputTextView.swift in Sources */,
+				6441F8592ACE8ACB000C3FD0 /* CommunityCell.swift in Sources */,
 				649D948E2AB6EF4A0092BF0D /* User.swift in Sources */,
 				64FA49ED2AB7DDD90007A263 /* UploadDiaryViewModel.swift in Sources */,
 				649D947D2AB19E840092BF0D /* MainTabController.swift in Sources */,

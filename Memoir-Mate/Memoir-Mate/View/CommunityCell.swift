@@ -1,16 +1,24 @@
+//
+//  CommunityCell.swift
+//  Memoir-Mate
+//
+//  Created by 정정욱 on 2023/10/05.
+//
+
 import UIKit
 import ActiveLabel
 
 // 프로토콜을 만들어서 현제 내 트윗셀을 내 컨트롤러로 전달할 것임
-protocol DiaryCellDelegate: class {
-    func handelProfileImageTapped(_ cell: DiaryCell) // 컨트롤러에게 위임할 작업을 명시
+protocol CommunityCellDelegate: class {
+    func handelProfileImageTapped(_ cell: CommunityCell) // 컨트롤러에게 위임할 작업을 명시
+    func handleReplyTapped(_ cell: CommunityCell)
+    func handleLikeTapped(_ cell: CommunityCell) // 트윗 좋아요 동작처리를 위임할 메서드
     func handleFetchUser(withUsername username: String) // 사용자 이름에 대하여 uid를 가져오는 메서드
-    func handleLongPress(_ cell: DiaryCell) // 셀을 길게 눌렀을 때 호출될 메서드
 }
 
-class DiaryCell:UICollectionViewCell {
+class CommunityCell:UICollectionViewCell {
     // MARK: - Properties
-    static let reuseIdentifier = "DiaryCell" // 재사용 식별자 정의
+    static let reuseIdentifier = "CommunityCell" // 재사용 식별자 정의
     
     // 데이터를 가져오기 전일수도 있기때문에 옵셔널로 선언
     var diary: Diary? {
@@ -19,7 +27,7 @@ class DiaryCell:UICollectionViewCell {
     
     private var longPressGestureRecognizer: UILongPressGestureRecognizer!
     
-    weak var delegate: DiaryCellDelegate?
+    weak var delegate: CommunityCellDelegate?
     
     var originalFrame: CGRect? // 셀의 원래 프레임을 저장하기 위한 속성
     
@@ -67,6 +75,29 @@ class DiaryCell:UICollectionViewCell {
     
     private let infoLabel = UILabel()
     
+    private lazy var commentButton: UIButton = {
+        let button = createButton(withImageName: "comment")
+        button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var retweetButton: UIButton = {
+        let button = createButton(withImageName: "retweet")
+        button.addTarget(self, action: #selector(handleRetweetTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var likeButton: UIButton = {
+        let button = createButton(withImageName: "like")
+        button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var shareButton: UIButton = {
+        let button = createButton(withImageName: "share")
+        button.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
+        return button
+    }()
     
     // 백그라운드 뷰
    lazy var backgroundBorderView: UIView = {
@@ -102,6 +133,7 @@ class DiaryCell:UICollectionViewCell {
 //        return button
 //    }()
     
+    
     // MARK: - Lifecycle
     override init(frame:CGRect) {
         super.init(frame: frame)
@@ -126,12 +158,12 @@ class DiaryCell:UICollectionViewCell {
           backgroundContentView.bottomAnchor.constraint(equalTo: backgroundBorderView.bottomAnchor, constant: -6),
         ])
          
-        
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
         replyLabel.translatesAutoresizingMaskIntoConstraints = false
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        let imageCaptionStack = UIStackView(arrangedSubviews: [infoLabel, replyLabel])
+        let imageCaptionStack = UIStackView(arrangedSubviews: [profileImageView ,infoLabel, replyLabel])
         imageCaptionStack.axis = .horizontal
         imageCaptionStack.distribution = .fillProportionally
         //imageCaptionStack.distribution = .fillProportionally
@@ -161,7 +193,7 @@ class DiaryCell:UICollectionViewCell {
         NSLayoutConstraint.activate([
 
             stack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 6),
-            stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
+            stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -24),
             stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             //세로크기를 100
@@ -172,13 +204,26 @@ class DiaryCell:UICollectionViewCell {
        infoLabel.font = UIFont.systemFont(ofSize: 14)
         
         
-        // 셀 꾹 눌렸을때
-        // 아래 코드를 추가하여 셀에 UILongPressGestureRecognizer를 추가합니다.
-        // UILongPressGestureRecognizer를 추가하고 target을 self로 설정
-           longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-           longPressGestureRecognizer.minimumPressDuration = 1.5 // 2초 동안 누를 때 동작
-           addGestureRecognizer(longPressGestureRecognizer)
-    
+        
+        
+        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
+        actionStack.translatesAutoresizingMaskIntoConstraints = false
+        actionStack.axis = .horizontal
+        actionStack.spacing = 72
+        
+        backgroundContentView.addSubview(actionStack)
+        let underlineView = UIView()
+        underlineView.backgroundColor = .systemGroupedBackground
+        backgroundContentView.addSubview(underlineView)
+       
+        // 사용자 프로필 이동
+        configureMentionHandler()
+        
+        NSLayoutConstraint.activate([
+
+            actionStack.centerXAnchor.constraint(equalTo: backgroundContentView.centerXAnchor),
+            actionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -8), // 원하는 간격 설정
+        ])
         
         
     }
@@ -196,16 +241,24 @@ class DiaryCell:UICollectionViewCell {
         delegate?.handelProfileImageTapped(self)
     }
     
-
-    // 아래 메서드를 추가하여 UILongPressGestureRecognizer를 처리합니다.
-    @objc private func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state == .began {
-            delegate?.handleLongPress(self)
-        }
+    @objc func handleCommentTapped(){
+        delegate?.handleReplyTapped(self)
     }
     
- 
+    @objc func handleRetweetTapped(){
+        
+    }
     
+    @objc func handleLikeTapped(){
+        delegate?.handleLikeTapped(self)
+    }
+    
+    @objc func handleShareTapped(){
+        
+    }
+    
+    
+
     
     
     // MARK: - Helpers
@@ -221,6 +274,8 @@ class DiaryCell:UICollectionViewCell {
         
         profileImageView.sd_setImage(with: viewModel.profileImageUrl)
         infoLabel.attributedText = viewModel.userInfoText
+        likeButton.tintColor = viewModel.likeButtonTintColor
+        likeButton.setImage(viewModel.likeButtonImage, for: .normal)
         
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
