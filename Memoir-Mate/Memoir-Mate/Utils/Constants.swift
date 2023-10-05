@@ -18,3 +18,4 @@ let STORAGE_PROFILE_IMAGE = STORAGE_REF.child("profile_images")
 
 let REF_DIARYS = DB_REF.child("diarys")
 let REF_USER_DIARYS = DB_REF.child("user-diarys")
+let REF_USER_SHAREDIARYS = DB_REF.child("user-share-diarys")

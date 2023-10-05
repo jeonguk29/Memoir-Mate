@@ -24,6 +24,10 @@ class MainTabController: UITabBarController {
              그 네비게이션의 첫번째 내장 컨틀로러가 FeedController임
              */
             
+            guard let nav = viewControllers?[1] as? UINavigationController else {return}
+            guard let diarycommunity = nav.viewControllers.first as? DiaryCommunityFeedViewController else {return}
+            diarycommunity.user = user
+            
         }
     }
     
@@ -51,7 +55,7 @@ class MainTabController: UITabBarController {
         let nav1 = templeteNavigationController(image: UIImage(systemName: "note.text.badge.plus"), rootViewController: diary)
         
         // 일기 커뮤니티 피드
-        let diarycommunity = DiaryCommunityFeedViewController()
+        let diarycommunity = DiaryCommunityFeedViewController(collectionViewLayout: UICollectionViewFlowLayout())
         let nav2 = templeteNavigationController(image: UIImage(systemName: "person.icloud"), rootViewController: diarycommunity)
         
         // 친구 추가 하기

@@ -25,4 +25,8 @@ extension UIColor {
     }
     
     static let mainColor = UIColor.rgb(red: 71, green: 115, blue: 181)
+    //static let commColor = UIColor.rgb(red: 190, green: 173, blue: 81)
+    //static let commColor = UIColor(red: 217/255, green: 169/255, blue: 200/255, alpha: 1)
+    static let commColor = UIColor(red: 162/255, green: 149/255, blue: 191/255, alpha: 1)
+
 }

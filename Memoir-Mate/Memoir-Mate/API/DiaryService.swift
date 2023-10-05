@@ -66,12 +66,29 @@ struct DiaryService {
     }
     
     
+    func shareDiary(diary: Diary?, completion: @escaping(DatabaseCompletion)) {
+        guard let diary = diary else {return}
+        let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
+        let uid = diary.user.uid // diary.user.uid를 옵셔널이 아닌 변수로 선언
+        
+        let timestamp = Int(diary.timestamp.timeIntervalSince1970) // Unix 타임스탬프
+
+        var values = ["uid": uid, "timestamp": timestamp,
+                      "likes": 0, "retweets": 0, "caption": diary.caption, "userSelectDate": diary.userSelectDate, "isShare" : true] as [String: Any]
+        
+        // 파이어 베이스에 일기 업데이트 하기
+        REF_DIARYS.child(diaryID).updateChildValues(values, withCompletionBlock: completion)
+        REF_USER_SHAREDIARYS.child(diaryID).updateChildValues([diaryID : 1], withCompletionBlock: completion)
+    }
+    
     func deleteDiary(diary: Diary?, completion: @escaping(DatabaseCompletion)) {
         guard let diary = diary else {return}
         let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
+        let userID = diary.user.uid // diary.diaryID를 옵셔널이 아닌 변수로 선언
         
-        // 파이어 베이스에 일기 업데이트 하기
+    
         REF_DIARYS.child(diaryID).removeValue(completionBlock: completion)
+        REF_USER_DIARYS.child(userID).child(diaryID).removeValue(completionBlock: completion)
     }
     
     
@@ -81,7 +98,7 @@ struct DiaryService {
         
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         REF_USER_DIARYS.child(currentUid).observe(.childAdded) { snapshot in
-            print(snapshot)// 내 피드의 나와야할 트윗 id를 표시
+            //print(snapshot)// 내 피드의 나와야할 트윗 id를 표시
             let diaryID = snapshot.key
             
             self.fetchDiary(with: diaryID) { diary in
@@ -90,6 +107,21 @@ struct DiaryService {
             }
         }
     }
+    
+    // 공유 트윗 가져오는 메서드 만들기
+    func communityFatchDiarys(completion: @escaping([Diary]) -> Void){
+        var diarys = [Diary]()
+        
+        REF_USER_SHAREDIARYS.observe(.childAdded) { snapshot in
+            let diaryID = snapshot.key
+            
+            self.fetchDiary(with: diaryID) { diary in
+                diarys.append(diary)
+                completion(diarys)
+            }
+        }
+    }
+    
     
     
     // 알림탭에서, 상대방이 좋아요 누른 트윗으로 이동하는 메서드 : 위 코드를 복사
