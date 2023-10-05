@@ -932,6 +932,7 @@ typedef NS_ENUM(NSUInteger, FSCalendarOrientation) {
         }
     }
     return _preferredRowHeight;
+    //return _rowHeight;
 }
 
 - (BOOL)floatingMode
