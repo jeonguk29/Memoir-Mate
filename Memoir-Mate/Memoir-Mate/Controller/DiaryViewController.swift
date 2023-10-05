@@ -22,7 +22,7 @@ class DiaryViewController: UICollectionViewController{
     var user: User?
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
-            //configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
+            configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
             print("DiaryViewController : \(user?.email)")
         }
     }
@@ -145,7 +145,7 @@ class DiaryViewController: UICollectionViewController{
         
         setupFSCalendar()
         setupAutoLayout()
-        configureLeftBarButton()
+        //configureLeftBarButton()
         
         let currentDate = Date()  // 현재 날짜 가져오기
         formatter.dateFormat = "yyyy-MM-dd"
@@ -224,8 +224,9 @@ class DiaryViewController: UICollectionViewController{
             calendarView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             calendarView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
             calendarView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
+            calendarView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor,constant: -370),
             //세로크기를 100
-            calendarView.heightAnchor.constraint(equalToConstant: 380),
+            
             
         
             
@@ -252,8 +253,7 @@ class DiaryViewController: UICollectionViewController{
         profileImageView.setDimensions(width: 32, height: 32)
         profileImageView.layer.cornerRadius = 32 / 2
         profileImageView.layer.masksToBounds = true
-        profileImageView.backgroundColor = .blue
-        //profileImageView.sd_setImage(with: user.profileImageUrl, completed: nil)
+        profileImageView.sd_setImage(with: user!.profileImageUrl, completed: nil)
         
         // 피드에서 자신의 프로파일 이미지 누를시 사용자 프로필로 이동
         //        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게
@@ -412,7 +412,7 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
                 return UIEdgeInsets.zero
             } else {
                 // calendarHidden이 false인 경우 공백 추가
-                return UIEdgeInsets(top: 400, left: 0, bottom: 0, right: 0)
+                return UIEdgeInsets(top: 300, left: 0, bottom: 0, right: 0)
             }
         } else {
             return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
@@ -608,17 +608,9 @@ extension DiaryViewController: DiaryCellDelegate {
         print("")
     }
     
-    func handleReplyTapped(_ cell: DiaryCell) {
-        print("")
-    }
-    
+
     func handleFetchUser(withUsername username: String) {
       
-    }
-    
-    func handleLikeTapped(_ cell: DiaryCell) {
-        print("DEBUG: Handle like tapped..")
-
     }
     
 }

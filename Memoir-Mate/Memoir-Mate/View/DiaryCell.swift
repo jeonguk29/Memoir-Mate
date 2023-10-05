@@ -4,8 +4,6 @@ import ActiveLabel
 // 프로토콜을 만들어서 현제 내 트윗셀을 내 컨트롤러로 전달할 것임
 protocol DiaryCellDelegate: class {
     func handelProfileImageTapped(_ cell: DiaryCell) // 컨트롤러에게 위임할 작업을 명시
-    func handleReplyTapped(_ cell: DiaryCell)
-    func handleLikeTapped(_ cell: DiaryCell) // 트윗 좋아요 동작처리를 위임할 메서드
     func handleFetchUser(withUsername username: String) // 사용자 이름에 대하여 uid를 가져오는 메서드
     func handleLongPress(_ cell: DiaryCell) // 셀을 길게 눌렀을 때 호출될 메서드
 }
@@ -69,32 +67,9 @@ class DiaryCell:UICollectionViewCell {
     
     private let infoLabel = UILabel()
     
-    private lazy var commentButton: UIButton = {
-        let button = createButton(withImageName: "comment")
-        button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var retweetButton: UIButton = {
-        let button = createButton(withImageName: "retweet")
-        button.addTarget(self, action: #selector(handleRetweetTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var likeButton: UIButton = {
-        let button = createButton(withImageName: "like")
-        button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    private lazy var shareButton: UIButton = {
-        let button = createButton(withImageName: "share")
-        button.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
-        return button
-    }()
     
     // 백그라운드 뷰
-   lazy var backgroundContentView: UIView = {
+   lazy var backgroundBorderView: UIView = {
         let view = UIView()
         view.backgroundColor = .mainColor // 원하는 배경색상으로 변경
         view.layer.cornerRadius = 20 // 원하는 값을 지정하여 둥글게 만듭니다.
@@ -106,7 +81,7 @@ class DiaryCell:UICollectionViewCell {
     }()
 
     // 백그라운드 뷰
-    private lazy var backgroundContentView2: UIView = {
+    private lazy var backgroundContentView: UIView = {
         let view = UIView()
         view.backgroundColor = .white // 원하는 배경색상으로 변경
         view.layer.cornerRadius = 15 // 원하는 값을 지정하여 둥글게 만듭니다.
@@ -132,23 +107,23 @@ class DiaryCell:UICollectionViewCell {
         super.init(frame: frame)
         backgroundColor = .clear
         
-        addSubview(backgroundContentView) // 백그라운드 뷰를 가장 처음에 추가
-        backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(backgroundBorderView) // 백그라운드 뷰를 가장 처음에 추가
+        backgroundBorderView.translatesAutoresizingMaskIntoConstraints = false
            
-        backgroundContentView.addSubview(backgroundContentView2)
-        backgroundContentView2.translatesAutoresizingMaskIntoConstraints = false
+        backgroundBorderView.addSubview(backgroundContentView)
+        backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
            
         
         NSLayoutConstraint.activate([
-            backgroundContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
-             backgroundContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-             backgroundContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-             backgroundContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            backgroundBorderView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
+             backgroundBorderView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+             backgroundBorderView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+             backgroundBorderView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
           
-            backgroundContentView2.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 6),
-          backgroundContentView2.leadingAnchor.constraint(equalTo: backgroundContentView.leadingAnchor, constant: 6),
-          backgroundContentView2.trailingAnchor.constraint(equalTo: backgroundContentView.trailingAnchor, constant: -6),
-          backgroundContentView2.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
+            backgroundContentView.topAnchor.constraint(equalTo: backgroundBorderView.topAnchor, constant: 6),
+          backgroundContentView.leadingAnchor.constraint(equalTo: backgroundBorderView.leadingAnchor, constant: 6),
+          backgroundContentView.trailingAnchor.constraint(equalTo: backgroundBorderView.trailingAnchor, constant: -6),
+          backgroundContentView.bottomAnchor.constraint(equalTo: backgroundBorderView.bottomAnchor, constant: -6),
         ])
          
         
@@ -180,13 +155,13 @@ class DiaryCell:UICollectionViewCell {
        
        stack.translatesAutoresizingMaskIntoConstraints = false
         
-    backgroundContentView.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
+       backgroundContentView.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
         
 
         NSLayoutConstraint.activate([
 
-            stack.topAnchor.constraint(equalTo: backgroundContentView2.topAnchor, constant: 6),
-            stack.bottomAnchor.constraint(equalTo: backgroundContentView2.bottomAnchor, constant: -6),
+            stack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 6),
+            stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
             stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             //세로크기를 100
@@ -196,12 +171,16 @@ class DiaryCell:UICollectionViewCell {
         
        infoLabel.font = UIFont.systemFont(ofSize: 14)
         
+        
+        // 셀 꾹 눌렸을때
         // 아래 코드를 추가하여 셀에 UILongPressGestureRecognizer를 추가합니다.
         // UILongPressGestureRecognizer를 추가하고 target을 self로 설정
            longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
            longPressGestureRecognizer.minimumPressDuration = 1.5 // 2초 동안 누를 때 동작
            addGestureRecognizer(longPressGestureRecognizer)
     
+        
+        
     }
     
     required init?(coder: NSCoder) {
@@ -217,22 +196,7 @@ class DiaryCell:UICollectionViewCell {
         delegate?.handelProfileImageTapped(self)
     }
     
-    @objc func handleCommentTapped(){
-        delegate?.handleReplyTapped(self)
-    }
-    
-    @objc func handleRetweetTapped(){
-        
-    }
-    
-    @objc func handleLikeTapped(){
-        delegate?.handleLikeTapped(self)
-    }
-    
-    @objc func handleShareTapped(){
-        
-    }
-    
+
     // 아래 메서드를 추가하여 UILongPressGestureRecognizer를 처리합니다.
     @objc private func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
@@ -257,8 +221,6 @@ class DiaryCell:UICollectionViewCell {
         
         profileImageView.sd_setImage(with: viewModel.profileImageUrl)
         infoLabel.attributedText = viewModel.userInfoText
-        likeButton.tintColor = viewModel.likeButtonTintColor
-        likeButton.setImage(viewModel.likeButtonImage, for: .normal)
         
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
