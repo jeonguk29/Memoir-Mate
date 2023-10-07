@@ -17,8 +17,6 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     var user: User?
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
-            print("DiaryCommunityFeedViewController : \(user?.email)")
-            print("DiaryCommunityFeedViewController : \(user?.profileImageUrl)")
             self.configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
         }
     }
@@ -291,21 +289,21 @@ extension DiaryCommunityFeedViewController {
     
 
   
-//    // 셀하나 선택시 일어나는 작업을 설정하는 메서드
-//    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let controller = WriteDiaryController(user: user!,
-//                                              userSelectDate: diarys[indexPath.row].userSelectDate,
-//                                              config: .diary,
-//                                              userSelectstate:.Update,
-//                                              userSelectDiary: diarys[indexPath.row])
-//        controller.delegate = self
-//        //navigationController?.pushViewController(controller, animated: true)
-//        let nav = UINavigationController(rootViewController: controller)
-//        nav.modalPresentationStyle = .fullScreen
-//        present(nav, animated: true, completion: nil)
-//        
-//        
-//    }
+    // 셀하나 선택시 일어나는 작업을 설정하는 메서드
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let controller = CommunityDiarySelectController(user: user!,
+                                              userSelectDate: diarys[indexPath.row].userSelectDate,
+                                              config: .diary,
+                                              userSelectstate:.Update,
+                                              userSelectDiary: diarys[indexPath.row])
+        controller.delegate = self
+        //navigationController?.pushViewController(controller, animated: true)
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+        
+        
+    }
 
     
     
@@ -322,7 +320,7 @@ extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
         let diary = diarys[indexPath.row]
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
-        return CGSize(width: view.frame.width, height: height + 160) // height + 72 이유 : 캡션과 아래 4가지 버튼들 사이 여백을 주기 위함
+        return CGSize(width: view.frame.width, height: height + 170) // height + 72 이유 : 캡션과 아래 4가지 버튼들 사이 여백을 주기 위함
     }
     
     // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)
@@ -364,6 +362,17 @@ extension DiaryCommunityFeedViewController: CommunityCellDelegate {
     
 }
 
+
+// MARK: - CommunityDiarySelectControllerDelegate
+
+extension DiaryCommunityFeedViewController: CommunityDiarySelectControllerDelegate {
+    func didTaphandleCancel() {
+        print("")
+    }
+    
+    
+  
+}
 
 
 // MARK: - 스크롤 애니메이션 부분
