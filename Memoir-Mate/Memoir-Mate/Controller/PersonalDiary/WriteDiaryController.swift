@@ -57,6 +57,16 @@ class WriteDiaryController: UIViewController{
         return button
     }()
     
+    private lazy var cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "delete.backward"), for: .normal)
+        button.tintColor = .gray
+        button.addTarget(self, action: #selector(handleCancel), for: .touchUpInside)
+        
+        return button
+    }()
+
+    
     private lazy var dleleteButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "trash.fill"), for: .normal)
@@ -224,13 +234,14 @@ class WriteDiaryController: UIViewController{
         navigationController?.navigationBar.standardAppearance = navBarAppearance
         navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
+      
+        navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: cancelButton)]
         
         //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: actionButton)
         // 네비게이션 바 오른쪽에 추가 버튼 (actionButton)과 (dleleteButton) 추가
-        let customButton =  UIBarButtonItem(customView: dleleteButton)
+        let customButton2 =  UIBarButtonItem(customView: dleleteButton)
         
-        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: actionButton), customButton]
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: actionButton), customButton2]
         
     }
 }
