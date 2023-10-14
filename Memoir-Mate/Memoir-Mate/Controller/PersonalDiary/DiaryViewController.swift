@@ -401,7 +401,11 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
         let diary = diarys[indexPath.row]
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
-        return CGSize(width: view.frame.width, height: height + 100) // height + 72 이유 : 캡션과 아래 4가지 버튼들 사이 여백을 주기 위함
+        
+        // 최대 높이를 400으로 제한
+        let cellHeight = min(height + 170, 400)
+           
+        return CGSize(width: view.frame.width, height: cellHeight)
     }
     
     // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)

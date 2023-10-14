@@ -114,6 +114,10 @@ class WriteDiaryController: UIViewController{
         super.viewDidLoad()
         configureUI()
         
+        // 키보드 표시 및 숨김 관찰자 등록
+           NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+           NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
     }
     
     
@@ -193,36 +197,29 @@ class WriteDiaryController: UIViewController{
     
     // MARK: - Helpers
     
-    func configureUI(){
-        
+    func configureUI() {
         if userSelectstate == .Update {
-            if let userSelectDiary {
-                DispatchQueue.main.async {
-                    self.captionTextView.text = userSelectDiary.caption
-                    self.captionTextView.placeholderLabel.isHidden = true
-                }
+            if let userSelectDiary = userSelectDiary { // 수정 모드에서 텍스트 불러오기
+                captionTextView.text = userSelectDiary.caption
+                captionTextView.handleTextInputChange() // 수동으로 텍스트 뷰 업데이트
             }
         }
         
         view.backgroundColor = .white
         configureNavigationBar()
         
-        
-        //           view.addSubview(ProfileImageView)
-        //           ProfileImageView.translatesAutoresizingMaskIntoConstraints = false
-        
         view.addSubview(captionTextView)
         captionTextView.translatesAutoresizingMaskIntoConstraints = false
         
-        
+        // captionTextView 화면에 꽉 채우기
         NSLayoutConstraint.activate([
-            
             captionTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            captionTextView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            captionTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            captionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            captionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            captionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
-        
     }
+
     
     func configureNavigationBar(){
         //        navigationController?.navigationBar.barTintColor = .white // Navigation bar의 배경색을 흰색으로 지정하는 코드입니다.
@@ -243,6 +240,23 @@ class WriteDiaryController: UIViewController{
         
         navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: actionButton), customButton2]
         
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        // 키보드 높이 가져오기
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            // 텍스트 뷰의 스크롤을 키보드 높이만큼 조절
+            let contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+            captionTextView.contentInset = contentInset
+            captionTextView.scrollIndicatorInsets = contentInset
+        }
+    }
+
+    @objc func keyboardWillHide(_ notification: Notification) {
+        // 키보드 숨김 시 텍스트 뷰의 스크롤을 초기화
+        let contentInset = UIEdgeInsets.zero
+        captionTextView.contentInset = contentInset
+        captionTextView.scrollIndicatorInsets = contentInset
     }
 }
 
