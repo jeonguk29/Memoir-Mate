@@ -232,7 +232,17 @@ class CommunityCell:UICollectionViewCell {
         
         infoLabel.font = UIFont.systemFont(ofSize: 14)
         
-    
+//        commentButton.translatesAutoresizingMaskIntoConstraints = false
+//        retweetButton.translatesAutoresizingMaskIntoConstraints = false
+//        likeButton.translatesAutoresizingMaskIntoConstraints = false
+//        shareButton.translatesAutoresizingMaskIntoConstraints = false
+//        let buttonWidth: CGFloat = 20
+//        let buttons = [commentButton, retweetButton, likeButton, shareButton]
+//
+//        for button in buttons {
+//            button.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+//        }
+
         
         let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
         actionStack.translatesAutoresizingMaskIntoConstraints = false

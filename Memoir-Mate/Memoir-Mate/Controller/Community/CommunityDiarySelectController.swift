@@ -23,11 +23,7 @@ protocol CommunityDiarySelectControllerDelegate: class {
 
 class CommunityDiarySelectController: UIViewController{
     
-    private var user: User{ // 변경이 일어나면 아래 사용자 이미지 화면에 출력
-        didSet {
-            print("\(user.email)")
-        }
-    }
+    private var user: User 
     private let config: UploadDiaryConfiguration
     private var userSelectDate: String
     private var userSelectstate: DiaryType
@@ -35,10 +31,17 @@ class CommunityDiarySelectController: UIViewController{
     
     weak var delegate: CommunityDiarySelectControllerDelegate?
     
+    // 1. CommentFeedViewController의 인스턴스 생성
+    var commentFeedVC = CommentFeedViewController(collectionViewLayout: UICollectionViewFlowLayout())
+
 
     
 
-    private let captionTextView = InputTextView() // 하위 클래스를 만들어 코드를 분리 시켰음
+    private lazy var captionTextView: InputTextView = {
+        let textView = InputTextView()
+           textView.textType = .community
+           return textView
+       }()
     
     
     
@@ -47,6 +50,16 @@ class CommunityDiarySelectController: UIViewController{
           scrollView.translatesAutoresizingMaskIntoConstraints = false
           return scrollView
       }()
+    
+    private lazy var cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "delete.backward"), for: .normal)
+        button.tintColor = .gray
+        button.addTarget(self, action: #selector(handleCancel), for: .touchUpInside)
+        
+        return button
+    }()
+
     
     
     
@@ -81,6 +94,7 @@ class CommunityDiarySelectController: UIViewController{
     
     init(user: User, userSelectDate: String, config: UploadDiaryConfiguration, userSelectstate : DiaryType, userSelectDiary: Diary?) {
         self.user = user
+        self.commentFeedVC.user = user // commentFeedVC의 user 프로퍼티에 값을 할당
         self.userSelectDate = userSelectDate
         self.config = config
         self.userSelectstate = userSelectstate
@@ -108,15 +122,20 @@ class CommunityDiarySelectController: UIViewController{
         }
     }
     
-    // MARK: - Selectors
-    
     @objc func handleProfileImageTapped(){
         print("DEBUG: Profile Image Tapped in cell ..")
        
     }
     
     @objc func handleCommentTapped(){
-       print()
+        
+    
+        // 2. 모달로 화면 표시
+        commentFeedVC.modalPresentationStyle = .pageSheet // 원하는 스타일로 설정하세요
+            present(commentFeedVC, animated: true, completion: nil)
+        
+        commentFeedVC.selectDiary = userSelectDiary
+     
     }
     
     @objc func handleRetweetTapped(){
@@ -144,13 +163,13 @@ class CommunityDiarySelectController: UIViewController{
         
         view.backgroundColor = .white
 
-        view.addSubview(scrollView)
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
+//        view.addSubview(scrollView)
+//        NSLayoutConstraint.activate([
+//            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+//            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//        ])
         
         
         if userSelectstate == .Update {
@@ -166,22 +185,28 @@ class CommunityDiarySelectController: UIViewController{
         // Scroll View의 ContentView 설정
         let contentView = UIView()
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(contentView)
+        view.addSubview(contentView)
         
         // ContentView의 높이를 지정 (여기에서는 임의의 값으로 설정하고 필요에 따라 조절)
         NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.heightAnchor),
+//            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+//            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+//            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+//            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+//            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+//            contentView.heightAnchor.constraint(greaterThanOrEqualTo: scrollView.heightAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: view.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         
         
-        scrollView.addSubview(contentView)
+        //scrollView.addSubview(contentView)
         // 나머지 UI 요소들을 ContentView에 추가
+        
         contentView.addSubview(captionTextView)
         captionTextView.translatesAutoresizingMaskIntoConstraints = false
         configureNavigationBar()
@@ -236,18 +261,24 @@ class CommunityDiarySelectController: UIViewController{
         navigationController?.navigationBar.standardAppearance = navBarAppearance
         navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
+        
+          navigationItem.leftBarButtonItems = [UIBarButtonItem(customView: cancelButton)]
+          
+        
+        
         
 
     }
     
     // 모든 버튼의 설정값이 동일하기 때문에 코드를 줄이기 위한 리팩토링 작업을 할 것임
-    func createButton(withImageName imageName: String) -> UIButton {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(named: imageName), for: .normal)
-        button.tintColor = .darkGray
-        button.setDimensions(width: 20, height: 20)
-        return button
-    }
-}
+      func createButton(withImageName imageName: String) -> UIButton {
+          let button = UIButton(type: .system)
+          button.setImage(UIImage(named: imageName), for: .normal)
+          button.tintColor = .darkGray
+          //button.setDimensions(width: 20, height: 20)
+          button.imageView?.contentMode = .scaleAspectFit // 이미지 뷰의 contentMode 설정
+          return button
+      }
+  }
 

@@ -92,7 +92,11 @@ class WriteDiaryController: UIViewController{
     
     
     
-    private let captionTextView = InputTextView() // 하위 클래스를 만들어 코드를 분리 시켰음
+    private lazy var captionTextView: InputTextView = {
+        let textView = InputTextView()
+        textView.textType = .personal
+           return textView
+       }()
     
     // MARK: - Lifecycle
     

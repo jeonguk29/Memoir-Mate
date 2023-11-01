@@ -8,6 +8,13 @@
 
 import UIKit
 
+enum textViewType { // 트윗인지, 답글인지 구분하기 위한 enum 타입
+    case ready
+    case personal
+    case community
+}
+
+
 class InputTextView: UITextView {
     
     // MARK: - Properties
@@ -19,6 +26,10 @@ class InputTextView: UITextView {
         label.text = "오늘의 일기를 적어주세요"
         return label
     }()
+    
+    var textType : textViewType = .ready {
+        didSet { configure() }
+    }
     
     // 추가: 키보드 내리기 버튼
     let dismissKeyboardButton: UIButton = {
@@ -34,49 +45,82 @@ class InputTextView: UITextView {
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         
-
-
-        backgroundColor = .white
-        //font = UIFont.systemFont(ofSize: 16)
-        font = UIFont(name: "NanumMuGungHwa", size: 25)
-        isScrollEnabled = true
-        //heightAnchor.constraint(equalToConstant: 600).isActive = true
-        //heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
-        
-        addSubview(placeholderLabel)
-        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        NSLayoutConstraint.activate([
-            placeholderLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
-            placeholderLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
+            configure()
             
-            //placeholderLabel.anchor(top:topAnchor, left: leftAnchor, paddingTop:8, paddingLeft:4)
-        ])
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleTextInputChange), name: UITextView.textDidChangeNotification, object: nil)
-        
-
-        // 키보드 내리기 버튼 액션 설정
-           dismissKeyboardButton.addTarget(self, action: #selector(dismissKeyboard), for: .touchUpInside)
-        
-        let toolBar = UIToolbar()
-        toolBar.sizeToFit()
-        toolBar.barTintColor = .white
-        
-        let doneButton = UIBarButtonItem.init(customView: dismissKeyboardButton)
-        toolBar.items = [doneButton]
-        self.inputAccessoryView = toolBar
-        
-        
-        
-    }
+        }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure() {
+        DispatchQueue.main.async { [self] in
+            
+            
+            if self.textType == .personal {
+                self.backgroundColor = .white
+                //font = UIFont.systemFont(ofSize: 16)
+                self.font = UIFont(name: "NanumMuGungHwa", size: 25)
+                self.isScrollEnabled = true
+                //heightAnchor.constraint(equalToConstant: 600).isActive = true
+                //heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true
+                
+                self.addSubview(self.placeholderLabel)
+                self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+                
+                
+                NSLayoutConstraint.activate([
+                    self.placeholderLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
+                    self.placeholderLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
+                    
+                    //placeholderLabel.anchor(top:topAnchor, left: leftAnchor, paddingTop:8, paddingLeft:4)
+                ])
+                
+                
+                NotificationCenter.default.addObserver(self, selector: #selector(self.handleTextInputChange), name: UITextView.textDidChangeNotification, object: nil)
+                
+                
+                // 키보드 내리기 버튼 액션 설정
+                let customToolbar = UIToolbar()
+                customToolbar.sizeToFit()
+                dismissKeyboardButton.addTarget(self, action: #selector(dismissKeyboard), for: .touchUpInside)
+//                dismissKeyboardButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+//                dismissKeyboardButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+                
+    
+                let doneButton = UIBarButtonItem(customView: dismissKeyboardButton)
+
+                customToolbar.setItems([doneButton], animated: false)
+
+                // ToolBar 대신 customToolbar로 설정
+                self.inputAccessoryView = customToolbar
+
+                
+                
+            }
+            
+                
+        
+            if self.textType == .community {
+                self.backgroundColor = .white
+                self.font = UIFont(name: "NanumMuGungHwa", size: 25)
+                self.isScrollEnabled = true
+                self.isEditable = false // 편집 불가능하도록 설정
+        
+                self.addSubview(self.placeholderLabel)
+                self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+                
+                
+                NSLayoutConstraint.activate([
+                    self.placeholderLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
+                    self.placeholderLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 4),
+                    
+                ])
+                
+                
+            }
+        }
+    }
     
     // MARK: - Selectors
     @objc func handleTextInputChange() {
@@ -96,8 +140,11 @@ class InputTextView: UITextView {
     
     // 추가: 키보드 내리기 액션
     @objc func dismissKeyboard() {
+        print("키보드 내리기")
         self.endEditing(true)
     }
+    
+    
 }
 
 

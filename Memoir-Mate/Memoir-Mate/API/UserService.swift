@@ -31,7 +31,7 @@ struct UserService {
             // 스냅샷은 해당 스냅샷에 대한 키도 나옴 Snapshot Snap (NO6TkcQJs3MFpMOXLNnIRJ5Br8S2)
             // 해당 스냅샷의 값들을 딕셔너리 타입으로 케스팅하여 편하게 사용할 것임
             guard let username = dictionary["username"] as? String else {return}
-            print("DEBUG: 현제 사용자의 이름 \(username)")
+            //print("DEBUG: 현제 사용자의 이름 \(username)")
             
             let user = User(uid: uid, dictionary: dictionary)
             //print("DEBUG: 현제 사용자의 name \(user.username)")
