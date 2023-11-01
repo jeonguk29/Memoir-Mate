@@ -39,4 +39,19 @@ struct UserService {
             completion(user)
         }
     }
+    
+    
+    // 사용자 검색을 위해 사용할 부분
+    func fetchUsers(completion: @escaping([User]) -> Void) {
+        var users = [User]()
+        
+        REF_USERS.observe(.childAdded) { snapshot in
+            let uid = snapshot.key
+            guard let dictionary = snapshot.value as? [String: AnyObject] else { return }
+            let user = User(uid: uid, dictionary: dictionary)
+            print(user.username)
+            users.append(user)
+            completion(users)
+        }
+    }
 }
