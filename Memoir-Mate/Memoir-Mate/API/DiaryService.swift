@@ -122,11 +122,66 @@ struct DiaryService {
         }
     }
     
+    // 일기 댓글 남기는 메서드
+    func diaryComment(diary: Diary?, caption: String, completion: @escaping(DatabaseCompletion)){
+        
+//        guard let uid = Auth.auth().currentUser?.uid else {return}
+        guard let diary = diary else {return}
+        let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        // 누가 트윗을 남겼는지 uid를 저장해줘야함
+        
+        let values = ["uid": uid, "timestamp" : Int(NSDate().timeIntervalSince1970),
+                      "likes": 0, "retweets": 0, "caption": caption] as [String: Any]
     
+        REF_DIARY_Comments.child(diaryID).childByAutoId().updateChildValues(values)
+    }
+      
+    // 일기 댓글 가져오는 메서드
+    
+    func fetchDiaryComment(with diaryID: String, completion: @escaping([Diary]) -> Void) {
+        var diarys = [Diary]()
+        print("fetchDiaryComment 시작")
+        
+        REF_DIARY_Comments.child(diaryID).observeSingleEvent(of: .value) { snapshot in
+                guard let value = snapshot.value as? [String: Any] else {
+                    completion(diarys)
+                    return
+                }
+                
+                for (commentKey, commentData) in value {
+                    guard let commentDict = commentData as? [String: Any],
+                          let caption = commentDict["caption"] as? String,
+                          let likes = commentDict["likes"] as? Int,
+                          let retweets = commentDict["retweets"] as? Int,
+                          let timestamp = commentDict["timestamp"] as? TimeInterval,
+                          let uid = commentDict["uid"] as? String else {
+                        continue
+                    }
+                    
+                    UserService.shared.fetchUser(uid: uid) { user in
+                        let diary = Diary(user: user, DiaryID: "", dictionary: [
+                            "caption": caption,
+                            "likes": likes,
+                            "retweets": retweets,
+                            "timestamp": timestamp
+                        ])
+                        
+                        print("댓글 \(diary.caption)")
+                        
+                        diarys.append(diary)
+                        
+                        if diarys.count == value.count {
+                            completion(diarys)
+                        }
+                    }
+                }
+            }
+        
+    }
     
     // 알림탭에서, 상대방이 좋아요 누른 트윗으로 이동하는 메서드 : 위 코드를 복사
     func fetchDiary(with diaryID: String, completion: @escaping(Diary) -> Void) {
-        
         REF_DIARYS.child(diaryID).observeSingleEvent(of: .value) { snapshot in
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             guard let uid = dictionary["uid"] as? String else { return }

@@ -24,7 +24,7 @@ struct Diary{
     // 모델을 조금 더 세분화하면 사용자 없이 트윗이 존재할 수 없습니다.
     // 따라서 모든 트윗은 누군가의 것이어야 합니다.
     init(user: User ,DiaryID: String, dictionary: [String: Any]) {
-        self.diaryID = DiaryID
+        self.diaryID = DiaryID as? String ?? ""
         self.user = user
         self.caption = dictionary["caption"] as? String ?? ""
         self.likes = dictionary["likes"] as? Int ?? 0

@@ -137,7 +137,8 @@ class DiaryCell:UICollectionViewCell {
         //imageCaptionStack.distribution = .fillProportionally
         imageCaptionStack.spacing = 12
         imageCaptionStack.alignment = .center
-        
+        imageCaptionStack.heightAnchor.constraint(equalToConstant:35).isActive = true
+
         let separatorView = UIView()
         separatorView.backgroundColor = .mainColor // 구분선의 색상 설정
         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이 설정

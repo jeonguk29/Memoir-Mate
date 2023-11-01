@@ -35,21 +35,20 @@ class CommunityCell:UICollectionViewCell {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
-        iv.setDimensions(width: 34, height: 34)
-        iv.layer.cornerRadius = 34/2
-        iv.backgroundColor = .mainColor
-
+        iv.setDimensions(width: 28, height: 28)
+        iv.layer.cornerRadius = 28/2
+        iv.backgroundColor = .commColor
+        
         // 버튼이 아닌 view 객체를 탭 이벤트 처리하는 방법 : 사용자 프로필 작업하기
         // lazy var로 profileImageView를 수정해야함 아래 함수가 만들어지기 전에 인스턴스를 찍을 수 있어서
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTapped))
         iv.addGestureRecognizer(tap)
         iv.isUserInteractionEnabled = true
 
-        // 프로필 이미지의 Auto Layout 설정
+        // 프로필 이미지뷰의 Auto Layout 설정
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.widthAnchor.constraint(equalToConstant: 34).isActive = true // 너비 제약 조건 추가
-        iv.heightAnchor.constraint(equalToConstant: 34).isActive = true // 높이 제약 조건 추가
-
+        // 비율 제약 조건 추가
+        iv.widthAnchor.constraint(equalTo: iv.heightAnchor).isActive = true
         return iv
     }()
     
@@ -59,7 +58,7 @@ class CommunityCell:UICollectionViewCell {
         let label = ActiveLabel()
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 12)
-        label.mentionColor = .mainColor
+        label.mentionColor = .commColor
         return label
     }()
     
@@ -68,8 +67,8 @@ class CommunityCell:UICollectionViewCell {
         label.font = UIFont(name: "NanumMuGungHwa", size: 25)
         label.numberOfLines = 0 // 여러줄 표시 가능 하게
         label.text = "Test caption"
-        label.mentionColor = .mainColor
-        label.hashtagColor = .mainColor
+        label.mentionColor = .commColor
+        label.hashtagColor = .commColor
         return label
     }()
     
@@ -100,9 +99,9 @@ class CommunityCell:UICollectionViewCell {
     }()
     
     // 백그라운드 뷰
-   lazy var backgroundBorderView: UIView = {
+    lazy var backgroundBorderView: UIView = {
         let view = UIView()
-        view.backgroundColor = .mainColor // 원하는 배경색상으로 변경
+        view.backgroundColor = .commColor // 원하는 배경색상으로 변경
         view.layer.cornerRadius = 20 // 원하는 값을 지정하여 둥글게 만듭니다.
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -110,7 +109,7 @@ class CommunityCell:UICollectionViewCell {
         view.layer.shadowRadius = 4
         return view
     }()
-
+    
     // 백그라운드 뷰
     private lazy var backgroundContentView: UIView = {
         let view = UIView()
@@ -124,14 +123,14 @@ class CommunityCell:UICollectionViewCell {
     }()
     
     
-//    // 추가: 삭제 버튼을 나타내는 UIButton
-//    private let deleteButton: UIButton = {
-//        let button = UIButton(type: .system)
-//        button.setImage(UIImage(systemName: "trash"), for: .normal)
-//        button.tintColor = .red
-//        button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
-//        return button
-//    }()
+    //    // 추가: 삭제 버튼을 나타내는 UIButton
+    //    private let deleteButton: UIButton = {
+    //        let button = UIButton(type: .system)
+    //        button.setImage(UIImage(systemName: "trash"), for: .normal)
+    //        button.tintColor = .red
+    //        button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
+    //        return button
+    //    }()
     
     
     // MARK: - Lifecycle
@@ -141,70 +140,109 @@ class CommunityCell:UICollectionViewCell {
         
         addSubview(backgroundBorderView) // 백그라운드 뷰를 가장 처음에 추가
         backgroundBorderView.translatesAutoresizingMaskIntoConstraints = false
-           
+        
         backgroundBorderView.addSubview(backgroundContentView)
         backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
-           
+        
         
         NSLayoutConstraint.activate([
             backgroundBorderView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
-             backgroundBorderView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-             backgroundBorderView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-             backgroundBorderView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
-          
+            backgroundBorderView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
+            backgroundBorderView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+            backgroundBorderView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            
             backgroundContentView.topAnchor.constraint(equalTo: backgroundBorderView.topAnchor, constant: 6),
-          backgroundContentView.leadingAnchor.constraint(equalTo: backgroundBorderView.leadingAnchor, constant: 6),
-          backgroundContentView.trailingAnchor.constraint(equalTo: backgroundBorderView.trailingAnchor, constant: -6),
-          backgroundContentView.bottomAnchor.constraint(equalTo: backgroundBorderView.bottomAnchor, constant: -6),
+            backgroundContentView.leadingAnchor.constraint(equalTo: backgroundBorderView.leadingAnchor, constant: 6),
+            backgroundContentView.trailingAnchor.constraint(equalTo: backgroundBorderView.trailingAnchor, constant: -6),
+            backgroundContentView.bottomAnchor.constraint(equalTo: backgroundBorderView.bottomAnchor, constant: -6),
         ])
-         
+        
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
         replyLabel.translatesAutoresizingMaskIntoConstraints = false
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        let imageCaptionStack = UIStackView(arrangedSubviews: [profileImageView ,infoLabel, replyLabel])
+        
+        let imageCaptionStack = UIStackView(arrangedSubviews: [infoLabel, replyLabel])
         imageCaptionStack.axis = .horizontal
         imageCaptionStack.distribution = .fillProportionally
         //imageCaptionStack.distribution = .fillProportionally
         imageCaptionStack.spacing = 12
         imageCaptionStack.alignment = .center
+        imageCaptionStack.translatesAutoresizingMaskIntoConstraints = false
         
         let separatorView = UIView()
-        separatorView.backgroundColor = .mainColor // 구분선의 색상 설정
+        separatorView.backgroundColor = .commColor // 구분선의 색상 설정
         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이 설정
-
-        let stack = UIStackView(arrangedSubviews: [imageCaptionStack, separatorView, captionLabel]) // 구분선을 stack에 추가
+        
+        
+        
+        let stack = UIStackView(arrangedSubviews: [separatorView, captionLabel]) // 구분선을 stack에 추가
         stack.axis = .vertical
         stack.distribution = .fillProportionally
         stack.spacing = 4
-      
-//
-//       let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
-//       stack.axis = .vertical
-//       stack.distribution = .fillProportionally
-//       stack.spacing = 8
-       
-       stack.translatesAutoresizingMaskIntoConstraints = false
         
-       backgroundContentView.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
+        //
+        //       let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
+        //       stack.axis = .vertical
+        //       stack.distribution = .fillProportionally
+        //       stack.spacing = 8
         
-
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        backgroundContentView.addSubview(imageCaptionStack)
+        backgroundContentView.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
+        backgroundContentView.addSubview(profileImageView) // 다른 요소들을 백그라운드 뷰 위에 추가
+        
+        
+        
+        // 버튼과의 구분선
+        let separatorView2 = UIView()
+        separatorView2.backgroundColor = .commColor // 구분선의 색상 설정
+        separatorView2.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이
+        separatorView2.translatesAutoresizingMaskIntoConstraints = false
+        backgroundContentView.addSubview(separatorView2)
+        
         NSLayoutConstraint.activate([
+            // 스택뷰에 감쌓은 요소 하나를 우측으로 밀어, 빈 공간에 프로필 사진 넣어서 오토레이아웃 충돌 문제를 해결
 
-            stack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 6),
-            stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -24),
+            imageCaptionStack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 7),
+            imageCaptionStack.leadingAnchor.constraint(equalTo: backgroundContentView.leadingAnchor, constant: 43),
+            // imageCaptionStack의 높이 제약 조건 추가
+            imageCaptionStack.heightAnchor.constraint(equalToConstant: 40),
+
+            
+            
+            profileImageView.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 13),
+            profileImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 25),
+            
+            
+            stack.topAnchor.constraint(equalTo: imageCaptionStack.bottomAnchor, constant: 3),
+            stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -35),
             stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             //세로크기를 100
-
+            
+//            separatorView2.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 3), // stack 바로 아래에 위치하도록 설정
+//            separatorView2.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
+//            separatorView2.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
+//          
         ])
+        
+        
+        infoLabel.font = UIFont.systemFont(ofSize: 14)
+        
+//        commentButton.translatesAutoresizingMaskIntoConstraints = false
+//        retweetButton.translatesAutoresizingMaskIntoConstraints = false
+//        likeButton.translatesAutoresizingMaskIntoConstraints = false
+//        shareButton.translatesAutoresizingMaskIntoConstraints = false
+//        let buttonWidth: CGFloat = 20
+//        let buttons = [commentButton, retweetButton, likeButton, shareButton]
+//
+//        for button in buttons {
+//            button.widthAnchor.constraint(equalToConstant: buttonWidth).isActive = true
+//        }
 
-        
-       infoLabel.font = UIFont.systemFont(ofSize: 14)
-        
-        
-        
         
         let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
         actionStack.translatesAutoresizingMaskIntoConstraints = false
@@ -215,14 +253,17 @@ class CommunityCell:UICollectionViewCell {
         let underlineView = UIView()
         underlineView.backgroundColor = .systemGroupedBackground
         backgroundContentView.addSubview(underlineView)
-       
+        
         // 사용자 프로필 이동
         configureMentionHandler()
         
         NSLayoutConstraint.activate([
-
+            
             actionStack.centerXAnchor.constraint(equalTo: backgroundContentView.centerXAnchor),
-            actionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -8), // 원하는 간격 설정
+            actionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -10), // 원하는 간격 설정
+            
+            
+            
         ])
         
         
@@ -258,7 +299,7 @@ class CommunityCell:UICollectionViewCell {
     }
     
     
-
+    
     
     
     // MARK: - Helpers
@@ -279,10 +320,10 @@ class CommunityCell:UICollectionViewCell {
         
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
-    
+        
     }
- 
- 
+    
+    
     // 모든 버튼의 설정값이 동일하기 때문에 코드를 줄이기 위한 리팩토링 작업을 할 것임
     func createButton(withImageName imageName: String) -> UIButton {
         let button = UIButton(type: .system)
