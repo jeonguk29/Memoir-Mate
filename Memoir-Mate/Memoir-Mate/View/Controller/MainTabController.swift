@@ -58,16 +58,18 @@ class MainTabController: UITabBarController {
         let diarycommunity = DiaryCommunityFeedViewController(collectionViewLayout: UICollectionViewFlowLayout())
         let nav2 = templeteNavigationController(image: UIImage(systemName: "person.icloud"), rootViewController: diarycommunity)
         
-        // 친구 추가 하기
+        // 알림
+        let notifications = NotificationsController()
+        let nav3 = templeteNavigationController(image: UIImage(named: "like_unselected"), rootViewController: notifications)
         
-        let notifications = UserListViewController()
-        let nav3 = templeteNavigationController(image: UIImage(systemName: "magnifyingglass.circle"), rootViewController: notifications)
+        let explore = SearchController(config: .userSearch)
+        let nav4 = templeteNavigationController(image: UIImage(systemName: "magnifyingglass.circle"), rootViewController: explore)
         
         
         
         
         // UITabBarController 에서 제공하는 속성임 안에 배열 형태로 뷰를 넣어주면 됨
-        viewControllers = [nav1, nav2, nav3]
+        viewControllers = [nav1, nav2, nav3, nav4]
         
         // 탭바 아이콘, 텍스트 색상 설정
         //tabBar.tintColor = .mainColor  // 원하는 색상으로 변경

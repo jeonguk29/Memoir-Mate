@@ -12,6 +12,11 @@ import AVKit
 
 
 private let reuseIdentifier = "DiaryCell"
+private let headerIdentifier = "DiaryHeader"
+
+protocol DiaryViewControllerDelegate: class {
+    func didTaphandleUpdate()
+}
 
 class DiaryViewController: UICollectionViewController{
     
@@ -31,6 +36,7 @@ class DiaryViewController: UICollectionViewController{
         didSet {collectionView.reloadData()}
     }
     
+    
     private var calendarView: FSCalendar = {
         let calendarView = FSCalendar()
         calendarView.scrollDirection = .horizontal
@@ -38,6 +44,7 @@ class DiaryViewController: UICollectionViewController{
         return calendarView
     }()
     
+
     let formatter = DateFormatter()
     var selectDate: String = "" // didset 사용해서 화면 새로고침해서 일기 목록 뿌려주기
     
@@ -47,7 +54,18 @@ class DiaryViewController: UICollectionViewController{
     var isNavigationBarHidden = false
     var calendarHidden = false
     
-
+//    private lazy var adminDiary: Diary = {
+//        var admindictionary: [String: AnyObject] = ["email": "admin@example.com" as AnyObject, "username": "관리자" as AnyObject]
+//    
+//        let currentDate = Date()  // 현재 날짜 가져오기
+//        formatter.dateFormat = "yyyy-MM-dd"
+//        let selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
+//        let adminUser = User(uid: "admin", dictionary: admindictionary)
+//
+//        let adminDiary = Diary(user: adminUser, DiaryID: "", dictionary: ["caption": "일기를 작성해주세요", "userSelectDate": selectDate]) // 관리자 일기 생성
+//        return adminDiary
+//    }()
+    
     private lazy var writeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "pencil.line"), for: .normal)
@@ -67,28 +85,6 @@ class DiaryViewController: UICollectionViewController{
         return button
     }()
     
-   
-    
-//    private lazy var closeCalendarButton: UIButton = {
-//        let button = UIButton(type: .custom)
-//        button.backgroundColor = .white
-//        button.layer.cornerRadius = 5
-//        button.layer.borderWidth = 1 // 보더의 넓이 설정
-//        button.layer.borderColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1) // 보더 컬러 설정
-//        button.setImage(UIImage(systemName: "xmark.circle"), for: .normal)
-//
-//        if let roseOfSharonFont = UIFont(name: "Rose-of-Sharon", size: 16) {
-//            button.titleLabel?.font = roseOfSharonFont
-//        } else {
-//            print("폰트 적용 안됨")
-//            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-//        }
-//        button.setTitleColor(.black, for: .normal)
-//
-//        button.addTarget(self, action: #selector(closeCalendarTapped), for: .touchUpInside)
-//        return button
-//    }()
-    
     
     private lazy var actionButton: UIButton = {
         let button = UIButton(type: .system)
@@ -107,16 +103,29 @@ class DiaryViewController: UICollectionViewController{
     private var overlayView: UIView?
     var originalCellFrame: CGRect?
     
+//    // 사용자 지정 작업
+//
+//    private let diary: Diary
+//    private var actionSheetLauncher: ActionSheetLauncher!
+//
+//    init(diary: Diary) {
+//        self.diary = diary
+//        self.actionSheetLauncher = ActionSheetLauncher(user: diary.user)
+//        let layout = UICollectionViewFlowLayout()
+//        super.init(collectionViewLayout: layout)
+//    }
+//
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//    
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // 즉, 사용자가 화면을 아래로 스크롤하면 (스와이프하면) 네비게이션 바가 자동으로 사라지고, 다시 위로 스크롤하면 (스와이프하면) 네비게이션 바가 다시 나타납니다.
         navigationController?.hidesBarsOnSwipe = true
-        
-        // UIScrollView의 delegate 설정
-        //ScrollView.delegate = self // 여기서 "yourScrollView"는 스크롤뷰의 변수명입니다. 스토리보드에서 스크롤 뷰와 연결해야 합니다.
-        
         
         
         calendarView.delegate = self
@@ -156,6 +165,7 @@ class DiaryViewController: UICollectionViewController{
         
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier:DiaryCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
         
+     
         
     }
     
@@ -277,10 +287,15 @@ class DiaryViewController: UICollectionViewController{
         DiaryService.shared.fatchDiarys { diarys in
             var selectdiarys = [Diary]() // 선택된 날짜의 일기를 담을 배열 생성
             
-            for selectdiary in diarys {
-                if selectdiary.userSelectDate == self.selectDate { // 오늘 날짜와 선택된 날짜가 같은 경우에만 추가
-                    selectdiarys.append(selectdiary)
+            if diarys.count != 0 {
+                for selectdiary in diarys {
+                    if selectdiary.userSelectDate == self.selectDate { // 오늘 날짜와 선택된 날짜가 같은 경우에만 추가
+                        selectdiarys.append(selectdiary)
+                    }
                 }
+            }
+            else {
+                selectdiarys.removeAll()
             }
             
             // 날짜 순으로 트윗 정렬
@@ -289,9 +304,13 @@ class DiaryViewController: UICollectionViewController{
             // 업데이트된 데이터를 반영하기 위해 collectionView를 업데이트
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
+                if selectdiarys.isEmpty {
+                    self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+                }
             }
         }
     }
+
 
     // 다이어리 데이터를 가져와서 diaryData 딕셔너리를 채우는 함수
     private func fetchDiaryData() {
@@ -346,6 +365,9 @@ extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
 
 extension DiaryViewController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if diarys.count == 0 {
+            return 1
+        }
         return diarys.count
     }
     
@@ -356,7 +378,7 @@ extension DiaryViewController {
         
         cell.delegate = self
         cell.diary = diarys[indexPath.row]
-        
+    
         
         // 셀에 대한 초기 설정
         // 애니메이션 적용
@@ -398,12 +420,17 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         //동적 셀 크기 조정
+        // diarys 배열이 비어있거나 요소가 없는 경우
+        guard !diarys.isEmpty, indexPath.row < diarys.count else {
+             return CGSize(width: view.frame.width, height: 0)
+         }
+         
         let diary = diarys[indexPath.row]
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
         
         // 최대 높이를 400으로 제한
-        let cellHeight = min(height + 170, 400)
+        let cellHeight = min(height + 100, 400)
            
         return CGSize(width: view.frame.width, height: cellHeight)
     }
@@ -572,7 +599,7 @@ extension DiaryViewController: DiaryCellDelegate {
     }
 
 
-    @objc func playerDidReachEnd(_ notification: Notification) {
+    @objc func playerDidReachEnd(_ notification: NSNotification) {
         if let playerItem = notification.object as? AVPlayerItem {
             playerItem.seek(to: CMTime.zero, completionHandler: nil)
         }
@@ -664,9 +691,33 @@ extension DiaryViewController: WriteDiaryControllerDelegate{
     }
     
     func didTaphandleUpdate() {
-        self.fetchDiarys()
+        self.collectionView.reloadData()
         self.fetchDiaryData()
-        collectionView.reloadData()
+        self.fetchDiarys()
     }
 }
+
+
+// 사용자 알림
+////재사용 가능한 헤더 추가
+//extension DiaryViewController {
+//    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+//        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! DiaryHeader
+//        
+//        header.diary = diary
+//        header.delegate = self
+//        return header
+//    }
+//}
+
+
+
+// 사용자 작업 시트를 위한 프로토콜을 채택하여 구현
+
+//extension DiaryViewController: DiaryHeaderDelegate {
+//    func showActionSheet() {
+//        actionSheetLauncher.show()
+//    }
+//}
+
 

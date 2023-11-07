@@ -20,3 +20,11 @@ let REF_DIARYS = DB_REF.child("diarys")
 let REF_USER_DIARYS = DB_REF.child("user-diarys")
 let REF_USER_SHAREDIARYS = DB_REF.child("user-share-diarys")
 let REF_DIARY_Comments = DB_REF.child("diary-comments")
+
+// likes
+let REF_USER_LIKES = DB_REF.child("user-likes") // 유저가 좋아요 누른 일기를 파악
+let REF_DIARY_LIKES = DB_REF.child("diary-likes") // 일기 입장에서 누가 좋아요 눌렀는지 파악
+
+let REF_USER_FOLLOWERS = DB_REF.child("user-followers")
+let REF_USER_FOLLOWING = DB_REF.child("user-following")
+let REF_NOTIFICATIONS = DB_REF.child("notifications")

@@ -9,7 +9,7 @@
 import UIKit
 import FSCalendar
 import AVKit
-
+import Foundation
 
 
 private let reuseIdentifier = "CommentCell"
@@ -191,7 +191,7 @@ class CommentFeedViewController: UICollectionViewController{
     
     
     // 키보드가 올라올 때
-    @objc func keyboardWillShow(notification: Notification) {
+    @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight = keyboardSize.height
             
@@ -202,7 +202,7 @@ class CommentFeedViewController: UICollectionViewController{
     }
     
     // 키보드가 내려갈 때
-    @objc func keyboardWillHide(notification: Notification) {
+    @objc func keyboardWillHide(notification: NSNotification) {
         UIView.animate(withDuration: 0.2) {
             self.comentView.transform = .identity
         }

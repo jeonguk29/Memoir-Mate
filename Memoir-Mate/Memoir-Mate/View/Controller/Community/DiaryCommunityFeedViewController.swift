@@ -322,7 +322,7 @@ extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
         let height = viewModel.size(forWidth: view.frame.width).height
         
         // 최대 높이를 400으로 제한
-        let cellHeight = min(height + 170, 400)
+        let cellHeight = min(height + 140, 400)
                   
         return CGSize(width: view.frame.width, height: cellHeight)
     }
@@ -348,23 +348,43 @@ extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - TweetCellDelegate
 extension DiaryCommunityFeedViewController: CommunityCellDelegate {
+ 
     func handleFetchUser(withUsername username: String) {
-        print("")
+        print()
     }
     
     func handelProfileImageTapped(_ cell: CommunityCell) {
-        print("")
+        print()
     }
     
     func handleReplyTapped(_ cell: CommunityCell) {
-        print("")
+        print()
     }
-    
+
+
     func handleLikeTapped(_ cell: CommunityCell) {
-        print("")
-    }
-    
+         print("DEBUG: Handle like tapped..")
+         
+         guard var diary = cell.diary else { return }
+ //        cell.tweet?.didLike.toggle()
+ //        print("DEBUG: Tweet is liked is \(cell.tweet?.didLike)")
+            DiaryService.shared.likeTweet(diary: diary) { (err, ref) in
+             cell.diary?.didLike.toggle()
+             // 셀에 있는 개체를 실제로 업데이트 하는 부분 API호출시 서버먼저 처리하고 여기서 화면 처리를 하는 것임
+             let likes = diary.didLike ? diary.likes - 1 : diary.likes + 1
+             cell.diary?.likes = likes // 이코드 실행시 Cell의 didSet이 수행됨
+             //트윗을 설정하든, 트윗안에 사용자를 재설정하든, 트윗의 좋아요 수를 재설정하든, didSet이 호출되는 것임
+             //그런다음 configure()이 호출 되고 뷰모델러 트윗을 넘겨준 다음 화면에 정상적인 값을 표시할 수 있음
+             
+             // 트윗이 좋아요인 경우에만 업로드 알림
+             guard cell.diary?.didLike == true else { return }
+             
+             NotificationService.shared.uploadNotification(toUser: diary.user,type: .like, diaryID: diary.diaryID)
+         }
+         
+     }
 }
+
 
 
 // MARK: - CommunityDiarySelectControllerDelegate

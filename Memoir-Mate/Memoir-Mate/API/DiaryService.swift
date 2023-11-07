@@ -89,6 +89,8 @@ struct DiaryService {
     
         REF_DIARYS.child(diaryID).removeValue(completionBlock: completion)
         REF_USER_DIARYS.child(userID).child(diaryID).removeValue(completionBlock: completion)
+        REF_USER_SHAREDIARYS.child(diaryID).removeValue(completionBlock: completion)
+       
     }
     
     
@@ -134,6 +136,7 @@ struct DiaryService {
         let values = ["uid": uid, "timestamp" : Int(NSDate().timeIntervalSince1970),
                       "likes": 0, "retweets": 0, "caption": caption] as [String: Any]
     
+        
         REF_DIARY_Comments.child(diaryID).childByAutoId().updateChildValues(values)
     }
       
@@ -192,6 +195,79 @@ struct DiaryService {
             }
         }
     }
+    
+    
+    // 사용자 프로필을 위해 만듬
+    // 사용자가 작성한 모든 트윗에 대한 변경 내역을 실시간으로 검색하는 데 사용됩니다.
+       func fatchDiarys(forUser user: User, completion: @escaping([Diary]) -> Void){
+           var diarys = [Diary]()
+           
+           REF_USER_DIARYS.child(user.uid).observe(.childAdded) { snapshot in
+               let diaryID = snapshot.key
+               print(snapshot.key)
+               
+               
+               // 리팩토링 작업
+               self.fetchDiary(with: diaryID) { diary in
+                   diarys.append(diary)// 해당 사용자에 맞는 모든 일기을 찾아 담고 반환
+                   completion(diarys)
+               }
+        
+               
+               // 프로필 이미지를 눌렀을때 user.uid에 해당하는것을 파이어베이스의가서 실제 값들을 건져오면 됨
+           }
+       }
+    
+    
+    // 사용자 프로필에서 좋아요 누른 트윗을 가져오기
+    func fetchLikes(forUser user: User, completion: @escaping([Diary]) -> Void) {
+           var diarys = [Diary]()
+
+           REF_USER_LIKES.child(user.uid).observe(.childAdded) { snapshot in
+               let diaryID = snapshot.key
+               self.fetchDiary(with: diaryID) { likeddiarys in
+                   var diary = likeddiarys
+                   diary.didLike = true // 프로필에서 좋아요누른 트윗 보여줄때 빨간 하트 활성화
+
+                   diarys.append(diary)
+                   completion(diarys)
+               }
+           }
+
+
+       }
+    
+    func likeTweet(diary: Diary, completion: @escaping(DatabaseCompletion)) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        // 좋아요 누르면 카운트 증감
+        let likes = diary.didLike ? diary.likes - 1 : diary.likes + 1
+        REF_DIARYS.child(diary.diaryID).child("likes").setValue(likes)
+        
+        if diary.didLike {
+            // remove like data from firebase - unlike tweet
+            //그래서 tweet-like 들어가서 트윗키찾고 좋아요 누른 유저 아이디찾고 지우기
+            //user-likes들어가서 현재 사용자 ID를 찾은 다음 좋아요 취소한 트윗을 찾아 지우기
+            REF_USER_LIKES.child(uid).child(diary.diaryID).removeValue { (err, ref) in
+                REF_DIARY_LIKES.child(diary.diaryID).removeValue(completionBlock: completion)
+            }
+        } else {
+            // add like data to firebase - like tweet
+            REF_USER_LIKES.child(uid).updateChildValues([diary.diaryID: 1]) { (err, ref) in
+                REF_DIARY_LIKES.child(diary.diaryID).updateChildValues([uid: 1], withCompletionBlock: completion)
+            }
+            
+        }
+    }
+    
+    func checkIfUserLikedTweet(_ diary: Diary, completion: @escaping(Bool) -> Void) {
+         guard let uid = Auth.auth().currentUser?.uid else { return }
+
+         REF_USER_LIKES.child(uid).child(diary.diaryID).observeSingleEvent(of: .value) { snapshot in
+             completion(snapshot.exists())
+         }
+     }
+           
    
 
 }

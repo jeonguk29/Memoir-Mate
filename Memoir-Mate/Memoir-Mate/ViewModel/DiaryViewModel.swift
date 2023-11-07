@@ -34,7 +34,12 @@ struct DiaryViewModel {
         let now = Date()
         
         //이것은 두 날짜 사이의 시차를 기반으로 형식이 지정된 문자열을 반환합니다.
-        return formatter.string(from: diary.timestamp, to: now) ?? "2m"
+        if let diaryTimestamp = diary.timestamp {
+              // diaryTimestamp가 nil이 아닌 경우에만 형식이 지정된 문자열을 반환합니다.
+              return formatter.string(from: diaryTimestamp, to: now) ?? "2m"
+          } else {
+              return "Now" // diaryTimestamp가 nil인 경우 기본값 반환
+          }
     }
     
     // 실제 데이터 뿌려주기

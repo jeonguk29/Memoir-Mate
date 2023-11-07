@@ -69,13 +69,13 @@ class LoginViewController: UIViewController {
                     let uid = user.uid ?? ""
                     let email = user.email ?? ""
                     let userName = user.displayName ?? ""
+                    let test = user.providerID
                     let photoURLString = user.photoURL?.absoluteString ?? ""
                    
                     print("User ID : \(uid)")
                     print("User Email : \(email)")
                     print("User Name : \(userName)")
                     print("User photoURL : \(photoURLString)")
-                   
                     
                     let values = ["email" : email,
                                   "username" : userName,

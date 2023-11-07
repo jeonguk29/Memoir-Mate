@@ -143,7 +143,7 @@ class WriteDiaryController: UIViewController{
                     print("DEBUG: 일기 업로드에 실패했습니다. error \(error.localizedDescription)")
                     return
                 }
-                
+            
                 self.dismiss(animated: true, completion: nil)
             }
         }
@@ -182,6 +182,10 @@ class WriteDiaryController: UIViewController{
         
         // 메인 스레드에서 실행되도록 DispatchQueue를 사용
         DispatchQueue.main.async {
+            // 프로필에서 일기 수정시 userSelectDate가 없음 그래서 기존 선택했던 날짜로 넣어주기
+            if self.userSelectDate == "" {
+                self.userSelectDate = self.userSelectDiary!.userSelectDate
+            }
             DiaryService.shared.updateDiary(diary: self.userSelectDiary, userSelectDate: self.userSelectDate, caption: caption) { (error, ref) in
                 if let error = error {
                     print("DEBUG: 일기 업데이트에 실패했습니다. error \(error.localizedDescription)")
@@ -246,7 +250,7 @@ class WriteDiaryController: UIViewController{
         
     }
     
-    @objc func keyboardWillShow(_ notification: Notification) {
+    @objc func keyboardWillShow(_ notification: NSNotification) {
         // 키보드 높이 가져오기
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             // 텍스트 뷰의 스크롤을 키보드 높이만큼 조절
@@ -256,11 +260,12 @@ class WriteDiaryController: UIViewController{
         }
     }
 
-    @objc func keyboardWillHide(_ notification: Notification) {
+    @objc func keyboardWillHide(_ notification: NSNotification) {
         // 키보드 숨김 시 텍스트 뷰의 스크롤을 초기화
         let contentInset = UIEdgeInsets.zero
         captionTextView.contentInset = contentInset
         captionTextView.scrollIndicatorInsets = contentInset
     }
+
 }
 

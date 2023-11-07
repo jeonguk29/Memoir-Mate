@@ -54,4 +54,46 @@ struct UserService {
             completion(users)
         }
     }
+    
+    func followUser(uid: String, completion: @escaping(DatabaseCompletion)){
+        // 사용자 A가 B를 팔로우 하면 B사용자 밑에 A, C ... 등등을 연결하고
+        // 사용자 A가 누구를 팔로우 하는지 A밑에 B를 추가 해서 각각 관리하는 구조임
+        
+        guard let currentUid = Auth.auth().currentUser?.uid else {return}
+    
+        REF_USER_FOLLOWING.child(currentUid).updateChildValues([uid: 1]) { (err, ref) in
+            REF_USER_FOLLOWERS.child(uid).updateChildValues([currentUid: 1], withCompletionBlock: completion)
+        }
+    
+        
+        print("DEBUG: Current uid \(currentUid) started following \(uid)")
+        print("DEBUG: Uid \(uid) gained \(currentUid) as a follower")
+    }
+    
+    func unfollowUser(uid: String, completion: @escaping(DatabaseCompletion)){
+        guard let currentUid = Auth.auth().currentUser?.uid else {return}
+        
+        REF_USER_FOLLOWING.child(currentUid).child(uid).removeValue() { (err, ref) in
+            // 팔로잉을 먼저 제거하고 팔로우를 제거하기
+            REF_USER_FOLLOWERS.child(uid).child(currentUid).removeValue(completionBlock: completion)
+        }
+    
+    }
+    
+    // 사용자 객체는 isFollowed = false로 항상 초기화 되기 때문에 팔로우를 눌러도 다시 나갔다 들어오면 재설정 됨
+    // 사용자가 실제로 누군가를 팔로우하는지 여부에 따라 해당 속성을 설정하는 방법이 필요합니다.
+    // 이게 그 방법으로 속석을 설정하는 방법임
+    func checkIfUserIsFollowd(uid: String, completion: @escaping(Bool) -> Void) {
+        guard let currentUid = Auth.auth().currentUser?.uid else {return}
+        
+        REF_USER_FOLLOWING.child(currentUid).child(uid).observeSingleEvent(of: .value) { snapshot in
+            print("DEBUG: User is followed is \(snapshot.exists())") // 팔로잉 하고있는지 여부
+            completion(snapshot.exists())
+        }
+    }
+    /*
+     위의 함수는 Firebase Realtime Database에서 현재 사용자가 선택한 사용자의 프로필을 팔로우했는지 확인하는 함수입니다. 함수는 먼저 Auth.auth().currentUser?.uid를 사용하여 현재 로그인 된 사용자의 uid를 가져옵니다. 가져오지 못하면 함수를 종료하고, 현재 사용자의 uid가 있는 경우 REF_USER_FOLLOWING.child(currentUid).child(uid) 경로에 대한 'single event'를 관찰합니다. 'degree event'를 관찰하면 콜백 함수 completion으로 전달된 Bool 값에 따라 팔로우 여부가 반환됩니다. 만약 snapshot이 존재한다면 (즉, 사용자가 팔로우 중이면) ture, 아니면 false입니다.
+     */
+    
+    
 }

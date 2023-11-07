@@ -26,6 +26,7 @@ struct User {
     
     
     init(uid: String, dictionary: [String: AnyObject]){
+        //print("젠장할\(dictionary)")
         self.uid = uid
     
         self.email = dictionary["email"] as? String ?? ""
