@@ -8,7 +8,7 @@
 import UIKit
 private let reuseIdentifier = "NotificationCell"
 
-class NotificationsController: UITableViewController {
+class NotificationsController: UITableViewController { 
     
     // MARK: - Properties
     private var notifications = [Notification]() {
@@ -16,6 +16,22 @@ class NotificationsController: UITableViewController {
             tableView.reloadData()
         }
     } // 알림 배열 만들기 : 현재 사용자가 받은 알림들을 담기위한
+    
+    private var user: User { // 현제 사용자 정보 가져오기
+        didSet {
+            //print("\(user.email)")
+        }
+    }
+    
+    init(user:User){
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
+    }   
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     // MARK: - Lifecycle
     
@@ -30,6 +46,8 @@ class NotificationsController: UITableViewController {
         navigationController?.navigationBar.isHidden = false
         navigationController?.navigationBar.barStyle = .default
     }
+    
+    
     
     // MARK: - Selectors
         @objc func handleRefresh() {
@@ -69,7 +87,7 @@ class NotificationsController: UITableViewController {
     
     func configureUI() {
         view.backgroundColor = .white
-        navigationItem.title = "Notifications"
+        navigationItem.title = "알림"
         
         tableView.register(NotificationCell.self, forCellReuseIdentifier: reuseIdentifier) // 셀 등록
         tableView.rowHeight = 60 // 셀 높이 설정
@@ -113,23 +131,31 @@ extension NotificationsController {
         // 오류나는 것을 수정 : 속성 기본값 때문에 크래시 나는걸 방지하고 해당 라인 만나면 탈출 하기 때문에 아래 코드 라인까지 가지 않아서 크래시 충돌나지 않음
         guard let diaryID = notification.diaryID else { return }
 
-        DiaryService.shared.fetchDiary(with: diaryID) { tweet in
-            //let controller = CommentFeedViewController(diary: diaryID)
-            //self.navigationController?.pushViewController(controller, animated: true)
+        DiaryService.shared.fetchNotificationsDiary(with: diaryID) { diary in
+            //let controller = CommunityDiarySelectController(diary: diary)
+            print("\(diary) 알림 일기 데이터 확인 ")
+            let controller = CommunityDiarySelectController(
+                user: self.user, userSelectDate: diary.userSelectDate,
+                                                  config: .diary,
+                userSelectstate:.Update, userSelectDiary: diary)
+            
+            self.navigationController?.pushViewController(controller, animated: true)
         }
+        
         // 이제 클릭하면 데이터베이스에서 내 트윗을 가져오고 실제로 채워짐
     }
 }
 
 // MARK: - NotificationCellDelegate
 extension NotificationsController: NotificationCellDelegate {
+
     
     // 셀에서 알림과 연결된 사용자 가져오기 : 프로필 이미지 클릭시
     func didTapProfileImage(_ cell: NotificationCell) {
         // 셀에 사용자 정보가 있기 때문에 가능
         guard let user = cell.notification?.user else { return }
 
-        let controller = ProfileController(user: user)
+        let controller = ProfileController(user: user, LoginUser: user)
         navigationController?.pushViewController(controller, animated: true)
     }
     

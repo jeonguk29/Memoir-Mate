@@ -183,14 +183,32 @@ struct DiaryService {
         
     }
     
-    // 알림탭에서, 상대방이 좋아요 누른 트윗으로 이동하는 메서드 : 위 코드를 복사
+    
     func fetchDiary(with diaryID: String, completion: @escaping(Diary) -> Void) {
-        REF_DIARYS.child(diaryID).observeSingleEvent(of: .value) { snapshot in
+        print("fetchDiary 전달 \(diaryID)")
+        REF_DIARYS.child(diaryID).observeSingleEvent(of: .value) { snapshot  in
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             guard let uid = dictionary["uid"] as? String else { return }
             
             UserService.shared.fetchUser(uid: uid) { user in
                 let diary = Diary(user: user, DiaryID: diaryID, dictionary: dictionary)
+                print("fetchDiary 일기 \(diary)")
+                completion(diary)
+            }
+        }
+    }
+    
+    // 알림탭에서, 상대방이 좋아요 누른 트윗으로 이동하는 메서드 : 위 코드를 복사
+    func fetchNotificationsDiary(with diaryID: String,completion: @escaping(Diary) -> Void) {
+        print("fetchDiary 전달 \(diaryID)")
+        REF_DIARYS.child(diaryID).observeSingleEvent(of: .value) { snapshot in
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            guard let uid = dictionary["uid"] as? String else { return }
+            
+            UserService.shared.fetchUser(uid: uid) { user in
+                print("fetchDiary 일기 \(user)")
+                let diary = Diary(user: user, DiaryID: diaryID, dictionary: dictionary)
+                print("fetchDiary 일기 \(diary)")
                 completion(diary)
             }
         }
