@@ -28,10 +28,26 @@ class MainTabController: UITabBarController {
             guard let diarycommunity = nav.viewControllers.first as? DiaryCommunityFeedViewController else {return}
             diarycommunity.user = user
             
+            
+            guard let search = nav.viewControllers.last as? SearchController else {return}
+            search.loginUser = user ?? AdminUser
         }
     }
     
+    let AdminUser: User = {
+        var admindictionary: [String: AnyObject] = ["email": "admin@example.com" as AnyObject, "username": "관리자" as AnyObject]
+        let formatter = DateFormatter()
+        
+        let currentDate = Date()  // 현재 날짜 가져오기
+        formatter.dateFormat = "yyyy-MM-dd"
+        let selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
+        let adminUser = User(uid: "admin", dictionary: admindictionary)
+        
+        return adminUser
+    }()
+    
 
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,18 +74,20 @@ class MainTabController: UITabBarController {
         let diarycommunity = DiaryCommunityFeedViewController(collectionViewLayout: UICollectionViewFlowLayout())
         let nav2 = templeteNavigationController(image: UIImage(systemName: "person.icloud"), rootViewController: diarycommunity)
         
-        // 알림
-        let notifications = NotificationsController()
-        let nav3 = templeteNavigationController(image: UIImage(named: "like_unselected"), rootViewController: notifications)
         
-        let explore = SearchController(config: .userSearch)
-        let nav4 = templeteNavigationController(image: UIImage(systemName: "magnifyingglass.circle"), rootViewController: explore)
+        
+        
+        // 알림
+ 
+        
+        let explore = SearchController(config: .userSearch, loginUser: user ?? self.AdminUser)
+        let nav3 = templeteNavigationController(image: UIImage(systemName: "magnifyingglass.circle"), rootViewController: explore)
         
         
         
         
         // UITabBarController 에서 제공하는 속성임 안에 배열 형태로 뷰를 넣어주면 됨
-        viewControllers = [nav1, nav2, nav3, nav4]
+        viewControllers = [nav1, nav2, nav3]
         
         // 탭바 아이콘, 텍스트 색상 설정
         //tabBar.tintColor = .mainColor  // 원하는 색상으로 변경

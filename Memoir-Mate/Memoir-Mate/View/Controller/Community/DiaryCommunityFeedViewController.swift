@@ -48,7 +48,14 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     
 
     
-   
+    private lazy var NotificationButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: "like_unselected"), for: .normal)
+        
+        button.addTarget(self, action: #selector(handleNotificationTapped), for: .touchUpInside)
+        return button
+    }()
+    
     
     
     private lazy var actionButton: UIButton = {
@@ -124,6 +131,19 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         calendarView.locale = Locale(identifier: "ko_KR")
     }
     
+    @objc func handleNotificationTapped() {
+        let controller = NotificationsController(user: user!)
+        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(handleDismissNotifications))
+        
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+        
+    }
+    
+    @objc func handleDismissNotifications() {
+        dismiss(animated: true, completion: nil)
+    }
     
     
     @objc func closeCalendarTapped(){
@@ -204,6 +224,8 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
         
+        let customButton =  UIBarButtonItem(customView: NotificationButton)
+        navigationItem.rightBarButtonItem = customButton
         
 
     }

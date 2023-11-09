@@ -22,6 +22,7 @@ class ProfileController: UICollectionViewController{
     // MARK: - properties
     
     private var user: User
+    private var LoginUser: User
     
     // 기본값을 .tweets로 지정해서 프로필 클릭시 Tweets이 첫화면임
     private var selectedFilter: ProfileFilterOptions = .diarys {
@@ -42,8 +43,10 @@ class ProfileController: UICollectionViewController{
     
     // MARK: - Lifecycle
     
-    init(user: User) {
+    init(user: User, LoginUser: User) {
         self.user = user
+        self.LoginUser = LoginUser
+
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
         //그리고 여기에서 Super.init를 호출할 때 이것은 컬렉션이기 때문에 이해하는 것이 매우 중요합니다.
         //컬렉션 뷰 컨트롤러도 초기화해야 합니다.
@@ -61,7 +64,8 @@ class ProfileController: UICollectionViewController{
         print("DEBUG: User is \(user.username)")
 //        checkIfUserIsFollowed()
 //        fetchUserStats()
-//        fetchLikedTweets()
+
+        fetchLikedTweets()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,14 +85,14 @@ class ProfileController: UICollectionViewController{
         }
     }
     
-//    // 좋아요 누른 트윗 가져오가
-//    func fetchLikedTweets() {
-//           DiaryService.shared.fetchLikes(forUser: user) { tweets in
-//               self.likedTweets = tweets
-//               // selectedFilter 의 Didset 작동해서 화면 리로드 가능함
-//           }
-//       }
-//    
+    // 좋아요 누른 트윗 가져오가
+    func fetchLikedTweets() {
+           DiaryService.shared.fetchLikes(forUser: user) { diarys in
+               self.likedTweets = diarys
+               // selectedFilter 의 Didset 작동해서 화면 리로드 가능함
+           }
+       }
+    
 //    func checkIfUserIsFollowed(){
 //        DiaryService.shared.checkIfUserIsFollowd(uid: user.uid) { isFollowed in
 //            self.user.isFollowed = isFollowed
@@ -96,7 +100,7 @@ class ProfileController: UICollectionViewController{
 //        }
 //    }
 //    
-//    
+    
 //    func fetchUserStats() {
 //        UserService.shared.fetchUserStats(uid: user.uid) { stats in
 //            //print("DEBUG: User has \(stats.followers) followers")
@@ -161,13 +165,33 @@ extension ProfileController {
     
     // 프로필에서 셀 누를때 메인과 동일하게 트윗으로 이동
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-         let diary = currentDataSource[indexPath.row]
-         let controller = WriteDiaryController(user: user, userSelectDate: "", config: .diary, userSelectstate: .Update, userSelectDiary: diary)
-        controller.delegate = self
+        let diary = currentDataSource[indexPath.row]
+        
+        if selectedFilter == .diarys && diary.user.uid == LoginUser.uid {
+           print("선택 일기 \(diary.user.uid) 지금 사용자 \(self.user.uid)")
+            let controller = WriteDiaryController(user: user, userSelectDate: "", config: .diary, userSelectstate: .Update, userSelectDiary: diary)
+           controller.delegate = self
+       
+           let nav = UINavigationController(rootViewController: controller)
+           nav.modalPresentationStyle = .fullScreen
+           present(nav, animated: true, completion: nil)
+  
+        }
+        else {
+          
+            let controller = CommunityDiarySelectController(user: user, userSelectDate: "", config: .diary, userSelectstate: .Update, userSelectDiary: diary)
+            
+            controller.delegate = self
+            //navigationController?.pushViewController(controller, animated: true)
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true, completion: nil)
+        }
     
-        let nav = UINavigationController(rootViewController: controller)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true, completion: nil)
+    
+        
+        // CommunityDiarySelectController
+        
      }
 }
 
@@ -273,11 +297,13 @@ extension ProfileController: ProfileHeaderDelegate {
 }
 
 
-
-extension ProfileController: WriteDiaryControllerDelegate{
+extension ProfileController: CommunityDiarySelectControllerDelegate {
     func didTaphandleCancel() {
         collectionView.reloadData()
     }
+}
+
+extension ProfileController: WriteDiaryControllerDelegate{
     
     func didTaphandleUpdate() {
         self.fetchDiarys()
