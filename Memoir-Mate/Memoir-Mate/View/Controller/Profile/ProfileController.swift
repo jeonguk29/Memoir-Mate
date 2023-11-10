@@ -22,7 +22,12 @@ class ProfileController: UICollectionViewController{
     // MARK: - properties
     
     private var user: User
-    private var LoginUser: User
+//    var LoginUser: User? {
+//        didSet {
+//            fetchDiarys()
+//        }
+//    }
+   
     
     // 기본값을 .tweets로 지정해서 프로필 클릭시 Tweets이 첫화면임
     private var selectedFilter: ProfileFilterOptions = .diarys {
@@ -43,9 +48,8 @@ class ProfileController: UICollectionViewController{
     
     // MARK: - Lifecycle
     
-    init(user: User, LoginUser: User) {
+    init(user: User) {
         self.user = user
-        self.LoginUser = LoginUser
 
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
         //그리고 여기에서 Super.init를 호출할 때 이것은 컬렉션이기 때문에 이해하는 것이 매우 중요합니다.
@@ -59,12 +63,10 @@ class ProfileController: UICollectionViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCollectionView()
-        
         fetchDiarys()
         print("DEBUG: User is \(user.username)")
 //        checkIfUserIsFollowed()
 //        fetchUserStats()
-
         fetchLikedTweets()
     }
     
@@ -79,9 +81,36 @@ class ProfileController: UICollectionViewController{
     // MARK: - API
     func fetchDiarys() {
         // FeedController에서 선택한 트윗셀의 user 정보를 전달 받기 때문에 바로 넘길 수 있음
+        
+        // 프로필 누른 사용자 정보와 현제 로그인한 사용자 정보가 같을때 공유하지 않은 일기까지 보여주고
+        //프로필 누른 사용자 정보와 현제 로그인한 사용자 정보가 다를때 공유한 일기만 보여주기
+        
+        //문제 내꺼의 공유 된거만 표시됨 다른사람거 일기 안보임
         DiaryService.shared.fatchDiarys(forUser: user) { diarys in
-            self.diarys = diarys
-            self.collectionView.reloadData()
+            var Mydiarys = [Diary]()
+            
+            print("프로필 선택 유져\(self.user.uid) 로그인한 유져\(Auth.auth().currentUser?.uid)" )
+            if self.user.uid != Auth.auth().currentUser?.uid {
+                for Sharediary in diarys {
+                    if Sharediary.isShare == true {
+    
+                        Mydiarys.append(Sharediary)
+                    }
+                }
+                self.diarys = Mydiarys
+                self.collectionView.reloadData()
+            }
+            else if self.user.uid == Auth.auth().currentUser?.uid {
+                for alldiary in diarys {
+                    if alldiary.isShare == true || alldiary.isShare == false{
+                      
+                        Mydiarys.append(alldiary)
+                    }
+                }
+                self.diarys = Mydiarys
+                self.collectionView.reloadData()
+            }
+      
         }
     }
     
@@ -91,7 +120,8 @@ class ProfileController: UICollectionViewController{
                self.likedTweets = diarys
                // selectedFilter 의 Didset 작동해서 화면 리로드 가능함
            }
-       }
+    }
+    
     
 //    func checkIfUserIsFollowed(){
 //        DiaryService.shared.checkIfUserIsFollowd(uid: user.uid) { isFollowed in
@@ -167,8 +197,8 @@ extension ProfileController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let diary = currentDataSource[indexPath.row]
         
-        if selectedFilter == .diarys && diary.user.uid == LoginUser.uid {
-           print("선택 일기 \(diary.user.uid) 지금 사용자 \(self.user.uid)")
+        if selectedFilter == .diarys && diary.user.uid == Auth.auth().currentUser?.uid {
+           //print("선택 일기 \(diary.user.uid) 지금 사용자 \(self.user.uid)")
             let controller = WriteDiaryController(user: user, userSelectDate: "", config: .diary, userSelectstate: .Update, userSelectDiary: diary)
            controller.delegate = self
        
@@ -215,7 +245,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         //동적 셀 크기 조정
-        let diary = diarys[indexPath.row]
+        let diary = currentDataSource[indexPath.row]
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
         
@@ -230,7 +260,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 // MARK: - ProfileHeaderDelegate
 extension ProfileController: ProfileHeaderDelegate {
     func didSelect(filter: ProfileFilterOptions) {
-        print("DEBUG: Did select filter \(filter.description) in profile controller..")
+        //print("DEBUG: Did select filter \(filter.description) in profile controller..")
         self.selectedFilter = filter
     }
     
@@ -238,7 +268,7 @@ extension ProfileController: ProfileHeaderDelegate {
     // 커스텀 델리게이트로 팔로우 처리해주기
     func handleEditProfileFollow(_ header: ProfileHeader) {
 
-        print("DEBUG: User is followed is \(user.isFollowed) before button tap ")
+        //print("DEBUG: User is followed is \(user.isFollowed) before button tap ")
         
 //        if user.isCurrentUser {
 //            // 팔로우 못하게

@@ -181,6 +181,7 @@ class DiaryViewController: UICollectionViewController{
     
     @objc func handleNotificationTapped() {
         let controller = NotificationsController(user: user!)
+        //controller.LoginUser = user!
         controller.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(handleDismissNotifications))
         
         let nav = UINavigationController(rootViewController: controller)

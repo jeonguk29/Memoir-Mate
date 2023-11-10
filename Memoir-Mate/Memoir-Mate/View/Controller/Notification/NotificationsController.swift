@@ -23,6 +23,8 @@ class NotificationsController: UITableViewController {
         }
     }
     
+    var LoginUser: User?
+    
     init(user:User){
         self.user = user
         super.init(nibName: nil, bundle: nil)
@@ -155,7 +157,8 @@ extension NotificationsController: NotificationCellDelegate {
         // 셀에 사용자 정보가 있기 때문에 가능
         guard let user = cell.notification?.user else { return }
 
-        let controller = ProfileController(user: user, LoginUser: user)
+        let controller = ProfileController(user: user)
+        //controller.LoginUser = self.LoginUser
         navigationController?.pushViewController(controller, animated: true)
     }
     

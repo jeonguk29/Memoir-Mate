@@ -23,7 +23,7 @@ class SearchController: UITableViewController{
         didSet{ tableView.reloadData() }
     }
     
-    var loginUser: User
+    //var loginUser: User?
     
     private var fileteredUsers = [User]() {// 사용자가 서치바에 검색하면 필터링된 유저들을 담을 배열임
         didSet { tableView.reloadData() }
@@ -40,9 +40,8 @@ class SearchController: UITableViewController{
     
     // MARK: - Lifecycle
     
-    init(config: SearchControllerConfiguration, loginUser: User) {
+    init(config: SearchControllerConfiguration) {
         self.config = config
-        self.loginUser = loginUser
         super.init(style: .plain)
     }
     
@@ -146,14 +145,16 @@ extension SearchController {
             guard let uid = Auth.auth().currentUser?.uid else {return}
             UserService.shared.fetchUser(uid: uid) { user in
                 //self.user = user
-                let controller = ProfileController(user: user, LoginUser: self.loginUser)
+                let controller = ProfileController(user: user)
+                //controller.LoginUser = self.loginUser
                 self.navigationController?.pushViewController(controller, animated: true)
             }
             
         }
         else
         {
-            let controller = ProfileController(user: user, LoginUser: loginUser)
+            let controller = ProfileController(user: user)
+            //controller.LoginUser = self.loginUser
             self.navigationController?.pushViewController(controller, animated: true)
         }
         

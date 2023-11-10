@@ -30,21 +30,21 @@ class MainTabController: UITabBarController {
             
             
             guard let search = nav.viewControllers.last as? SearchController else {return}
-            search.loginUser = user ?? AdminUser
+            //search.loginUser = user
         }
     }
     
-    let AdminUser: User = {
-        var admindictionary: [String: AnyObject] = ["email": "admin@example.com" as AnyObject, "username": "관리자" as AnyObject]
-        let formatter = DateFormatter()
-        
-        let currentDate = Date()  // 현재 날짜 가져오기
-        formatter.dateFormat = "yyyy-MM-dd"
-        let selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
-        let adminUser = User(uid: "admin", dictionary: admindictionary)
-        
-        return adminUser
-    }()
+//    let AdminUser: User = {
+//        var admindictionary: [String: AnyObject] = ["email": "admin@example.com" as AnyObject, "username": "관리자" as AnyObject]
+//        let formatter = DateFormatter()
+//        
+//        let currentDate = Date()  // 현재 날짜 가져오기
+//        formatter.dateFormat = "yyyy-MM-dd"
+//        let selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
+//        let adminUser = User(uid: "admin", dictionary: admindictionary)
+//        
+//        return adminUser
+//    }()
     
 
     
@@ -80,7 +80,7 @@ class MainTabController: UITabBarController {
         // 알림
  
         
-        let explore = SearchController(config: .userSearch, loginUser: user ?? self.AdminUser)
+        let explore = SearchController(config: .userSearch)
         let nav3 = templeteNavigationController(image: UIImage(systemName: "magnifyingglass.circle"), rootViewController: explore)
         
         
