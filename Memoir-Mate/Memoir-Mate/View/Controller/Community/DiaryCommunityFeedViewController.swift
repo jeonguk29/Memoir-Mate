@@ -218,7 +218,7 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         profileImageView.setDimensions(width: 32, height: 32)
         profileImageView.layer.cornerRadius = 32 / 2
         profileImageView.layer.masksToBounds = true
-        profileImageView.sd_setImage(with: user!.profileImageUrl , completed: nil)
+        profileImageView.sd_setImage(with: user!.photoURLString , completed: nil)
         
           
         

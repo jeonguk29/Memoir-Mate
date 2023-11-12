@@ -23,7 +23,7 @@ struct DiaryViewModel {
     }
     
     var profileImageUrl: URL?{
-        return user.profileImageUrl
+        return user.photoURLString
     }
     
     var timestamp: String {

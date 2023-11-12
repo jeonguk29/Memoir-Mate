@@ -17,6 +17,9 @@
 		642135632AC3BA1E00E6E02D /* back3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 642135622AC3BA1E00E6E02D /* back3.mp4 */; };
 		643260D52ADBBA5800A047B1 /* CommentBottomTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643260D42ADBBA5800A047B1 /* CommentBottomTextView.swift */; };
 		6441F8592ACE8ACB000C3FD0 /* CommunityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */; };
+		645A21B52AFDEA440001D701 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645A21B42AFDEA440001D701 /* RegistrationController.swift */; };
+		645A21B72AFDEA7F0001D701 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645A21B62AFDEA7F0001D701 /* AuthService.swift */; };
+		645A21B92AFDF9520001D701 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645A21B82AFDF9520001D701 /* Utilities.swift */; };
 		646255862ADAC5270057D835 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646255852ADAC5270057D835 /* CommentCell.swift */; };
 		646255892ADADCF30057D835 /* CommentFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646255882ADADCF30057D835 /* CommentFeedViewController.swift */; };
 		649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945B2AB0A5590092BF0D /* AppDelegate.swift */; };
@@ -67,6 +70,9 @@
 		642135622AC3BA1E00E6E02D /* back3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back3.mp4; sourceTree = "<group>"; };
 		643260D42ADBBA5800A047B1 /* CommentBottomTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentBottomTextView.swift; sourceTree = "<group>"; };
 		6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityCell.swift; sourceTree = "<group>"; };
+		645A21B42AFDEA440001D701 /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
+		645A21B62AFDEA7F0001D701 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		645A21B82AFDF9520001D701 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		646255852ADAC5270057D835 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		646255882ADADCF30057D835 /* CommentFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFeedViewController.swift; sourceTree = "<group>"; };
 		649D94582AB0A5590092BF0D /* Memoir-Mate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Memoir-Mate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -265,6 +271,8 @@
 			isa = PBXGroup;
 			children = (
 				649D947A2AB19E5E0092BF0D /* LoginViewController.swift */,
+				645A21B42AFDEA440001D701 /* RegistrationController.swift */,
+				645A21B82AFDF9520001D701 /* Utilities.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -286,6 +294,7 @@
 				649D94902AB6EFFD0092BF0D /* UserService.swift */,
 				64FA49EA2AB7DC7C0007A263 /* DiaryService.swift */,
 				64E0F53F2AF9FFE200122E4A /* NotificationService.swift */,
+				645A21B62AFDEA7F0001D701 /* AuthService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -470,6 +479,8 @@
 				649D947B2AB19E5E0092BF0D /* LoginViewController.swift in Sources */,
 				640168802AF21A5300CBE131 /* ProfileFilterCell.swift in Sources */,
 				64BE8E372ACFE97D00703410 /* CommunityDiarySelectController.swift in Sources */,
+				645A21B72AFDEA7F0001D701 /* AuthService.swift in Sources */,
+				645A21B92AFDF9520001D701 /* Utilities.swift in Sources */,
 				64E0F53A2AF9F9B100122E4A /* ActionSheetCell.swift in Sources */,
 				649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */,
 				649D94812AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift in Sources */,
@@ -488,6 +499,7 @@
 				649D948E2AB6EF4A0092BF0D /* User.swift in Sources */,
 				64E0F5402AF9FFE200122E4A /* NotificationService.swift in Sources */,
 				64FA49ED2AB7DDD90007A263 /* UploadDiaryViewModel.swift in Sources */,
+				645A21B52AFDEA440001D701 /* RegistrationController.swift in Sources */,
 				649D947D2AB19E840092BF0D /* MainTabController.swift in Sources */,
 				64FA49F12AB80BEF0007A263 /* DiaryCell.swift in Sources */,
 				64E0F53C2AF9F9D700122E4A /* ActionSheetViewModel.swift in Sources */,

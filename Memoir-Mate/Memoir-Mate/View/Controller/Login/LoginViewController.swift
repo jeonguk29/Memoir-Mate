@@ -69,17 +69,24 @@ class LoginViewController: UIViewController {
                     let uid = user.uid ?? ""
                     let email = user.email ?? ""
                     let userName = user.displayName ?? ""
-                    let test = user.providerID
+                    let userNickName = ""
                     let photoURLString = user.photoURL?.absoluteString ?? ""
-                   
-                    print("User ID : \(uid)")
-                    print("User Email : \(email)")
-                    print("User Name : \(userName)")
-                    print("User photoURL : \(photoURLString)")
+                    let userSetting = false
+                    let backgroundCustomImage1 = ""
+                    let backgroundCustomImage2 = ""
+//                    print("User ID : \(uid)")
+//                    print("User Email : \(email)")
+//                    print("User Name : \(userName)")
+//                    print("User photoURL : \(photoURLString)")
                     
                     let values = ["email" : email,
                                   "username" : userName,
-                                  "profileImageUrl" : photoURLString]
+                                  "photoURLString" : photoURLString,
+                                  "userSetting" : userSetting,
+                                  "backgroundCustomImage1" : backgroundCustomImage1,
+                                  "backgroundCustomImage2" : backgroundCustomImage2
+                    ]
+                    
                     
                     REF_USERS.child(uid).updateChildValues(values)
                     

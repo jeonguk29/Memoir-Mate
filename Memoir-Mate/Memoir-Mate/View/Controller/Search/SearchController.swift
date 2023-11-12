@@ -70,7 +70,7 @@ class SearchController: UITableViewController{
     // MARK: - API
     
     func fetchUsers() {
-        UserService.shared.fetchUsers { users in
+        UserService.shared.fetchUsers{ users in
             self.users = users
         }
     }

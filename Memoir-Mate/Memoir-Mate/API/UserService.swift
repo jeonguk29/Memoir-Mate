@@ -25,12 +25,12 @@ struct UserService {
             
             //print("DEBUG: Snapshot \(snapshot)")
             guard let dictionary = snapshot.value as? [String: AnyObject] else {return}
-            //print("DEBUG: Dictionary is \(dictionary)")
+            print("UserService에서 실행 이때는 값이 정상적입 DEBUG: Dictionary is \(dictionary)")
             
             // 두개는 미우 비슷하지만 우리가 이것을 어떨게 사용하게 될지에 따라 큰 차이를 만듬
             // 스냅샷은 해당 스냅샷에 대한 키도 나옴 Snapshot Snap (NO6TkcQJs3MFpMOXLNnIRJ5Br8S2)
             // 해당 스냅샷의 값들을 딕셔너리 타입으로 케스팅하여 편하게 사용할 것임
-            guard let username = dictionary["username"] as? String else {return}
+            //guard let username = dictionary["username"] as? String else {return}
             //print("DEBUG: 현제 사용자의 이름 \(username)")
             
             let user = User(uid: uid, dictionary: dictionary)
@@ -66,8 +66,8 @@ struct UserService {
         }
     
         
-        print("DEBUG: Current uid \(currentUid) started following \(uid)")
-        print("DEBUG: Uid \(uid) gained \(currentUid) as a follower")
+        //print("DEBUG: Current uid \(currentUid) started following \(uid)")
+        //print("DEBUG: Uid \(uid) gained \(currentUid) as a follower")
     }
     
     func unfollowUser(uid: String, completion: @escaping(DatabaseCompletion)){

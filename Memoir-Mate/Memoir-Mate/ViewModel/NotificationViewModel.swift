@@ -51,7 +51,7 @@ struct NotificationViewModel {
     }
 
     var profileImageURL: URL? {
-        return user.profileImageUrl
+        return user.photoURLString
     }
     
     var shouldHideFollowButton: Bool {

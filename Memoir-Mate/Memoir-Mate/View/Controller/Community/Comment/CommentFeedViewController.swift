@@ -23,7 +23,7 @@ class CommentFeedViewController: UICollectionViewController{
     var user: User?
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
-            profileImageView.sd_setImage(with: user!.profileImageUrl , completed: nil)
+            profileImageView.sd_setImage(with: user!.photoURLString , completed: nil)
         }
     }
     

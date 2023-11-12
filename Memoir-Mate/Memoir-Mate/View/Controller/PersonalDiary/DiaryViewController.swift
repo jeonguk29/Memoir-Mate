@@ -28,7 +28,17 @@ class DiaryViewController: UICollectionViewController{
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
             configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
-            print("DiaryViewController : \(user?.email)")
+            print("앱 사작후 DiaryViewController : \(user?.photoURLString)")
+            
+            if  user!.userSetting != true {
+                var controller = RegistrationController(user: self.user!)
+                //controller.user = self.user
+                let nav = UINavigationController(rootViewController: controller)
+                
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true, completion: nil)
+            }
+            
         }
     }
     
@@ -266,7 +276,9 @@ class DiaryViewController: UICollectionViewController{
         profileImageView.setDimensions(width: 32, height: 32)
         profileImageView.layer.cornerRadius = 32 / 2
         profileImageView.layer.masksToBounds = true
-        profileImageView.sd_setImage(with: user!.profileImageUrl, completed: nil)
+        profileImageView.sd_setImage(with: user?.photoURLString, completed: nil)
+        print("사용자 프로필 사진 \(user?.photoURLString)")
+        //print(user)
         
         // 피드에서 자신의 프로파일 이미지 누를시 사용자 프로필로 이동
         //        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게

@@ -12,37 +12,41 @@ class MainTabController: UITabBarController {
     
     var user: User? { // 변경이 일어나면 아래 메세지를 출력
         didSet {
-            print("DEBUG: Did set user in main tab..")
-            guard let nav = viewControllers?[0] as? UINavigationController else {return}
-            guard let diary = nav.viewControllers.first as? DiaryViewController else {return}
-            diary.user = user
-            
-            /* 아래서 뷰컨들을 설정해줬음
-             // UITabBarController 에서 제공하는 속성임 안에 배열 형태로 뷰를 넣어주면 됨
-             viewControllers = [nav1, nav2, nav3, nav4] 0,1,2,3
-             0번째 FeedController 위에 네비게이션 컨트롤러를 올렸었음
-             그 네비게이션의 첫번째 내장 컨틀로러가 FeedController임
-             */
-            
-            guard let nav = viewControllers?[1] as? UINavigationController else {return}
-            guard let diarycommunity = nav.viewControllers.first as? DiaryCommunityFeedViewController else {return}
-            diarycommunity.user = user
-            
-            
-            guard let search = nav.viewControllers.last as? SearchController else {return}
-            //search.loginUser = user
+//            if user?.userSetting == true {
+                let N = 0
+                print("DEBUG: Did set user in main tab..\(N + 1)")
+                guard let nav = viewControllers?[0] as? UINavigationController else {return}
+                guard let diary = nav.viewControllers.first as? DiaryViewController else {return}
+                diary.user = user
+                
+                /* 아래서 뷰컨들을 설정해줬음
+                 // UITabBarController 에서 제공하는 속성임 안에 배열 형태로 뷰를 넣어주면 됨
+                 viewControllers = [nav1, nav2, nav3, nav4] 0,1,2,3
+                 0번째 FeedController 위에 네비게이션 컨트롤러를 올렸었음
+                 그 네비게이션의 첫번째 내장 컨틀로러가 FeedController임
+                 */
+                
+                guard let nav = viewControllers?[1] as? UINavigationController else {return}
+                guard let diarycommunity = nav.viewControllers.first as? DiaryCommunityFeedViewController else {return}
+                diarycommunity.user = user
+                
+                
+                guard let search = nav.viewControllers.last as? SearchController else {return}
+                //search.loginUser = user
+//            }
+
         }
     }
     
 //    let AdminUser: User = {
 //        var admindictionary: [String: AnyObject] = ["email": "admin@example.com" as AnyObject, "username": "관리자" as AnyObject]
 //        let formatter = DateFormatter()
-//        
+//
 //        let currentDate = Date()  // 현재 날짜 가져오기
 //        formatter.dateFormat = "yyyy-MM-dd"
 //        let selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
 //        let adminUser = User(uid: "admin", dictionary: admindictionary)
-//        
+//
 //        return adminUser
 //    }()
     
@@ -74,12 +78,7 @@ class MainTabController: UITabBarController {
         let diarycommunity = DiaryCommunityFeedViewController(collectionViewLayout: UICollectionViewFlowLayout())
         let nav2 = templeteNavigationController(image: UIImage(systemName: "person.icloud"), rootViewController: diarycommunity)
         
-        
-        
-        
-        // 알림
- 
-        
+        // 사용자 검색
         let explore = SearchController(config: .userSearch)
         let nav3 = templeteNavigationController(image: UIImage(systemName: "magnifyingglass.circle"), rootViewController: explore)
         
@@ -94,7 +93,7 @@ class MainTabController: UITabBarController {
     }
     
     
-    // MARK: - 네비게이션 설정 
+    // MARK: - 네비게이션 설정
     func templeteNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
         
         let nav = UINavigationController(rootViewController: rootViewController)
@@ -118,14 +117,18 @@ class MainTabController: UITabBarController {
     
     // MARK: - API : 로그인
        func authenticateUserAndConfigureUI() {
+           print("authenticateUserAndConfigureUI 실행")
            if Auth.auth().currentUser == nil {
-               //print("DEBUG: 사용자가 로그인 하지 않았습니다.")
+               print("DEBUG: 사용자가 로그인 하지 않았습니다.")
                DispatchQueue.main.async {
                    let nav = UINavigationController(rootViewController: LoginViewController())
                    nav.modalPresentationStyle = .fullScreen
                    self.present(nav, animated: true, completion: nil)
                }
-           }else {
+               
+           }
+
+           else {
                //print("DEBUG: 사용자가 로그인 했습니다.")
                configureViewControllers() // 로그인 했으면 탭바 보여주기
                //configureUI()
