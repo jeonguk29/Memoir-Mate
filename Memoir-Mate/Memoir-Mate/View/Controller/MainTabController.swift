@@ -4,6 +4,7 @@
 
 import UIKit
 import FirebaseAuth
+import GoogleSignIn
 
 class MainTabController: UITabBarController {
 
@@ -30,9 +31,9 @@ class MainTabController: UITabBarController {
                 guard let diarycommunity = nav.viewControllers.first as? DiaryCommunityFeedViewController else {return}
                 diarycommunity.user = user
                 
-                
-                guard let search = nav.viewControllers.last as? SearchController else {return}
-                //search.loginUser = user
+                guard let nav = viewControllers?[2] as? UINavigationController else {return}
+                guard let search = nav.viewControllers.first as? SearchController else {return}
+                search.fetchUsers() // 사용자 다시 불러오기 (이미지 바꾼후 호출시 적용된 이미지를 호출 하기 위해)
 //            }
 
         }
@@ -55,6 +56,13 @@ class MainTabController: UITabBarController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+//        do {
+//            try Auth.auth().signOut()
+//            GIDSignIn.sharedInstance.signOut()
+//        } catch let error {
+//            print("Couldn't make logout with error \(error.localizedDescription)")
+//        }
+        
         configureViewControllers()
         tabBar.backgroundColor = .systemGray5
         authenticateUserAndConfigureUI()
@@ -118,6 +126,8 @@ class MainTabController: UITabBarController {
     // MARK: - API : 로그인
        func authenticateUserAndConfigureUI() {
            print("authenticateUserAndConfigureUI 실행")
+
+          
            if Auth.auth().currentUser == nil {
                print("DEBUG: 사용자가 로그인 하지 않았습니다.")
                DispatchQueue.main.async {

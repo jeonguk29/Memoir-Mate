@@ -60,63 +60,67 @@ class LoginViewController: UIViewController {
           let credential = GoogleAuthProvider.credential(withIDToken: idToken,
                                                          accessToken: user.accessToken.tokenString)
             Auth.auth().signIn(with: credential) { result, error in
-                
-                // At this point, our user is signed in
-                if let user = Auth.auth().currentUser {
-                    
-                    // 여기서부터 로그인된 사용자의 프로필 정보에 접근 가능.
-            
-                    let uid = user.uid ?? ""
-                    let email = user.email ?? ""
-                    let userName = user.displayName ?? ""
-                    let userNickName = ""
-                    let photoURLString = user.photoURL?.absoluteString ?? ""
-                    let userSetting = false
-                    let backgroundCustomImage1 = ""
-                    let backgroundCustomImage2 = ""
-//                    print("User ID : \(uid)")
-//                    print("User Email : \(email)")
-//                    print("User Name : \(userName)")
-//                    print("User photoURL : \(photoURLString)")
-                    
-                    let values = ["email" : email,
-                                  "username" : userName,
-                                  "photoURLString" : photoURLString,
-                                  "userSetting" : userSetting,
-                                  "backgroundCustomImage1" : backgroundCustomImage1,
-                                  "backgroundCustomImage2" : backgroundCustomImage2
-                    ]
-                    
-                    
-                    REF_USERS.child(uid).updateChildValues(values)
-                    
-                  
-//
-//                    let values = ["profileImageUrl" : result?.user.p]
-//
-//                    REF_USERS.child(uid).updateChildValues(values, withCompletionBlock: completion)
-                    
-                    // 다시 메인화면 보여주기
-//                               guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
-//                                   return }
-//
-//                               guard let tab = window.rootViewController as? MainTabController else {return}
-//
-//                               tab.authenticateUserAndConfigureUI()
-//
-//                               self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인 컨트롤러를 닫고
+                if let loginUser = Auth.auth().currentUser {
+                    UserService.shared.LoginfetchUser(uid: loginUser.uid) { fetchedUser in
+                        let uid = loginUser.uid
+                        let email: String
+                        let userName: String
+                        let userNickName: String
+                        let photoURLString: String?
+                        let userSetting: Bool
+                        let bio: String
+                        let backgroundCustomImage1: String
+                        let backgroundCustomImage2: String
+
+                        if let user = fetchedUser {
+                            // 사용자 정보가 이미 있는 경우
+                            email = user.email ?? loginUser.email!
+                            userName = user.username ?? loginUser.displayName!
+                            userNickName = user.userNickName ?? ""
+                            photoURLString = user.photoURLString?.absoluteString ?? loginUser.photoURL!.absoluteString
+                            userSetting = user.userSetting ?? false
+                            bio = user.bio ?? "Memoir Mate User"
+                            backgroundCustomImage1 = user.backgroundCustomImage1?.absoluteString ?? ""
+                            backgroundCustomImage2 = user.backgroundCustomImage2?.absoluteString ?? ""
+                        } else {
+                            // 처음 로그인하는 사용자의 경우
+                            email = loginUser.email!
+                            userName = loginUser.displayName!
+                            userNickName = ""
+                            photoURLString = loginUser.photoURL!.absoluteString
+                            userSetting = false
+                            bio = "Memoir Mate User"
+                            backgroundCustomImage1 = ""
+                            backgroundCustomImage2 = ""
+                        }
+
+                        let values: [String: Any] = ["email" : email,
+                                      "username" : userName,
+                                      "userNickName" : userNickName,
+                                      "photoURLString" : photoURLString as Any,
+                                      "userSetting" : userSetting,
+                                      "bio" : bio,
+                                      "backgroundCustomImage1" : backgroundCustomImage1,
+                                      "backgroundCustomImage2" : backgroundCustomImage2
+                        ]
+
+                        // 로그인된 사용자 정보를 업데이트
+                        REF_USERS.child(uid).updateChildValues(values)
+
+                        // 다시 메인화면 보여주기
+                        guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
+                            return }
+                        
+                        guard let tab = window.rootViewController as? MainTabController else {return}
+                        
+                        tab.authenticateUserAndConfigureUI()
+                        
+                        self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인
+                    }
                 }
-                
-                // 다시 메인화면 보여주기
-                guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
-                    return }
-                
-                guard let tab = window.rootViewController as? MainTabController else {return}
-                
-                tab.authenticateUserAndConfigureUI()
-                
-                self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인
             }
+
+
         }
         
     }
@@ -168,4 +172,3 @@ class LoginViewController: UIViewController {
     
     
 }
-
