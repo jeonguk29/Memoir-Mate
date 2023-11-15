@@ -94,7 +94,7 @@ struct DiaryService {
     }
     
     
-    // 트윗 가져오는 메서드 만들기
+    // 일기 가져오는 메서드 만들기
     func fatchDiarys(completion: @escaping([Diary]) -> Void){
         var diarys = [Diary]()
         
@@ -110,7 +110,7 @@ struct DiaryService {
         }
     }
     
-    // 공유 트윗 가져오는 메서드 만들기
+    // 공유 일기 가져오는 메서드 만들기
     func communityFatchDiarys(completion: @escaping([Diary]) -> Void){
         var diarys = [Diary]()
         
@@ -285,7 +285,6 @@ struct DiaryService {
              completion(snapshot.exists())
          }
      }
-           
    
 
 }

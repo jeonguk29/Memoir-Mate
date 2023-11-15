@@ -38,7 +38,7 @@ struct User {
     var backgroundCustomImage2 :URL?
     
     init(uid: String, dictionary: [String: AnyObject]){
-        print("젠장할\(dictionary)")
+        //print("젠장할\(dictionary)")
         
      
         self.uid = uid
@@ -80,9 +80,9 @@ struct User {
         }
         
         if let profileImageUrlString = dictionary["photoURLString"] as? String {
-            print("이미지 파베 저장후 모델 만들때 사진 값 URL 값 재대로 변환 되는가? 1 \(profileImageUrlString)")
+            //print("이미지 파베 저장후 모델 만들때 사진 값 URL 값 재대로 변환 되는가? 1 \(profileImageUrlString)")
             if let url = URL(string: profileImageUrlString) {
-                print("이미지 파베 저장후 모델 만들때 사진 값 URL 값 재대로 변환 되는가? 2 \(url)")
+                //print("이미지 파베 저장후 모델 만들때 사진 값 URL 값 재대로 변환 되는가? 2 \(url)")
                 self.photoURLString = url
             } else {
                 print("URL 변환 실패: \(profileImageUrlString)")

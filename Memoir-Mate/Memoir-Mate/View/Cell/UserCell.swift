@@ -27,14 +27,30 @@ class UserCell: UITableViewCell {
         return iv
     }()
     
-    private let usernameLabel: UILabel = {
+    private let userIdmarkLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.text = "사용자 ID : "
+        label.textColor = .systemGray
+        return label
+    }()
+    
+    private let userNickmarkLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.text = "사용자 이름 : "
+        label.textColor = .systemGray
+        return label
+    }()
+    
+    private let userIdLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
         label.text = "Username"
         return label
     }()
     
-    private let fullnameLabel: UILabel = {
+    private let userNicknameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
         label.text = "Fullname"
@@ -50,7 +66,17 @@ class UserCell: UITableViewCell {
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         //profileImageView.centerY(inView: self, leftAnchor: leftAnchor, paddingLeft: 12)
         
-        let stack = UIStackView(arrangedSubviews: [usernameLabel, fullnameLabel])
+//        let userId = UIStackView(arrangedSubviews: [userIdmarkLabel, userIdLabel])
+//        userId.axis = .horizontal
+//        userId.alignment = .leading
+//        userId.spacing = 1
+//        
+//        let userNick = UIStackView(arrangedSubviews: [userNickmarkLabel, userNicknameLabel])
+//        userNick.axis = .horizontal
+//        userNick.alignment = .leading
+//        userNick.spacing = 1
+        
+        let stack = UIStackView(arrangedSubviews: [userIdLabel, userNicknameLabel])
         stack.axis = .vertical
         stack.spacing = 2
         
@@ -76,10 +102,10 @@ class UserCell: UITableViewCell {
     
     func configure() {
         guard let user = user else {return}
-        
+        //profileImageView.sd_cancelCurrentImageLoad()
         profileImageView.sd_setImage(with: user.photoURLString)
-        usernameLabel.text = user.username
-        fullnameLabel.text = user.email
+        userIdLabel.text = user.userID
+        userNicknameLabel.text = user.userNickName
     }
     
     

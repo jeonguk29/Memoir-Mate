@@ -10,6 +10,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseCore
 import FirebaseDatabase
+import GoogleSignIn
 
 private let reuseIdentifier = "DiaryCell"
 private let headerIdentifier = "ProfileHeader"
@@ -22,11 +23,7 @@ class ProfileController: UICollectionViewController{
     // MARK: - properties
     
     private var user: User
-//    var LoginUser: User? {
-//        didSet {
-//            fetchDiarys()
-//        }
-//    }
+
    
     
     // 기본값을 .tweets로 지정해서 프로필 클릭시 Tweets이 첫화면임
@@ -65,8 +62,8 @@ class ProfileController: UICollectionViewController{
         configureCollectionView()
         fetchDiarys()
         print("DEBUG: User is \(user.username)")
-//        checkIfUserIsFollowed()
-//        fetchUserStats()
+        checkIfUserIsFollowed()
+        fetchUserStats()
         fetchLikedTweets()
     }
     
@@ -123,22 +120,22 @@ class ProfileController: UICollectionViewController{
     }
     
     
-//    func checkIfUserIsFollowed(){
-//        DiaryService.shared.checkIfUserIsFollowd(uid: user.uid) { isFollowed in
-//            self.user.isFollowed = isFollowed
-//            self.collectionView.reloadData()
-//        }
-//    }
-//    
-    
-//    func fetchUserStats() {
-//        UserService.shared.fetchUserStats(uid: user.uid) { stats in
-//            //print("DEBUG: User has \(stats.followers) followers")
-//            //print("DEBUG: User is following \(stats.following) people")
-//            self.user.stats = stats
-//            self.collectionView.reloadData()
-//        }
-//    }
+    func checkIfUserIsFollowed(){
+        UserService.shared.checkIfUserIsFollowd(uid: user.uid) { isFollowed in
+            self.user.isFollowed = isFollowed
+            self.collectionView.reloadData()
+        }
+    }
+
+    // 사용자 followers, following 값 표시
+    func fetchUserStats() {
+        UserService.shared.fetchUserStats(uid: user.uid) { stats in
+            //print("DEBUG: User has \(stats.followers) followers")
+            //print("DEBUG: User is following \(stats.following) people")
+            self.user.stats = stats
+            self.collectionView.reloadData()
+        }
+    }
     
     // MARK: - Helpers
     
@@ -270,25 +267,25 @@ extension ProfileController: ProfileHeaderDelegate {
 
         //print("DEBUG: User is followed is \(user.isFollowed) before button tap ")
         
-//        if user.isCurrentUser {
-//            // 팔로우 못하게
-//
-//             let controller = EditProfileController(user: user)
-//            controller.delegate = self
-//            
-//            let nav = UINavigationController(rootViewController: controller)
-//
-//            let appearance = UINavigationBarAppearance()
-//            appearance.configureWithOpaqueBackground()
-//            appearance.backgroundColor = .mainColor
-//            nav.navigationBar.standardAppearance = appearance
-//            nav.navigationBar.scrollEdgeAppearance = nav.navigationBar.standardAppearance
-//            nav.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-//
-//            nav.modalPresentationStyle = .fullScreen
-//            present(nav, animated: true, completion: nil)
-//            return
-//        }
+        if user.isCurrentUser {
+            // 팔로우 못하게
+
+             let controller = EditProfileController(user: user)
+            controller.delegate = self
+            
+            let nav = UINavigationController(rootViewController: controller)
+
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .mainColor
+            nav.navigationBar.standardAppearance = appearance
+            nav.navigationBar.scrollEdgeAppearance = nav.navigationBar.standardAppearance
+            nav.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true, completion: nil)
+            return
+        }
         
         if user.isFollowed {
             UserService.shared.unfollowUser(uid: user.uid) { (err, ref) in
@@ -345,23 +342,32 @@ extension ProfileController: WriteDiaryControllerDelegate{
 
 
 // MARK: - EditProfileControllerDelegate
-//extension ProfileController: EditProfileControllerDelegate {
-//    
-//    func handleLogout() {// 로그인 처리를 위임받아 처리
-//            do {
-//                try Auth.auth().signOut()
-//
-//                let nav = UINavigationController(rootViewController: LoginViewController())
-//                nav.modalPresentationStyle = .fullScreen
-//                self.present(nav, animated: true, completion: nil)
-//            } catch let error {
-//                print("Couldn't make logout with error \(error.localizedDescription)")
-//            }
-//        }
-//    
-//    func controller(_ controller: EditProfileController, wantsToUpdate user: User) {
-//        controller.dismiss(animated: true, completion: nil)
-//        self.user = user
-//        self.collectionView.reloadData() // 사용자 정보를 업데이트후 리로드
-//    }
-//}
+extension ProfileController: EditProfileControllerDelegate {
+    
+    func handleLogout() {// 로그인 처리를 위임받아 처리
+            do {
+                try Auth.auth().signOut()
+                GIDSignIn.sharedInstance.signOut()
+                
+                let nav = UINavigationController(rootViewController: LoginViewController())
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true, completion: nil)
+            } catch let error {
+                print("Couldn't make logout with error \(error.localizedDescription)")
+            }
+        }
+    
+    func controller(_ controller: EditProfileController, wantsToUpdate user: User) {
+        controller.dismiss(animated: true, completion: nil)
+        self.user = user
+        
+        // 변경후 메인에 전달해서 사용자 정보 모든 탭에 재전달 후 리로드
+        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }),
+                          let tab = window.rootViewController as? MainTabController else { return }
+                    //print("RegistrationController 에서 이미지 등록후 \(user.photoURLString)")
+                    tab.user = user
+        
+
+        self.collectionView.reloadData() // 사용자 정보를 업데이트후 리로드
+    }
+}

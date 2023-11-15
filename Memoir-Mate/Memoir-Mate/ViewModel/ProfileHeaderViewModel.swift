@@ -13,9 +13,9 @@ enum ProfileFilterOptions: Int, CaseIterable {
     
     var description: String {
         switch self {
-        case .diarys: return "Diarys"
+        case .diarys: return "작성 일기"
         //case .replies: return "Tweets & Replies"
-        case .likes: return "Likes"
+        case .likes: return "좋아요 누른 일기"
         }
     }
 }
@@ -58,7 +58,7 @@ struct ProfileHeaderViewModel {
     
     init(user: User) {
         self.user = user
-        self.usernameText = "@" + user.username
+        self.usernameText = "@" + user.userNickName
     }
     
     // fileprivate 비공계로 설정, 도움이 함수일 뿐임

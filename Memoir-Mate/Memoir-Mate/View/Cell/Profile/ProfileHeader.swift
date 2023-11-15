@@ -87,7 +87,7 @@ class ProfileHeader: UICollectionReusableView {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.numberOfLines = 3 // 최대 3줄까지만
-        label.text = "안녕!!"
+        label.text = ""
         return label
     }()
     
@@ -235,8 +235,9 @@ class ProfileHeader: UICollectionReusableView {
         followingLabel.attributedText = viewModel.followingString
         followersLabel.attributedText = viewModel.followersString
         
-        fullnameLabel.text = user.email
+        fullnameLabel.text = user.userID
         usernameLabel.text = viewModel.usernameText
+        bioLabel.text = user.bio
     }
 
 }

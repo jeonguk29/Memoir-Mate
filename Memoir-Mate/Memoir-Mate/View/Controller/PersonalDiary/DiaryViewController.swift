@@ -30,7 +30,7 @@ class DiaryViewController: UICollectionViewController{
             configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
             print("앱 사작후 DiaryViewController : \(user?.photoURLString)")
             
-            if  user!.userSetting != true {
+            if  user!.userSetting != true  {
                 var controller = RegistrationController(user: self.user!)
                 //controller.user = self.user
                 let nav = UINavigationController(rootViewController: controller)

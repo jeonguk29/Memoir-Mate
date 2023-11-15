@@ -20,7 +20,11 @@ class SearchController: UITableViewController{
     private let config: SearchControllerConfiguration
     
     private var users = [User]() {
-        didSet{ tableView.reloadData() }
+        didSet{
+            //print("프로필 이미지 호출후 실행되었습니다")
+            // 이미지 캐시 제거
+            tableView.reloadData()
+        }
     }
     
     //var loginUser: User?
@@ -70,8 +74,10 @@ class SearchController: UITableViewController{
     // MARK: - API
     
     func fetchUsers() {
+        
         UserService.shared.fetchUsers{ users in
             self.users = users
+            print("검색 창에서 이미지 편집후 바뀌는걸 보고 싶음 test \(users)")
         }
     }
     
@@ -100,7 +106,7 @@ class SearchController: UITableViewController{
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.placeholder = "사용자 이름을 입력해 주세요"
+        searchController.searchBar.placeholder = "사용자 아이디를 입력해 주세요"
         navigationItem.searchController = searchController
         definesPresentationContext = false
     }
@@ -121,6 +127,7 @@ extension SearchController {
         
         let user = inSearchMode ? fileteredUsers[indexPath.row] : users[indexPath.row]
         //검색모드이면 검색모드배열에 담은 유저를 한명씩 셀에 전달, 그게 아니면 전체 사용자들을 한명씩 셀에 전달
+        
         cell.user = user
         return cell
         
@@ -168,10 +175,10 @@ extension SearchController {
 
 extension SearchController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text?.lowercased() else {return}
+        guard let searchText = searchController.searchBar.text?.description else {return}
         //print("DEBUG: Search text is \(searchText)")
         
-        fileteredUsers = users.filter({ $0.username.contains(searchText) })
+        fileteredUsers = users.filter({ $0.userID.contains(searchText) })
         // 사용자 이름 검색 필터링
         
         // 위 문법을 풀어 쓰면
