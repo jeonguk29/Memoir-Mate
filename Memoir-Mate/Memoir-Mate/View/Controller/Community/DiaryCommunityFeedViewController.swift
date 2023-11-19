@@ -58,7 +58,7 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     
     
     
-    private lazy var actionButton: UIButton = {
+    private lazy var calendarButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "calendar.circle"), for: .normal)
         // 버튼 액션 추가
@@ -175,10 +175,10 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         
         
         view.addSubview(calendarView)
-        view.addSubview(actionButton)
+     
            
         calendarView.translatesAutoresizingMaskIntoConstraints = false
-        actionButton.translatesAutoresizingMaskIntoConstraints = false
+
             
             
         // Safe Area 제약 조건 설정
@@ -192,19 +192,9 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
             calendarView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor,constant: -370),
             //세로크기를 100
             
-            
         
-            
-            // ⭐️ 해당 한줄의 코드가 위 코드를 대체함
-            // safeAreaLayoutGuide는 safeArea를 말함
-            
-            actionButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -64),
-            actionButton.widthAnchor.constraint(equalToConstant: 56),
-            actionButton.heightAnchor.constraint(equalToConstant: 56),
-                        
         ])
-        actionButton.layer.cornerRadius = 56/2 // 높이 나누기 2 하면 원형 모양이 됨
+     
             
     
         
@@ -225,6 +215,15 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
         
         let customButton =  UIBarButtonItem(customView: NotificationButton)
+        let customButton2 =  UIBarButtonItem(customView: calendarButton)
+        
+        // 네비게이션 바 아이템 사이에 임의로 간격 설정하기
+        let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        space.width = 32 // 원하는 간격을 설정하세요
+
+        navigationItem.rightBarButtonItems = [customButton, space, customButton2]
+        
+     
         navigationItem.rightBarButtonItem = customButton
         
 
@@ -253,6 +252,7 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
             }
         }
     }
+    
 
 
 }
@@ -297,7 +297,7 @@ extension DiaryCommunityFeedViewController {
         
         cell.delegate = self
         cell.diary = diarys[indexPath.row]
-        cell.backgroundBorderView.backgroundColor = .commColor
+        //cell.backgroundBorderView.backgroundColor = .commColor
        
         // 셀에 대한 초기 설정
         // 애니메이션 적용
@@ -344,7 +344,7 @@ extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
         let height = viewModel.size(forWidth: view.frame.width).height
         
         // 최대 높이를 400으로 제한
-        let cellHeight = min(height + 140, 400)
+        let cellHeight = max(min(height, 400), 250)
                   
         return CGSize(width: view.frame.width, height: cellHeight)
     }
@@ -376,7 +376,15 @@ extension DiaryCommunityFeedViewController: CommunityCellDelegate {
     }
     
     func handelProfileImageTapped(_ cell: CommunityCell) {
-        print()
+        guard let user = cell.diary?.user else { return }
+        
+        let controller = ProfileController(user: user)
+        controller.navigationItem.setHidesBackButton(true, animated: false) // "Back" 버튼 숨김
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.modalPresentationStyle = .fullScreen // 모달 스타일을 Full Screen으로 설정
+        
+        present(navigationController, animated: true, completion: nil)
     }
     
     func handleReplyTapped(_ cell: CommunityCell) {

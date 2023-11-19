@@ -15,12 +15,12 @@ struct DiaryService {
     static let shared = DiaryService()
     
     // 별명 적용 : DatabaseCompletion
-    func uploadDiary(userSelectDate: String,caption: String, type: UploadDiaryConfiguration, completion: @escaping(DatabaseCompletion)) {
+    func uploadDiary(userSelectDate: String, userSelectWeather: String ,caption: String, type: UploadDiaryConfiguration, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else {return}
         // 누가 트윗을 남겼는지 uid를 저장해줘야함
         
         var values = ["uid": uid, "timestamp" : Int(NSDate().timeIntervalSince1970),
-                      "likes" : 0, "retweets": 0, "caption": caption, "userSelectDate": userSelectDate, "isShare" : false] as [String : Any]
+                      "likes" : 0, "retweets": 0, "caption": caption, "userSelectWeather" : userSelectWeather, "userSelectDate": userSelectDate, "isShare" : false] as [String : Any]
         
         // 파이어 베이스에 답장 업로드하기
         switch type {
@@ -50,15 +50,14 @@ struct DiaryService {
     }
     
    
-    func updateDiary(diary: Diary?, userSelectDate: String, caption: String, completion: @escaping(DatabaseCompletion)) {
+    func updateDiary(diary: Diary?, userSelectDate: String, userSelectWeather: String,caption: String, completion: @escaping(DatabaseCompletion)) {
         guard let diary = diary else {return}
         let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
         let uid = diary.user.uid // diary.user.uid를 옵셔널이 아닌 변수로 선언
         
         let timestamp = Int(diary.timestamp.timeIntervalSince1970) // Unix 타임스탬프
 
-        var values = ["uid": uid, "timestamp": timestamp,
-                      "likes": 0, "retweets": 0, "caption": caption, "userSelectDate": userSelectDate] as [String: Any]
+        var values = ["uid": uid, "timestamp": timestamp, "caption": caption, "userSelectDate": userSelectDate, "userSelectWeather" : userSelectWeather] as [String: Any]
         
         // 파이어 베이스에 일기 업데이트 하기
         REF_DIARYS.child(diaryID).updateChildValues(values, withCompletionBlock: completion)

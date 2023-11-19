@@ -85,7 +85,7 @@ class DiaryViewController: UICollectionViewController{
     }()
     
     
-    private lazy var actionButton: UIButton = {
+    private lazy var calendarButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "calendar.circle"), for: .normal)
         // 버튼 액션 추가
@@ -220,6 +220,18 @@ class DiaryViewController: UICollectionViewController{
         collectionView.performBatchUpdates(nil, completion: nil) // 달력 첫번째 셀의 위치를 조절 하기 위해
     }
     
+    // 자신의 프로필 이미지 누를시 프로필로 이동
+    @objc func handleProfileImageTap() {
+        guard let user = user else { return }
+        
+        let controller = ProfileController(user: user)
+        controller.navigationItem.setHidesBackButton(true, animated: false) // "Back" 버튼 숨김
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.modalPresentationStyle = .fullScreen // 모달 스타일을 Full Screen으로 설정
+        
+        present(navigationController, animated: true, completion: nil)
+    }
     
     private func setupAutoLayout() {
         
@@ -233,10 +245,10 @@ class DiaryViewController: UICollectionViewController{
         
         
         view.addSubview(calendarView)
-        view.addSubview(actionButton)
+        
         
         calendarView.translatesAutoresizingMaskIntoConstraints = false
-        actionButton.translatesAutoresizingMaskIntoConstraints = false
+
         
         
         // Safe Area 제약 조건 설정
@@ -249,21 +261,9 @@ class DiaryViewController: UICollectionViewController{
             calendarView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
             calendarView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor,constant: -370),
             //세로크기를 100
-            
-            
-            
-            
-            // ⭐️ 해당 한줄의 코드가 위 코드를 대체함
-            // safeAreaLayoutGuide는 safeArea를 말함
-            
-            actionButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            actionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -64),
-            actionButton.widthAnchor.constraint(equalToConstant: 56),
-            actionButton.heightAnchor.constraint(equalToConstant: 56),
+
             
         ])
-        //actionButton.layer.cornerRadius = 56/2 // 높이 나누기 2 하면 원형 모양이 됨
-        
         
         
     }
@@ -281,22 +281,23 @@ class DiaryViewController: UICollectionViewController{
         //print(user)
         
         // 피드에서 자신의 프로파일 이미지 누를시 사용자 프로필로 이동
-        //        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게
-        //
-        //        let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTap))
-        //                profileImageView.addGestureRecognizer(tap)
+        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTap))
+        profileImageView.addGestureRecognizer(tap)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
         
         // "일기쓰기" 버튼을 customButton으로 감싼 다음, 이 버튼을 네비게이션 바의 오른쪽 버튼으로 설정
         let customButton =  UIBarButtonItem(customView: writeButton)
         let customButton2 =  UIBarButtonItem(customView: NotificationButton)
+        let customButton3 =  UIBarButtonItem(customView: calendarButton)
         
         // 네비게이션 바 아이템 사이에 임의로 간격 설정하기
         let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        space.width = 20 // 원하는 간격을 설정하세요
+        space.width = 32 // 원하는 간격을 설정하세요
 
-        navigationItem.rightBarButtonItems = [customButton, space, customButton2]
+        navigationItem.rightBarButtonItems = [customButton, space, customButton2, space, customButton3]
 
     }
     
@@ -437,21 +438,22 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
     // 각 셀의 크기를 지정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        //동적 셀 크기 조정
+        // 동적 셀 크기 조정
         // diarys 배열이 비어있거나 요소가 없는 경우
         guard !diarys.isEmpty, indexPath.row < diarys.count else {
-            return CGSize(width: view.frame.width, height: 0)
+            return CGSize(width: collectionView.frame.width, height: 0)
         }
         
         let diary = diarys[indexPath.row]
         let viewModel = DiaryViewModel(diary: diary)
-        let height = viewModel.size(forWidth: view.frame.width).height
+        let height = viewModel.size(forWidth: collectionView.frame.width).height
         
-        // 최대 높이를 400으로 제한
-        let cellHeight = min(height + 100, 400)
+        // 최소 높이를 200, 최대 높이를 400으로 제한
+        let cellHeight = max(min(height, 400), 200)
         
-        return CGSize(width: view.frame.width, height: cellHeight)
+        return CGSize(width: collectionView.frame.width, height: cellHeight)
     }
+
     
     // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -652,11 +654,17 @@ extension DiaryViewController: DiaryCellDelegate {
         }
     }
     
-    
     func handelProfileImageTapped(_ cell: DiaryCell) {
-        print("")
+        guard let user = cell.diary?.user else { return }
+        
+        let controller = ProfileController(user: user)
+        controller.navigationItem.setHidesBackButton(true, animated: false) // "Back" 버튼 숨김
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.modalPresentationStyle = .fullScreen // 모달 스타일을 Full Screen으로 설정
+        
+        present(navigationController, animated: true, completion: nil)
     }
-    
     
     func handleFetchUser(withUsername username: String) {
         

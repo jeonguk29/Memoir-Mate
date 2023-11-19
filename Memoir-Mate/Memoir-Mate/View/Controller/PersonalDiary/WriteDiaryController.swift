@@ -13,6 +13,14 @@ enum DiaryType: String { // 어떤 종류의 알림인지 숫자로 파악하기
     case Update
 }
 
+enum WeatherType: String { // 어떤 종류의 알림인지 숫자로 파악하기 위함
+    case Sunny
+    case Blur
+    case Rain
+    case Snow
+}
+
+
 protocol WriteDiaryControllerDelegate: class {
     func didTaphandleCancel()
     func didTaphandleUpdate()
@@ -98,6 +106,40 @@ class WriteDiaryController: UIViewController{
            return textView
        }()
     
+
+    private lazy var weatherSunButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "sun.max"), for: .normal)
+        button.tintColor = defultWeatherType == .Sunny ? .blue : .gray
+        button.addTarget(self, action: #selector(handleWeather), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var weatherBlurButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "cloud"), for: .normal)
+        button.tintColor = defultWeatherType == .Blur ? .blue : .gray
+        button.addTarget(self, action: #selector(handleWeather), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var weatherRainButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "cloud.bolt.rain"), for: .normal)
+        button.tintColor = defultWeatherType == .Rain ? .blue : .gray
+        button.addTarget(self, action: #selector(handleWeather), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var weatherSnowButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "cloud.snow"), for: .normal)
+        button.tintColor = defultWeatherType == .Snow ? .blue : .gray
+        button.addTarget(self, action: #selector(handleWeather), for: .touchUpInside)
+        return button
+    }()
+    var defultWeatherType : WeatherType = .Sunny
+    
     // MARK: - Lifecycle
     
     init(user: User, userSelectDate: String, config: UploadDiaryConfiguration, userSelectstate : DiaryType, userSelectDiary: Diary?) {
@@ -106,7 +148,11 @@ class WriteDiaryController: UIViewController{
         self.config = config
         self.userSelectstate = userSelectstate
         self.userSelectDiary = userSelectDiary
-    
+        
+        // 날씨 수정 할때 버튼 색상 지정하기 위함
+        if let selectedWeather = userSelectDiary?.isSelectWeather, let weatherType = WeatherType(rawValue: selectedWeather) {
+            self.defultWeatherType = weatherType
+        }
         super.init(nibName: nil, bundle: nil)
     }   // 사용자 이미지를 가져오기 위해 불필요한 API 요청 할필요가 없음 이전화면에서 이미 사용자 데이터를 호출해 불러왔으니까 받기만 하면 되는 것임
     
@@ -117,11 +163,13 @@ class WriteDiaryController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        
+        print(userSelectDate)
         // 키보드 표시 및 숨김 관찰자 등록
            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
+        // 초기 버튼 색상 업데이트
+ 
     }
     
     
@@ -138,7 +186,7 @@ class WriteDiaryController: UIViewController{
         
         // 메인 스레드에서 실행되도록 DispatchQueue를 사용
         DispatchQueue.main.async {
-            DiaryService.shared.uploadDiary(userSelectDate: self.userSelectDate, caption: caption, type: self.config) { (error, ref) in
+            DiaryService.shared.uploadDiary(userSelectDate: self.userSelectDate, userSelectWeather: self.defultWeatherType.rawValue, caption: caption, type: self.config) { (error, ref) in
                 if let error = error {
                     print("DEBUG: 일기 업로드에 실패했습니다. error \(error.localizedDescription)")
                     return
@@ -186,7 +234,7 @@ class WriteDiaryController: UIViewController{
             if self.userSelectDate == "" {
                 self.userSelectDate = self.userSelectDiary!.userSelectDate
             }
-            DiaryService.shared.updateDiary(diary: self.userSelectDiary, userSelectDate: self.userSelectDate, caption: caption) { (error, ref) in
+            DiaryService.shared.updateDiary(diary: self.userSelectDiary, userSelectDate: self.userSelectDate, userSelectWeather: self.defultWeatherType.rawValue , caption: caption) { (error, ref) in
                 if let error = error {
                     print("DEBUG: 일기 업데이트에 실패했습니다. error \(error.localizedDescription)")
                     return
@@ -198,6 +246,27 @@ class WriteDiaryController: UIViewController{
         }
     }
     
+   
+    @objc private func handleWeather(sender: UIButton) {
+        weatherSunButton.tintColor = sender == weatherSunButton ? .blue : .gray
+        weatherBlurButton.tintColor = sender == weatherBlurButton ? .blue : .gray
+        weatherRainButton.tintColor = sender == weatherRainButton ? .blue : .gray
+        weatherSnowButton.tintColor = sender == weatherSnowButton ? .blue : .gray
+        
+        if sender == weatherSunButton {
+            defultWeatherType = .Sunny
+        } else if sender == weatherBlurButton {
+            defultWeatherType = .Blur
+        } else if sender == weatherRainButton {
+            defultWeatherType = .Rain
+        } else if sender == weatherSnowButton {
+            defultWeatherType = .Snow
+        }
+    
+    }
+
+
+   
     
     // MARK: - API
     
@@ -219,12 +288,28 @@ class WriteDiaryController: UIViewController{
         view.addSubview(captionTextView)
         captionTextView.translatesAutoresizingMaskIntoConstraints = false
         
+        let Weatherstack = UIStackView(arrangedSubviews: [weatherSunButton, weatherBlurButton,weatherRainButton, weatherSnowButton])
+        Weatherstack.axis = .horizontal
+        Weatherstack.distribution = .equalSpacing
+        Weatherstack.spacing = 15
+        Weatherstack.alignment = .center
+        
+        view.addSubview(Weatherstack)
+        Weatherstack.translatesAutoresizingMaskIntoConstraints = false
+        
         // captionTextView 화면에 꽉 채우기
         NSLayoutConstraint.activate([
-            captionTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            Weatherstack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+            Weatherstack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 52),
+            Weatherstack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -52),
+            
+            captionTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 52),
             captionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             captionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             captionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            
+            
         ])
     }
 

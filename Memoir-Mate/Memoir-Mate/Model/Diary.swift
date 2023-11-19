@@ -21,6 +21,7 @@ struct Diary{
     var userSelectDate:String
     var isReply: Bool { return replyingTo != nil } // 답글인지에 따라 누구에게 답글 다는건지 라벨을 표시할지 말지 정하는 속성값
     var isShare: Bool = false
+    var isSelectWeather: String
     // 모델을 조금 더 세분화하면 사용자 없이 트윗이 존재할 수 없습니다.
     // 따라서 모든 트윗은 누군가의 것이어야 합니다.
     init(user: User ,DiaryID: String, dictionary: [String: Any]) {
@@ -31,6 +32,7 @@ struct Diary{
         self.retweetCount = dictionary["retweetCount"] as? Int ?? 0
         self.userSelectDate = dictionary["userSelectDate"] as? String ?? ""
         self.isShare = dictionary["isShare"] as? Bool ?? false
+        self.isSelectWeather = dictionary["userSelectWeather"] as? String ?? "Sunny"
         if let timestamp = dictionary["timestamp"] as? Double {
             self.timestamp = Date(timeIntervalSince1970: timestamp)
         }

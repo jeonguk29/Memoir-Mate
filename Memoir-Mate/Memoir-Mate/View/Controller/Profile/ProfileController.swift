@@ -247,7 +247,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
         let height = viewModel.size(forWidth: view.frame.width).height
         
         // 최대 높이를 400으로 제한
-        let cellHeight = min(height + 100, 400)
+        let cellHeight = max(min(height, 400), 200)
                   
         return CGSize(width: view.frame.width, height: cellHeight)
     }
@@ -319,8 +319,14 @@ extension ProfileController: ProfileHeaderDelegate {
  
     
     func handleDismissal() {
-        navigationController?.popViewController(animated: true)
+        
+        if let navigationController = navigationController {
+            navigationController.popViewController(animated: true)
+        }
+        
+        dismiss(animated: true, completion: nil)
     }
+
 }
 
 
