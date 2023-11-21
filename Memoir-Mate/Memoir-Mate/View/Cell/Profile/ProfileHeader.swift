@@ -121,7 +121,7 @@ class ProfileHeader: UICollectionReusableView {
     // 왜 뷰디드로드가 아니지?
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        backgroundColor = .white
         filterBar.delegate = self
         
         addSubview(containerView)

@@ -101,7 +101,7 @@ class CommunityCell:UICollectionViewCell {
     // 백그라운드 뷰
     lazy var backgroundBorderView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         view.layer.cornerRadius = 20
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -109,11 +109,11 @@ class CommunityCell:UICollectionViewCell {
         view.layer.shadowRadius = 4
         return view
     }()
-
+    
     // 백그라운드 뷰
     private lazy var backgroundContentView: UIView = {
         let view = UIView()
-        //view.backgroundColor = UIColor.white.withAlphaComponent(0.7) // 투명도를 조절하여 원하는 값으로 설정
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.7) // 투명도를 조절하여 원하는 값으로 설정
         view.layer.cornerRadius = 15
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -122,12 +122,14 @@ class CommunityCell:UICollectionViewCell {
         return view
     }()
     
-   
+    
+    
+    
     private let userNickNameLabel: UILabel = {
         let lb = UILabel()
         lb.text = ""
         lb.font = UIFont.systemFont(ofSize: 15)
-        lb.textColor = .white
+        lb.textColor = .black
         lb.adjustsFontSizeToFitWidth = true // 텍스트 사이즈에 맞춰서 표시되도록 설정
         lb.minimumScaleFactor = 0.5 // 최소 스케일 팩터 설정 (0.5는 텍스트 크기의 50%까지 축소)
         lb.translatesAutoresizingMaskIntoConstraints = false
@@ -160,15 +162,15 @@ class CommunityCell:UICollectionViewCell {
     
     lazy var titleView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray4
+        view.backgroundColor = .white
         view.layer.cornerRadius = 15
         view.layer.shadowColor = UIColor.black.cgColor
-//        view.layer.shadowOffset = CGSize(width: 0, height: 2)
-//        view.layer.shadowOpacity = 0.2
-//        view.layer.shadowRadius = 4
+        //        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        //        view.layer.shadowOpacity = 0.2
+        //        view.layer.shadowRadius = 4
         return view
     }()
-
+    
     
     // 추가: 삭제 버튼을 나타내는 UIButton
     private let declarationButton: UIButton = {
@@ -180,6 +182,7 @@ class CommunityCell:UICollectionViewCell {
     }()
     
     
+    // MARK: - Lifecycle
     // MARK: - Lifecycle
     override init(frame:CGRect) {
         super.init(frame: frame)
@@ -209,12 +212,12 @@ class CommunityCell:UICollectionViewCell {
             titleView.leadingAnchor.constraint(equalTo: backgroundBorderView.leadingAnchor),
             titleView.trailingAnchor.constraint(equalTo: backgroundBorderView.trailingAnchor),
             titleView.heightAnchor.constraint(equalToConstant: 50)
-
+            
             
         ])
         
         
-  
+        
         calendarDayLabel.translatesAutoresizingMaskIntoConstraints = false
         // userNickNameLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -222,7 +225,7 @@ class CommunityCell:UICollectionViewCell {
         calendarDayLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         // userNickNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
-    
+        
         titleView.addSubview(profileImageView)
         titleView.addSubview(userNickNameLabel)
         titleView.addSubview(declarationButton)
@@ -241,69 +244,67 @@ class CommunityCell:UICollectionViewCell {
         ])
         
         
-        let leftstack = UIStackView(arrangedSubviews: [weatherImageView,calendarDayLabel, likeButton])
+        let leftstack = UIStackView(arrangedSubviews: [weatherImageView,calendarDayLabel])
         leftstack.axis = .vertical
         leftstack.distribution = .fillProportionally
         leftstack.spacing = 15
         leftstack.alignment = .center
         
-        
         let imageCaptionStack = UIStackView(arrangedSubviews: [leftstack, captionLabel])
         imageCaptionStack.distribution = .fillProportionally
         imageCaptionStack.spacing = 20
         imageCaptionStack.alignment = .top
-
- 
+        
+        
+        //        let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
+        //        stack.axis = .vertical
+        //        stack.distribution = .fillProportionally
+        //        stack.spacing = 12
         
         imageCaptionStack.translatesAutoresizingMaskIntoConstraints = false
         backgroundContentView.addSubview(imageCaptionStack)
         
-//        userNickNameLabel.translatesAutoresizingMaskIntoConstraints = false
-//        backgroundContentView.addSubview(userNickNameLabel)
-//        
         NSLayoutConstraint.activate([
-
+            
             imageCaptionStack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 60),
             imageCaptionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
             imageCaptionStack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             imageCaptionStack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
-                //세로크기를 100
-
+            //세로크기를 100
+            
         ])
-
         
         
         
         infoLabel.font = UIFont.systemFont(ofSize: 14)
-           
         configureMentionHandler()
         
-
         
-       
-
         
-//        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
-//        actionStack.translatesAutoresizingMaskIntoConstraints = false
-//        actionStack.axis = .horizontal
-//        actionStack.spacing = 72
-//        
-//        backgroundContentView.addSubview(actionStack)
-//        let underlineView = UIView()
-//        underlineView.backgroundColor = .systemGroupedBackground
-//        backgroundContentView.addSubview(underlineView)
-//        
-//        // 사용자 프로필 이동
-//        configureMentionHandler()
-//        
-//        NSLayoutConstraint.activate([
-//            
-//            actionStack.centerXAnchor.constraint(equalTo: backgroundContentView.centerXAnchor),
-//            actionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -10), // 원하는 간격 설정
-//            
-//            
-//            
-//        ])
+        
+        
+        
+        //        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
+        //        actionStack.translatesAutoresizingMaskIntoConstraints = false
+        //        actionStack.axis = .horizontal
+        //        actionStack.spacing = 72
+        //
+        //        backgroundContentView.addSubview(actionStack)
+        //        let underlineView = UIView()
+        //        underlineView.backgroundColor = .systemGroupedBackground
+        //        backgroundContentView.addSubview(underlineView)
+        //
+        //        // 사용자 프로필 이동
+        //        configureMentionHandler()
+        //
+        //        NSLayoutConstraint.activate([
+        //
+        //            actionStack.centerXAnchor.constraint(equalTo: backgroundContentView.centerXAnchor),
+        //            actionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -10), // 원하는 간격 설정
+        //
+        //
+        //
+        //        ])
         
         
     }
@@ -390,7 +391,7 @@ class CommunityCell:UICollectionViewCell {
         default:
             weatherImageView.image = UIImage(systemName: "sun.max")
         }
-
+        
         
         
     }
@@ -402,7 +403,7 @@ class CommunityCell:UICollectionViewCell {
         button.setImage(UIImage(named: imageName), for: .normal)
         button.tintColor = .darkGray
         button.setDimensions(width: 20, height: 20)
-        return button
+        return button 
     }
     
     func configureMentionHandler() {

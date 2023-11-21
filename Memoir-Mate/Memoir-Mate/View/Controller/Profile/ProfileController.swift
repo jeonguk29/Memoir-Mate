@@ -11,6 +11,7 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseDatabase
 import GoogleSignIn
+import AVFoundation
 
 private let reuseIdentifier = "DiaryCell"
 private let headerIdentifier = "ProfileHeader"
@@ -51,6 +52,8 @@ class ProfileController: UICollectionViewController{
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
         //그리고 여기에서 Super.init를 호출할 때 이것은 컬렉션이기 때문에 이해하는 것이 매우 중요합니다.
         //컬렉션 뷰 컨트롤러도 초기화해야 합니다.
+        
+       
     }
     
     required init?(coder: NSCoder) {
@@ -59,6 +62,40 @@ class ProfileController: UICollectionViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        
+//        // 비디오 파일 경로를 가져옵니다.
+//        if let videoPath = Bundle.main.path(forResource: "tab2", ofType: "mp4") {
+//            // AVPlayer 인스턴스를 생성합니다.
+//            let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
+//            
+//            // AVPlayerLayer 인스턴스를 생성하고 AVPlayer를 할당합니다.
+//            let playerLayer = AVPlayerLayer(player: player)
+//            playerLayer.frame = view.bounds
+//            playerLayer.videoGravity = .resizeAspectFill
+//            
+//            // 비디오를 보여줄 뷰를 생성합니다.
+//            let videoView = UIView(frame: view.bounds)
+//            videoView.layer.addSublayer(playerLayer)
+//            
+//            // 비디오를 반복 재생합니다.
+//            player.actionAtItemEnd = .none
+//            
+//            // 비디오가 끝났을 때 호출되는 옵저버를 등록합니다.
+//            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: nil) { [weak player] _ in
+//                player?.seek(to: CMTime.zero) // 비디오를 처음으로 되감습니다.
+//                player?.play() // 비디오를 재생합니다.
+//            }
+//            
+//            
+//            player.isMuted = true // 소리 끄기
+//            // 비디오 재생을 시작합니다.
+//            player.play()
+//            
+//            // collectionView의 배경으로 비디오 뷰를 설정합니다.
+//            collectionView.backgroundView = videoView
+//        }
+        
         configureCollectionView()
         fetchDiarys()
         print("DEBUG: User is \(user.username)")
@@ -140,7 +177,7 @@ class ProfileController: UICollectionViewController{
     // MARK: - Helpers
     
     func configureCollectionView() {
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .systemGray6
         collectionView.contentInsetAdjustmentBehavior = .never // 상태 표시줄 지우기
         
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier: reuseIdentifier)

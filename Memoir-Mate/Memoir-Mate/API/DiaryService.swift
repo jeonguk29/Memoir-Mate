@@ -80,6 +80,21 @@ struct DiaryService {
         REF_USER_SHAREDIARYS.child(diaryID).updateChildValues([diaryID : 1], withCompletionBlock: completion)
     }
     
+    func shareClearDiary(diary: Diary?, completion: @escaping(DatabaseCompletion)) {
+        guard let diary = diary else {return}
+        let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
+        let uid = diary.user.uid // diary.user.uid를 옵셔널이 아닌 변수로 선언
+        
+        let timestamp = Int(diary.timestamp.timeIntervalSince1970) // Unix 타임스탬프
+
+        var values = ["uid": uid, "timestamp": timestamp,
+                      "likes": 0, "retweets": 0, "caption": diary.caption, "userSelectDate": diary.userSelectDate, "isShare" : false] as [String: Any]
+        
+        // 파이어 베이스에 일기 업데이트 하기
+        REF_DIARYS.child(diaryID).updateChildValues(values, withCompletionBlock: completion)
+        REF_USER_SHAREDIARYS.child(diaryID).updateChildValues([diaryID : 1], withCompletionBlock: completion)
+    }
+    
     func deleteDiary(diary: Diary?, completion: @escaping(DatabaseCompletion)) {
         guard let diary = diary else {return}
         let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언

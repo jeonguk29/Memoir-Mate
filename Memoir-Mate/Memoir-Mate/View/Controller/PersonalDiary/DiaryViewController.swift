@@ -165,9 +165,24 @@ class DiaryViewController: UICollectionViewController{
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier:DiaryCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
         
         
-        
+        setupRefreshControl()
     }
     
+
+    func setupRefreshControl() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshCollectionView), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+    }
+
+    @objc func refreshCollectionView() {
+        print("새로고침")
+        fetchDiarys() // fetchDiarys() 호출
+        collectionView.refreshControl?.endRefreshing() // 새로고침 완료 후 refreshControl 종료
+    }
+    /*
+     위 코드에서는 setupRefreshControl() 메서드를 추가하여 컬렉션 뷰의 refreshControl을 설정합니다. refreshControl은 아래로 스크롤하여 새로고침을 수행할 때 동작하는 컨트롤입니다. refreshControl이 호출되면 refreshCollectionView() 메서드가 실행되고, 이 메서드에서는 fetchDiarys()를 호출하여 데이터를 새로고침한 후 refreshControl을 종료합니다.
+     */
     
     
     // MARK: - Helpers
@@ -538,7 +553,7 @@ extension DiaryViewController: DiaryCellDelegate {
             
             
             // 비디오 파일 경로를 가져옵니다.
-            if let videoPath = Bundle.main.path(forResource: "back3", ofType: "mp4") {
+            if let videoPath = Bundle.main.path(forResource: "oceanback", ofType: "mp4") {
                 // AVPlayer 인스턴스를 생성합니다.
                 let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
                 
@@ -557,6 +572,8 @@ extension DiaryViewController: DiaryCellDelegate {
                 NotificationCenter.default.addObserver(self, selector: #selector(playerDidReachEnd(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
                 
                 // 비디오 재생을 시작합니다.
+                
+                player.isMuted = true // 소리 끄기
                 player.play()
             }
             
@@ -626,32 +643,66 @@ extension DiaryViewController: DiaryCellDelegate {
     @objc func squareButtonTapped(sharedCell:DiaryCell){
         
         guard let cell = selectedCell else { return }
-        let alertController = UIAlertController(title: "일기 공유", message: "해당 일기를 공유하시겠습니까?", preferredStyle: .alert)
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: nil)
-        
-        let shareAction = UIAlertAction(title: "공유", style: .cancel) { _ in
-            DispatchQueue.main.async {
-                DiaryService.shared.shareDiary(diary: cell.diary) { (error, ref) in
-                    if let error = error {
-                        print("DEBUG: 일기 공유에 실패했습니다. error \(error.localizedDescription)")
-                        return
+        if cell.diary?.isShare == false {
+            let alertController = UIAlertController(title: "일기 공유", message: "해당 일기를 공유하시겠습니까?", preferredStyle: .alert)
+            
+            let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+            
+            let shareAction = UIAlertAction(title: "공유", style: .cancel) { _ in
+                DispatchQueue.main.async {
+                    DiaryService.shared.shareDiary(diary: cell.diary) { (error, ref) in
+                        if let error = error {
+                            print("DEBUG: 일기 공유에 실패했습니다. error \(error.localizedDescription)")
+                            return
+                        }
+                        self.dismiss(animated: true, completion: nil)
+                        self.closeOverlayView()
+                      
                     }
-                    
-                    self.dismiss(animated: true, completion: nil)
-                    self.closeOverlayView()
                 }
             }
+            
+            
+            // "취소" 버튼의 텍스트 색상을 빨간색으로 설정
+            //        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+            // "공유" 버튼의 텍스트 색상을 파란색으로 설정
+            //        shareAction.setValue(UIColor.blue, forKey: "titleTextColor")
+            alertController.addAction(cancelAction)
+            alertController.addAction(shareAction)
+            
+            self.present(alertController, animated: true, completion: nil)
         }
         
-        // "취소" 버튼의 텍스트 색상을 빨간색으로 설정
-        //        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
-        // "공유" 버튼의 텍스트 색상을 파란색으로 설정
-        //        shareAction.setValue(UIColor.blue, forKey: "titleTextColor")
-        alertController.addAction(cancelAction)
-        alertController.addAction(shareAction)
-        
-        present(alertController, animated: true, completion: nil)
+        if cell.diary?.isShare == true{
+            let alertController = UIAlertController(title: "공유 해제", message: "일기 공유를 해제하시겠습니까?", preferredStyle: .alert)
+            
+            let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: nil)
+            
+            let shareAction = UIAlertAction(title: "해제", style: .cancel) { _ in
+                DispatchQueue.main.async {
+                    DiaryService.shared.shareClearDiary(diary: cell.diary) { (error, ref) in
+                        if let error = error {
+                            print("DEBUG: 일기 공유 해제에 실패했습니다. error \(error.localizedDescription)")
+                            return
+                        }
+
+                        self.dismiss(animated: true, completion: nil)
+                        self.closeOverlayView()
+                       
+                    }
+                }
+            }
+            
+            
+            // "취소" 버튼의 텍스트 색상을 빨간색으로 설정
+            //        cancelAction.setValue(UIColor.red, forKey: "titleTextColor")
+            // "공유" 버튼의 텍스트 색상을 파란색으로 설정
+            //        shareAction.setValue(UIColor.blue, forKey: "titleTextColor")
+            alertController.addAction(cancelAction)
+            alertController.addAction(shareAction)
+            
+            self.present(alertController, animated: true, completion: nil)
+        }
     }
     
     
