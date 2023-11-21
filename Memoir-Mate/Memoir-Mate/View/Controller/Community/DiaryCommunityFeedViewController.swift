@@ -243,6 +243,7 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
                 }
             }
             
+            self.checkIfUserLikedDiarys()
             // 날짜 순으로 트윗 정렬
             self.diarys = selectdiarys.sorted(by: { $0.timestamp > $1.timestamp })
             
@@ -253,6 +254,21 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         }
     }
     
+    func checkIfUserLikedDiarys() {
+        // 2. 실제 데이터베이스에 저장된 정보로 모든 트윗을 돌리면서 확인하고 화면에 적용하기 위한 작업
+        
+        // 현제 피드에서 언팔로우를 하고 다시 사용자 검색 화면에서 팔로우 눌렀을때 해당 좋아요 체크부분에서 오류가 나는 것을 해결
+        self.diarys.forEach { diary in
+            DiaryService.shared.checkIfUserLikedDiary(diary) { didLike in
+                guard didLike == true else { return }
+                
+                // 두 인덱스 개수가 맞지 않아서 아래 코드를 작성한 것임
+                if let index = self.diarys.firstIndex(where: { $0.diaryID == diary.diaryID }) {
+                    self.diarys[index].didLike = true
+                }
+            }
+        }
+    }
 
 
 }
@@ -344,7 +360,7 @@ extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
         let height = viewModel.size(forWidth: view.frame.width).height
         
         // 최대 높이를 400으로 제한
-        let cellHeight = max(min(height, 400), 250)
+        let cellHeight = max(min(height, 400), 230)
                   
         return CGSize(width: view.frame.width, height: cellHeight)
     }
@@ -398,7 +414,7 @@ extension DiaryCommunityFeedViewController: CommunityCellDelegate {
          guard var diary = cell.diary else { return }
  //        cell.tweet?.didLike.toggle()
  //        print("DEBUG: Tweet is liked is \(cell.tweet?.didLike)")
-            DiaryService.shared.likeTweet(diary: diary) { (err, ref) in
+            DiaryService.shared.likeDiary(diary: diary) { (err, ref) in
              cell.diary?.didLike.toggle()
              // 셀에 있는 개체를 실제로 업데이트 하는 부분 API호출시 서버먼저 처리하고 여기서 화면 처리를 하는 것임
              let likes = diary.didLike ? diary.likes - 1 : diary.likes + 1

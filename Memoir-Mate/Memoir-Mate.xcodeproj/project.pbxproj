@@ -20,6 +20,8 @@
 		641BDDAD2B00AF75003F81B9 /* EditProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641BDDAC2B00AF75003F81B9 /* EditProfileViewModel.swift */; };
 		641BDDAF2B00AFD2003F81B9 /* EditProfileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641BDDAE2B00AFD2003F81B9 /* EditProfileCell.swift */; };
 		642135632AC3BA1E00E6E02D /* back3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 642135622AC3BA1E00E6E02D /* back3.mp4 */; };
+		6427AB9B2B0B9BD000720002 /* backVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6427AB9A2B0B9BD000720002 /* backVideo.mp4 */; };
+		6427AB9D2B0BA85900720002 /* sky.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6427AB9C2B0BA85900720002 /* sky.mp4 */; };
 		643260D52ADBBA5800A047B1 /* CommentBottomTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643260D42ADBBA5800A047B1 /* CommentBottomTextView.swift */; };
 		6441F8592ACE8ACB000C3FD0 /* CommunityCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */; };
 		645A21B52AFDEA440001D701 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645A21B42AFDEA440001D701 /* RegistrationController.swift */; };
@@ -44,7 +46,6 @@
 		649D948E2AB6EF4A0092BF0D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D948D2AB6EF4A0092BF0D /* User.swift */; };
 		649D94912AB6EFFD0092BF0D /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94902AB6EFFD0092BF0D /* UserService.swift */; };
 		64BE8E372ACFE97D00703410 /* CommunityDiarySelectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */; };
-		64BE8E3B2AD2E67800703410 /* Launch.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 64BE8E3A2AD2E67800703410 /* Launch.mp4 */; };
 		64E0F5362AF9F6DF00122E4A /* ActionSheetLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */; };
 		64E0F5382AF9F73F00122E4A /* DiaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5372AF9F73F00122E4A /* DiaryHeader.swift */; };
 		64E0F53A2AF9F9B100122E4A /* ActionSheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5392AF9F9B100122E4A /* ActionSheetCell.swift */; };
@@ -78,6 +79,8 @@
 		641BDDAC2B00AF75003F81B9 /* EditProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewModel.swift; sourceTree = "<group>"; };
 		641BDDAE2B00AFD2003F81B9 /* EditProfileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileCell.swift; sourceTree = "<group>"; };
 		642135622AC3BA1E00E6E02D /* back3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = back3.mp4; sourceTree = "<group>"; };
+		6427AB9A2B0B9BD000720002 /* backVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = backVideo.mp4; sourceTree = "<group>"; };
+		6427AB9C2B0BA85900720002 /* sky.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sky.mp4; sourceTree = "<group>"; };
 		643260D42ADBBA5800A047B1 /* CommentBottomTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentBottomTextView.swift; sourceTree = "<group>"; };
 		6441F8582ACE8ACB000C3FD0 /* CommunityCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityCell.swift; sourceTree = "<group>"; };
 		645A21B42AFDEA440001D701 /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
@@ -204,6 +207,8 @@
 		649D944F2AB0A5590092BF0D = {
 			isa = PBXGroup;
 			children = (
+				6427AB9C2B0BA85900720002 /* sky.mp4 */,
+				6427AB9A2B0B9BD000720002 /* backVideo.mp4 */,
 				64BE8E3A2AD2E67800703410 /* Launch.mp4 */,
 				642135622AC3BA1E00E6E02D /* back3.mp4 */,
 				649D945A2AB0A5590092BF0D /* Memoir-Mate */,
@@ -428,7 +433,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				64BE8E3B2AD2E67800703410 /* Launch.mp4 in Resources */,
+				6427AB9D2B0BA85900720002 /* sky.mp4 in Resources */,
+				6427AB9B2B0B9BD000720002 /* backVideo.mp4 in Resources */,
 				642135632AC3BA1E00E6E02D /* back3.mp4 in Resources */,
 				649D94682AB0A55B0092BF0D /* LaunchScreen.storyboard in Resources */,
 				649D94742AB192210092BF0D /* GoogleService-Info.plist in Resources */,

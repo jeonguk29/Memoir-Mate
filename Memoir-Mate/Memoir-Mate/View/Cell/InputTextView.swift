@@ -21,7 +21,7 @@ class InputTextView: UITextView {
     let placeholderLabel: UILabel = {
         let label = UILabel()
         //label.font = UIFont.systemFont(ofSize: 16)
-        label.font = UIFont(name: "NanumMuGungHwa", size: 25)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = .darkGray
         label.text = "오늘의 일기를 적어주세요"
         return label
@@ -60,7 +60,7 @@ class InputTextView: UITextView {
             if self.textType == .personal {
                 self.backgroundColor = .white
                 //font = UIFont.systemFont(ofSize: 16)
-                self.font = UIFont(name: "NanumMuGungHwa", size: 25)
+                self.font = UIFont.systemFont(ofSize: 16) //UIFont(name: "NanumMuGungHwa", size: 25)
                 self.isScrollEnabled = true
                 //heightAnchor.constraint(equalToConstant: 600).isActive = true
                 //heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true

@@ -27,8 +27,8 @@ class DiaryCell:UICollectionViewCell {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.clipsToBounds = true
-        iv.setDimensions(width: 42, height: 42)
-        iv.layer.cornerRadius = 42/2
+        iv.setDimensions(width: 39, height: 39)
+        iv.layer.cornerRadius = 39/2
         iv.backgroundColor = .mainColor
         
         // 버튼이 아닌 view 객체를 탭 이벤트 처리하는 방법 : 사용자 프로필 작업하기
@@ -39,23 +39,27 @@ class DiaryCell:UICollectionViewCell {
         
         // 프로필 이미지의 Auto Layout 설정
         iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.widthAnchor.constraint(equalToConstant: 42).isActive = true // 너비 제약 조건 추가
-        iv.heightAnchor.constraint(equalToConstant: 42).isActive = true // 높이 제약 조건 추가
+        iv.widthAnchor.constraint(equalToConstant: 39).isActive = true // 너비 제약 조건 추가
+        iv.heightAnchor.constraint(equalToConstant: 39).isActive = true // 높이 제약 조건 추가
         
         return iv
     }()
     
     private let userNickNameLabel: UILabel = {
         let lb = UILabel()
-        lb.text = "woogie"
+        lb.text = ""
+        lb.font = UIFont.systemFont(ofSize: 15)
+        lb.textColor = .black
         lb.adjustsFontSizeToFitWidth = true // 텍스트 사이즈에 맞춰서 표시되도록 설정
         lb.minimumScaleFactor = 0.5 // 최소 스케일 팩터 설정 (0.5는 텍스트 크기의 50%까지 축소)
+        lb.translatesAutoresizingMaskIntoConstraints = false
         return lb
     }()
     
     private let calendarDayLabel: UILabel = {
         let lb = UILabel()
         lb.text = "15"
+        lb.font = UIFont.systemFont(ofSize: 15)
         lb.font = UIFont.boldSystemFont(ofSize: lb.font.pointSize) // 폰트를 두껍게 설정
         return lb
     }()
@@ -88,7 +92,7 @@ class DiaryCell:UICollectionViewCell {
     
     private let captionLabel: ActiveLabel = {
         let label = ActiveLabel()
-        label.font = UIFont(name: "NanumMuGungHwa", size: 25)
+        label.font = UIFont.systemFont(ofSize: 15)
         label.numberOfLines = 0 // 여러줄 표시 가능 하게
         label.text = "Test caption"
         label.mentionColor = .mainColor
@@ -103,7 +107,7 @@ class DiaryCell:UICollectionViewCell {
     // 백그라운드 뷰
     lazy var backgroundBorderView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .clear
         view.layer.cornerRadius = 20
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -115,7 +119,7 @@ class DiaryCell:UICollectionViewCell {
     // 백그라운드 뷰
     private lazy var backgroundContentView: UIView = {
         let view = UIView()
-        //view.backgroundColor = UIColor.white.withAlphaComponent(0.7) // 투명도를 조절하여 원하는 값으로 설정
+        view.backgroundColor = UIColor.white.withAlphaComponent(0.7) // 투명도를 조절하여 원하는 값으로 설정
         view.layer.cornerRadius = 15
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -124,6 +128,26 @@ class DiaryCell:UICollectionViewCell {
         return view
     }()
     
+    lazy var titleView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 15
+        view.layer.shadowColor = UIColor.black.cgColor
+//        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+//        view.layer.shadowOpacity = 0.2
+//        view.layer.shadowRadius = 4
+        return view
+    }()
+
+    
+    // 추가: 삭제 버튼을 나타내는 UIButton
+    private let declarationButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = .systemGray5
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.addTarget(self, action: #selector(declarationButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     //    // 추가: 삭제 버튼을 나타내는 UIButton
     //    private let deleteButton: UIButton = {
@@ -145,6 +169,8 @@ class DiaryCell:UICollectionViewCell {
         backgroundBorderView.addSubview(backgroundContentView)
         backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
         
+        backgroundBorderView.addSubview(titleView)
+        titleView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             backgroundBorderView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
@@ -156,6 +182,13 @@ class DiaryCell:UICollectionViewCell {
             backgroundContentView.leadingAnchor.constraint(equalTo: backgroundBorderView.leadingAnchor, constant: 6),
             backgroundContentView.trailingAnchor.constraint(equalTo: backgroundBorderView.trailingAnchor, constant: -6),
             backgroundContentView.bottomAnchor.constraint(equalTo: backgroundBorderView.bottomAnchor, constant: -6),
+            
+            titleView.topAnchor.constraint(equalTo: backgroundBorderView.topAnchor),
+            titleView.leadingAnchor.constraint(equalTo: backgroundBorderView.leadingAnchor),
+            titleView.trailingAnchor.constraint(equalTo: backgroundBorderView.trailingAnchor),
+            titleView.heightAnchor.constraint(equalToConstant: 50)
+
+            
         ])
         
         
@@ -167,7 +200,26 @@ class DiaryCell:UICollectionViewCell {
         calendarDayLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         // userNickNameLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
         
-        let leftstack = UIStackView(arrangedSubviews: [profileImageView, weatherImageView,calendarDayLabel])
+    
+        titleView.addSubview(profileImageView)
+        titleView.addSubview(userNickNameLabel)
+        titleView.addSubview(declarationButton)
+        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        userNickNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        declarationButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            profileImageView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: titleView.leadingAnchor, constant: 17),
+            userNickNameLabel.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
+            userNickNameLabel.leadingAnchor.constraint(equalTo: titleView.leadingAnchor, constant: 75),
+            userNickNameLabel.rightAnchor.constraint(equalTo: titleView.rightAnchor, constant: -30),
+            declarationButton.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
+            declarationButton.rightAnchor.constraint(equalTo: titleView.rightAnchor, constant: -20),
+            //세로크기를 100
+        ])
+        
+        
+        let leftstack = UIStackView(arrangedSubviews: [weatherImageView,calendarDayLabel])
         leftstack.axis = .vertical
         leftstack.distribution = .fillProportionally
         leftstack.spacing = 15
@@ -179,20 +231,20 @@ class DiaryCell:UICollectionViewCell {
         imageCaptionStack.alignment = .top
 
         
-        let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
-        stack.axis = .vertical
-        stack.distribution = .fillProportionally
-        stack.spacing = 12
-        
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        backgroundContentView.addSubview(stack)
+//        let stack = UIStackView(arrangedSubviews: [replyLabel, imageCaptionStack])
+//        stack.axis = .vertical
+//        stack.distribution = .fillProportionally
+//        stack.spacing = 12
+  
+        imageCaptionStack.translatesAutoresizingMaskIntoConstraints = false
+        backgroundContentView.addSubview(imageCaptionStack)
       
         NSLayoutConstraint.activate([
 
-                stack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 6),
-                stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
-                stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
-                stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
+            imageCaptionStack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 60),
+            imageCaptionStack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -6),
+            imageCaptionStack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
+            imageCaptionStack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
                 //세로크기를 100
 
         ])
@@ -243,6 +295,10 @@ class DiaryCell:UICollectionViewCell {
         delegate?.handelProfileImageTapped(self)
     }
     
+    @objc func declarationButtonTapped() {
+        
+    }
+    
     
     // 아래 메서드를 추가하여 UILongPressGestureRecognizer를 처리합니다.
     @objc private func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
@@ -282,22 +338,28 @@ class DiaryCell:UICollectionViewCell {
         switch selectedWeather {
         case "Sunny":
             weatherImageView.image = UIImage(systemName: "sun.max")
+            weatherImageView.tintColor = .orange
         case "Blur":
             weatherImageView.image = UIImage(systemName: "cloud")
+            weatherImageView.tintColor = .gray
         case "Rain":
             weatherImageView.image = UIImage(systemName: "cloud.bolt.rain")
+            weatherImageView.tintColor = .lightGray
         case "Snow":
             weatherImageView.image = UIImage(systemName: "cloud.snow")
+            weatherImageView.tintColor = .mainColor
         default:
             weatherImageView.image = UIImage(systemName: "sun.max")
         }
 
+        userNickNameLabel.text = diary.user.userNickName
         
         profileImageView.sd_setImage(with: viewModel.profileImageUrl)
         infoLabel.attributedText = viewModel.userInfoText
         
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
+        
         
     }
     

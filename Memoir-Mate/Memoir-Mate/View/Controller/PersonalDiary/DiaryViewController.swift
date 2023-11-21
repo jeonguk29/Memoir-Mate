@@ -233,15 +233,51 @@ class DiaryViewController: UICollectionViewController{
         present(navigationController, animated: true, completion: nil)
     }
     
+   
+    
+
     private func setupAutoLayout() {
         
         
+        // 비디오 파일 경로를 가져옵니다.
+           if let videoPath = Bundle.main.path(forResource: "sky", ofType: "mp4") {
+               // AVPlayer 인스턴스를 생성합니다.
+               let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
+               
+               // AVPlayerLayer 인스턴스를 생성하고 AVPlayer를 할당합니다.
+               let playerLayer = AVPlayerLayer(player: player)
+               playerLayer.frame = view.bounds
+               playerLayer.videoGravity = .resizeAspectFill
+               
+               // 비디오를 보여줄 뷰를 생성합니다.
+               let videoView = UIView(frame: view.bounds)
+               videoView.layer.addSublayer(playerLayer)
+               
+               // 비디오를 반복 재생합니다.
+               player.actionAtItemEnd = .none
+               
+               // 비디오가 끝났을 때 호출되는 옵저버를 등록합니다.
+               NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: nil) { [weak player] _ in
+                   player?.seek(to: CMTime.zero) // 비디오를 처음으로 되감습니다.
+                   player?.play() // 비디오를 재생합니다.
+               }
+                      
+               
+               player.isMuted = true
+               // 비디오 재생을 시작합니다.
+               player.play()
+               
+               // collectionView의 배경으로 비디오 뷰를 설정합니다.
+               collectionView.backgroundView = videoView
+           }
+       
+
         
         // 배경 이미지 설정
-        let backgroundImage = UIImage(named: "back")
-        let backgroundImageView = UIImageView(image: backgroundImage)
-        backgroundImageView.contentMode = .scaleAspectFill
-        collectionView.backgroundView = backgroundImageView
+//        let backgroundImage = UIImage(named: "back3")
+//        let backgroundImageView = UIImageView(image: backgroundImage)
+//        backgroundImageView.contentMode = .scaleAspectFill
+//        collectionView.backgroundView = backgroundImageView
         
         
         view.addSubview(calendarView)

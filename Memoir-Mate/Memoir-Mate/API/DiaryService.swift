@@ -254,7 +254,7 @@ struct DiaryService {
 
        }
     
-    func likeTweet(diary: Diary, completion: @escaping(DatabaseCompletion)) {
+    func likeDiary(diary: Diary, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
         // 좋아요 누르면 카운트 증감
@@ -277,7 +277,7 @@ struct DiaryService {
         }
     }
     
-    func checkIfUserLikedTweet(_ diary: Diary, completion: @escaping(Bool) -> Void) {
+    func checkIfUserLikedDiary(_ diary: Diary, completion: @escaping(Bool) -> Void) {
          guard let uid = Auth.auth().currentUser?.uid else { return }
 
          REF_USER_LIKES.child(uid).child(diary.diaryID).observeSingleEvent(of: .value) { snapshot in

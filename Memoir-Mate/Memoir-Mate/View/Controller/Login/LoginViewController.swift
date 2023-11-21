@@ -10,6 +10,7 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseDatabase
 import UIKit
+import AuthenticationServices
 
 class LoginViewController: UIViewController {
     
@@ -32,6 +33,10 @@ class LoginViewController: UIViewController {
         button.addTarget(self, action: #selector(handleGoogleLogin), for: .touchUpInside)
         return button
     }()
+    
+    
+    
+    //애플 로그인
     
     @objc func handleGoogleLogin(){
         print("로그인 버튼 클릭")
