@@ -24,8 +24,14 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     }
     
   
-    private var diarys = [Diary]() {
-        didSet {collectionView.reloadData()}
+    private var diarys = [Diary]() 
+    {
+        //diarys 배열이 변경되어 collectionView.reloadData()가 호출될 때 깜빡임 없이 자연스럽게 화면 갱신
+        didSet {
+             UIView.transition(with: collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
+                 self.collectionView.reloadData()
+             }, completion: nil)
+         }
     }
     
     
@@ -76,6 +82,11 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         // 즉, 사용자가 화면을 아래로 스크롤하면 (스와이프하면) 네비게이션 바가 자동으로 사라지고, 다시 위로 스크롤하면 (스와이프하면) 네비게이션 바가 다시 나타납니다.
         navigationController?.hidesBarsOnSwipe = true
         
+        
+        // 처음 화면 보일때
+        fetchDiarys()
+        
+        
         // UIScrollView의 delegate 설정
         //ScrollView.delegate = self // 여기서 "yourScrollView"는 스크롤뷰의 변수명입니다. 스토리보드에서 스크롤 뷰와 연결해야 합니다.
         
@@ -115,13 +126,27 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         formatter.dateFormat = "yyyy-MM-dd"
         selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
         
-        fetchDiarys()
         
         collectionView.register(CommunityCell.self, forCellWithReuseIdentifier:CommunityCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
         
-        
+        // 피드 새로고침 가능하게 새로고침시 트윗 다시 보여주기 : 팔로우 취소한 사람 트윗에 대하여, 팔로우 했을때는 새 노드가 추가될 때마다 감시 대기하는 데이터베이스 구조에 수신기가 있기 때문에 바로바로 적용 됨 피드에
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+     
     }
     
+    // MARK: - Selectors
+     @objc func handleRefresh() {
+         fetchDiarys()
+     }
+    
+//    // viewWillAppear에서 실행해 화면이 보여질때 새로고침 되는 것을 방지
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        fetchDiarys()
+//        //self.checkIfUserLikedDiarys() // 좋아요 상태 확인() // 화면이 나타나기 직전에 fetchDiarys()를 호출하여 데이터를 새로고침합니다.
+//    }
     
     
     // MARK: - Helpers
@@ -263,44 +288,53 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     
   
     
-    
-    // MARK: - API
     func fetchDiarys() {
+        collectionView.refreshControl?.beginRefreshing() // 새로고침 컨트롤러 추가
+
         DiaryService.shared.communityFatchDiarys { diarys in
-            var selectdiarys = [Diary]() // 선택된 날짜의 일기를 담을 배열 생성
+            var communityDiarys = [Diary]() // 공유된 다이어리를 담을 배열 생성
+            var selectDiarys = [Diary]() // 선택된 날짜의 다이어리를 담을 배열 생성
             
-            for selectdiary in diarys {
-                if selectdiary.userSelectDate == self.selectDate { // 오늘 날짜와 선택된 날짜가 같은 경우에만 추가
-                    selectdiarys.append(selectdiary)
+            for diary in diarys {
+                if diary.isShare { // isShare가 true인 경우에만 추가
+                    communityDiarys.append(diary)
                 }
             }
             
-            self.checkIfUserLikedDiarys()
-            // 날짜 순으로 트윗 정렬
-            self.diarys = selectdiarys.sorted(by: { $0.timestamp > $1.timestamp })
-            
-            // 업데이트된 데이터를 반영하기 위해 collectionView를 업데이트
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
+            // 같은 날짜의 일기만 선택
+            selectDiarys = communityDiarys.filter {
+                $0.userSelectDate == self.selectDate
             }
+            
+            // 좋아요 상태 확인 및 적용
+            self.checkIfUserLikedDiary(selectDiarys)
+            
+            // 날짜 순으로 정렬
+            selectDiarys.sort(by: { $0.timestamp > $1.timestamp })
+            
+            self.diarys = selectDiarys
+            self.collectionView.refreshControl?.endRefreshing()
         }
     }
-    
-    func checkIfUserLikedDiarys() {
-        // 2. 실제 데이터베이스에 저장된 정보로 모든 트윗을 돌리면서 확인하고 화면에 적용하기 위한 작업
-        
-        // 현제 피드에서 언팔로우를 하고 다시 사용자 검색 화면에서 팔로우 눌렀을때 해당 좋아요 체크부분에서 오류가 나는 것을 해결
-        self.diarys.forEach { diary in
+
+    func checkIfUserLikedDiary(_ diarys: [Diary]) {
+        diarys.forEach { diary in
             DiaryService.shared.checkIfUserLikedDiary(diary) { didLike in
                 guard didLike == true else { return }
-                
-                // 두 인덱스 개수가 맞지 않아서 아래 코드를 작성한 것임
                 if let index = self.diarys.firstIndex(where: { $0.diaryID == diary.diaryID }) {
                     self.diarys[index].didLike = true
                 }
             }
         }
     }
+    
+    // 한번만    self.diarys = selectDiarys 변경될때 리로드 되도록 바꾸자 didSet 금지 시켜야 새로고침해야 값받을 수 있음
+
+ 
+   
+
+    
+ 
 
 
 }

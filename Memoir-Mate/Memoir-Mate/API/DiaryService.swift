@@ -128,16 +128,26 @@ struct DiaryService {
     func communityFatchDiarys(completion: @escaping([Diary]) -> Void){
         var diarys = [Diary]()
         
-        REF_USER_SHAREDIARYS.observe(.childAdded) { snapshot in
-            let diaryID = snapshot.key
-            
-            self.fetchDiary(with: diaryID) { diary in
-                diarys.append(diary)
+        REF_USER_SHAREDIARYS.observeSingleEvent(of: .value) { snapshot in
+            guard let snapshotValue = snapshot.value as? [String: Any] else {
                 completion(diarys)
+                return
+            }
+            
+            let diaryIDs = Array(snapshotValue.keys)
+            
+            diaryIDs.forEach { diaryID in
+                self.fetchDiary(with: diaryID) { diary in
+                    diarys.append(diary)
+                    
+                    if diarys.count == diaryIDs.count {
+                        completion(diarys)
+                    }
+                }
             }
         }
     }
-    
+
     // 일기 댓글 남기는 메서드
     func diaryComment(diary: Diary?, caption: String, completion: @escaping(DatabaseCompletion)){
         

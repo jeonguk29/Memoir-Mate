@@ -263,7 +263,8 @@ class CommunityCell:UICollectionViewCell {
         
         imageCaptionStack.translatesAutoresizingMaskIntoConstraints = false
         backgroundContentView.addSubview(imageCaptionStack)
-        
+        likeButton.translatesAutoresizingMaskIntoConstraints = false
+        backgroundContentView.addSubview(likeButton)
         NSLayoutConstraint.activate([
             
             imageCaptionStack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 60),
@@ -272,6 +273,8 @@ class CommunityCell:UICollectionViewCell {
             imageCaptionStack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             //세로크기를 100
             
+            likeButton.topAnchor.constraint(equalTo: leftstack.bottomAnchor, constant: 15),
+            likeButton.leadingAnchor.constraint(equalTo: leftstack.leadingAnchor, constant: 10),
         ])
         
         
