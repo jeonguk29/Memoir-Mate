@@ -5,8 +5,8 @@ class CommentBottomTextView: UITextView {
     // MARK: - Properties
     let placeholderLabel: UILabel = {
         let label = UILabel()
-        //label.font = UIFont.systemFont(ofSize: 16)
-        label.font = UIFont(name: "NanumMuGungHwa", size: 25)
+        label.font = UIFont.systemFont(ofSize: 16)
+        //label.font = UIFont(name: "NanumMuGungHwa", size: 25)
         label.textColor = .darkGray
         label.text = "댓글을 적어주세요"
         return label
@@ -32,8 +32,8 @@ class CommentBottomTextView: UITextView {
             
             
             self.backgroundColor = .white
-            //font = UIFont.systemFont(ofSize: 16)
-            self.font = UIFont(name: "NanumMuGungHwa", size: 25)
+            font = UIFont.systemFont(ofSize: 16)
+            //self.font = UIFont(name: "NanumMuGungHwa", size: 25)
             self.isScrollEnabled = true
             //heightAnchor.constraint(equalToConstant: 600).isActive = true
             //heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height).isActive = true

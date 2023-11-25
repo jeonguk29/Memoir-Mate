@@ -103,7 +103,7 @@ class InputTextView: UITextView {
         
             if self.textType == .community {
                 self.backgroundColor = .white
-                self.font = UIFont(name: "NanumMuGungHwa", size: 25)
+                self.font = UIFont.systemFont(ofSize: 16)
                 self.isScrollEnabled = true
                 self.isEditable = false // 편집 불가능하도록 설정
         

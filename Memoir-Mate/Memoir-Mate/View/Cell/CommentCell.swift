@@ -66,36 +66,34 @@ class CommentCell:UICollectionViewCell {
         return label
     }()
     
-    private let infoLabel = UILabel()
+    private let userNickNameLabel = UILabel()
     
-    private lazy var commentButton: UIButton = {
-        let button = createButton(withImageName: "comment")
-        button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
+    
+    private lazy var backgroundContentView: UIView = {
+        let view = UIView()
+        //view.backgroundColor = UIColor.white.withAlphaComponent(0.7) // 투명도를 조절하여 원하는 값으로 설정
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 15
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowRadius = 4
+        return view
+    }()
+    
+    private let declarationButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = .systemGray5
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.addTarget(self, action: #selector(declarationButtonTapped), for: .touchUpInside)
         return button
     }()
     
-    private lazy var likeButton: UIButton = {
-        let button = createButton(withImageName: "like")
-        button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var backgroundContentView: UIView = {
-         let view = UIView()
-         view.backgroundColor = .white
-         //view.layer.cornerRadius = 20 // 원하는 값을 지정하여 둥글게 만듭니다.
-         //view.layer.shadowColor = UIColor.black.cgColor
-         //view.layer.shadowOffset = CGSize(width: 0, height: 2)
-         //view.layer.shadowOpacity = 0.2
-        // view.layer.shadowRadius = 4
-         return view
-     }()
 
      
      // MARK: - Lifecycle
      override init(frame:CGRect) {
          super.init(frame: frame)
-         backgroundColor = .clear
          
          addSubview(backgroundContentView) // 백그라운드 뷰를 가장 처음에 추가
          backgroundContentView.translatesAutoresizingMaskIntoConstraints = false
@@ -103,76 +101,55 @@ class CommentCell:UICollectionViewCell {
          
          
          NSLayoutConstraint.activate([
-             backgroundContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: 1),
-             backgroundContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 1),
-             backgroundContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -1),
-             backgroundContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -1),
+             backgroundContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+             backgroundContentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 8),
+             backgroundContentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -8),
+             backgroundContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5),
              
          ])
          
          profileImageView.translatesAutoresizingMaskIntoConstraints = false
-         infoLabel.translatesAutoresizingMaskIntoConstraints = false
-         replyLabel.translatesAutoresizingMaskIntoConstraints = false
+         userNickNameLabel.translatesAutoresizingMaskIntoConstraints = false
+         //replyLabel.translatesAutoresizingMaskIntoConstraints = false
          captionLabel.translatesAutoresizingMaskIntoConstraints = false
          
          
-         let imageCaptionStack = UIStackView(arrangedSubviews: [infoLabel, replyLabel])
-         imageCaptionStack.axis = .horizontal
-         imageCaptionStack.distribution = .fillProportionally
+         let profileStack = UIStackView(arrangedSubviews: [profileImageView, userNickNameLabel, replyLabel])
+         profileStack.distribution = .fillProportionally
          //imageCaptionStack.distribution = .fillProportionally
-         imageCaptionStack.spacing = 12
-         imageCaptionStack.alignment = .center
-         imageCaptionStack.translatesAutoresizingMaskIntoConstraints = false
+         profileStack.spacing = 12
+         profileStack.alignment = .center
+         profileStack.translatesAutoresizingMaskIntoConstraints = false
          
-         let separatorView = UIView()
-         separatorView.backgroundColor = .systemGray // 구분선의 색상 설정
-         separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이 설정
+    
          
-         
-         
-         let stack = UIStackView(arrangedSubviews: [captionLabel, separatorView]) // 구분선을 stack에 추가
+         let stack = UIStackView(arrangedSubviews: [profileStack, captionLabel]) // 구분선을 stack에 추가
          stack.axis = .vertical
          stack.distribution = .fillProportionally
          stack.spacing = 1
          
-         
-         stack.translatesAutoresizingMaskIntoConstraints = false
-         
-         backgroundContentView.addSubview(imageCaptionStack)
          backgroundContentView.addSubview(stack) // 다른 요소들을 백그라운드 뷰 위에 추가
-         backgroundContentView.addSubview(profileImageView) // 다른 요소들을 백그라운드 뷰 위에 추가
+         stack.translatesAutoresizingMaskIntoConstraints = false
+      
+         backgroundContentView.addSubview(declarationButton)
+         declarationButton.translatesAutoresizingMaskIntoConstraints = false
          
          
-        
          NSLayoutConstraint.activate([
-             // 스택뷰에 감쌓은 요소 하나를 우측으로 밀어, 빈 공간에 프로필 사진 넣어서 오토레이아웃 충돌 문제를 해결
-
-             imageCaptionStack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor),
-             imageCaptionStack.leadingAnchor.constraint(equalTo: backgroundContentView.leadingAnchor, constant: 63),
-             // imageCaptionStack의 높이 제약 조건 추가
-             // imageCaptionStack.heightAnchor.constraint(equalToConstant: 32),
-
-             
-             
-             profileImageView.topAnchor.constraint(equalTo: backgroundContentView.topAnchor),
-             profileImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 25),
-             profileImageView.bottomAnchor.constraint(equalTo: stack.topAnchor, constant: -1),
-             
-             
-             stack.topAnchor.constraint(equalTo: imageCaptionStack.bottomAnchor, constant: 3),
-             stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor),
-             stack.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
-             stack.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
-             //세로크기를 100
-             
- //            separatorView2.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 3), // stack 바로 아래에 위치하도록 설정
- //            separatorView2.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
- //            separatorView2.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
- //
+            
+            stack.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 1),
+            stack.leadingAnchor.constraint(equalTo: backgroundContentView.leadingAnchor, constant: 10),
+            stack.trailingAnchor.constraint(equalTo: backgroundContentView.trailingAnchor, constant: -10),
+            stack.bottomAnchor.constraint(equalTo: backgroundContentView.bottomAnchor, constant: -10),
+            
+      
+            declarationButton.topAnchor.constraint(equalTo: backgroundContentView.topAnchor, constant: 18),
+            declarationButton.trailingAnchor.constraint(equalTo: backgroundContentView.trailingAnchor, constant: -20),
+            
          ])
          
          
-         infoLabel.font = UIFont.systemFont(ofSize: 14)
+        userNickNameLabel.font = UIFont.systemFont(ofSize: 14)
    
          // 사용자 프로필 이동
          configureMentionHandler()
@@ -210,6 +187,9 @@ class CommentCell:UICollectionViewCell {
         
     }
     
+    @objc func declarationButtonTapped() {
+        
+    }
     
     
     // MARK: - Helpers
@@ -224,10 +204,8 @@ class CommentCell:UICollectionViewCell {
         //print("DEBUG: Tweet user is \(tweet.user.username)")// 해당 트윗을 남긴 사용자의 이름 출력
         
         profileImageView.sd_setImage(with: viewModel.profileImageUrl)
-        infoLabel.attributedText = viewModel.userInfoText
-        likeButton.tintColor = viewModel.likeButtonTintColor
-        likeButton.setImage(viewModel.likeButtonImage, for: .normal)
-        
+        //userNickNameLabel.text = viewModel.user.userNickName
+        userNickNameLabel.attributedText = viewModel.userInfoText
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
     }

@@ -144,6 +144,9 @@ class CommentFeedViewController: UICollectionViewController{
     // MARK: - Helpers
     // 'comentView' UI 구성
     func configureCommentView() {
+    
+        collectionView.backgroundColor = .systemGray6
+        
         comentView.backgroundColor = .white
         comentView.layer.cornerRadius = 20
         comentView.layer.shadowColor = UIColor.black.cgColor
@@ -251,7 +254,7 @@ class CommentFeedViewController: UICollectionViewController{
             var selectdiarys = [Diary]() // 선택된 날짜의 일기를 담을 배열 생성
             
             // 최신 댓글이 가장 아래로 내려가도록 정렬
-            self.comments = diarys.sorted(by: { $0.timestamp < $1.timestamp })
+            self.comments = diarys.sorted(by: { $0.timestamp > $1.timestamp })
             // 업데이트된 데이터를 반영하기 위해 collectionView를 업데이트
             print(self.comments)
             DispatchQueue.main.async {
@@ -291,6 +294,8 @@ extension CommentFeedViewController {
         
         return cell
     }
+    
+    
 }
 
 extension CommentFeedViewController : commentCellDelegate{
@@ -318,28 +323,42 @@ extension CommentFeedViewController: UICollectionViewDelegateFlowLayout {
     
     // 각 셀의 크기를 지정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        //동적 셀 크기 조정
-        guard let diary = comments[indexPath.row] else { return CGSize(width: 0, height: 0)}
+        guard let diary = comments[indexPath.row] else { return CGSize(width: 0, height: 0) }
         let viewModel = DiaryViewModel(diary: diary)
         let height = viewModel.size(forWidth: view.frame.width).height
         
         // 최대 높이를 400으로 제한
         let cellHeight = min(height + 80, 300)
         
+        
+//        print(" cell 테스트 \(indexPath.row)")
+//        print(" cell 테스트 \(comments.count - 1)")
+//        // 마지막 셀인 경우
+//        if indexPath.row == comments.count - 1 {
+//            let bottomSpacing: CGFloat = 50
+//            let collectionViewHeight = collectionView.bounds.size.height
+//            let contentHeight = collectionView.contentSize.height
+//            let maxContentOffsetY = contentHeight - collectionViewHeight
+//            
+//     
+//            return CGSize(width: view.frame.width, height: cellHeight + bottomSpacing)
+//           
+//        }
+        
         return CGSize(width: view.frame.width, height: cellHeight)
     }
     
-    // 각 섹션의 여백을 지정 (달력 때문에 일기 안보임 현상을 방지)
+
+    // 섹션개념을 가지고 여백을 줘서 텍스트 박스 가려지지 않게 적용
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         if section == 0 { // 첫 번째 섹션인 경우
-            return UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
-        } else if section == collectionView.numberOfSections - 1 { // 마지막 섹션인 경우
-            return UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
-        } else {
-            return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
+            return UIEdgeInsets(top: 55, left: 0, bottom: 80, right: 0)
         }
+        
+        return UIEdgeInsets.zero // 나머지 섹션은 여백 없음
     }
+    
+  
     
     
     
@@ -397,6 +416,7 @@ extension CommentFeedViewController: UITextViewDelegate {
 
     
 }
+
 
 
 //

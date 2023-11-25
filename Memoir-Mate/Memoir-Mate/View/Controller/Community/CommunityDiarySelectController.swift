@@ -64,29 +64,29 @@ class CommunityDiarySelectController: UIViewController{
     
     
     private lazy var commentButton: UIButton = {
-        let button = createButton(withImageName: "comment")
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "message"), for: .normal)
+        button.tintColor = .darkGray
+        button.backgroundColor = .white
+        button.setDimensions(width: 42, height: 42)
+        button.layer.cornerRadius = 42 / 2
+        button.layer.shadowColor = UIColor.gray.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 1
+        button.clipsToBounds = false
         button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
         return button
     }()
     
-    private lazy var retweetButton: UIButton = {
-        let button = createButton(withImageName: "retweet")
-        button.addTarget(self, action: #selector(handleRetweetTapped), for: .touchUpInside)
-        return button
-    }()
+  
     
     private lazy var likeButton: UIButton = {
         let button = createButton(withImageName: "like")
         button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
         return button
     }()
-    
-    private lazy var shareButton: UIButton = {
-        let button = createButton(withImageName: "share")
-        button.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
-        return button
-    }()
-    
+
     
     
     
@@ -211,44 +211,54 @@ class CommunityDiarySelectController: UIViewController{
         captionTextView.translatesAutoresizingMaskIntoConstraints = false
         configureNavigationBar()
         
-       
-       
+        contentView.addSubview(commentButton)
+        commentButton.translatesAutoresizingMaskIntoConstraints = false
         
+        
+       
+       
+        // 삭제 예정 11월 25일
         // 액션 버튼과의 구분선
-        let separatorView = UIView()
-        separatorView.backgroundColor = .gray // 구분선의 색상 설정
-        separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(separatorView)
+//        let separatorView = UIView()
+//        separatorView.backgroundColor = .gray // 구분선의 색상 설정
+//        separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true // 구분선의 높이
+//        separatorView.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(separatorView)
         
         
-        
+ 
         NSLayoutConstraint.activate([
             
             captionTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             captionTextView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             captionTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            captionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            captionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            separatorView.topAnchor.constraint(equalTo: captionTextView.bottomAnchor, constant: 1),
-            separatorView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            separatorView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            commentButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
+            commentButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
         ])
-        
-        
-        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
-        actionStack.translatesAutoresizingMaskIntoConstraints = false
-        actionStack.axis = .horizontal
-        actionStack.spacing = 72
-        contentView.addSubview(actionStack)
-
-        NSLayoutConstraint.activate([
-            actionStack.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 10),
-            actionStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            actionStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-
             
-        ])
+            // 삭제 예정 11월 25일
+//            separatorView.topAnchor.constraint(equalTo: captionTextView.bottomAnchor, constant: 1),
+//            separatorView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+//            separatorView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+//        ])
+        
+
+//        let actionStack = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
+//        actionStack.translatesAutoresizingMaskIntoConstraints = false
+//        actionStack.axis = .horizontal
+//        actionStack.spacing = 72
+//        contentView.addSubview(actionStack)
+//
+//        NSLayoutConstraint.activate([
+//            actionStack.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 10),
+//            actionStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+//            actionStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+//
+//            
+//        ])
     }
     
     func configureNavigationBar(){

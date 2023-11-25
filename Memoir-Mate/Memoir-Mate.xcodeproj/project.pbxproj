@@ -263,7 +263,6 @@
 		649D94752AB19C280092BF0D /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				649D948D2AB6EF4A0092BF0D /* User.swift */,
 				64FA49EE2AB7DF0B0007A263 /* Diary.swift */,
 				64E0F53D2AF9FF8900122E4A /* Notification.swift */,
 			);
@@ -274,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				64FA49EC2AB7DDD90007A263 /* UploadDiaryViewModel.swift */,
+				649D948D2AB6EF4A0092BF0D /* User.swift */,
 				64FA49F22AB815170007A263 /* DiaryViewModel.swift */,
 				640168782AF2151200CBE131 /* ProfileHeaderViewModel.swift */,
 				64E0F53B2AF9F9D700122E4A /* ActionSheetViewModel.swift */,

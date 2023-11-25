@@ -63,12 +63,12 @@ struct DiaryViewModel {
     
     // 트윗 셀에서 작성하는 대신 원하는 효과를 여기 뷰모델에서 얻을수 있음 큐 클래스를 깨끗하게 유지할 수 있음
     var userInfoText: NSAttributedString {
-        let title = NSMutableAttributedString(string: user.email, attributes: [.font : UIFont.boldSystemFont(ofSize: 14)])
+        let title = NSMutableAttributedString(string: user.userNickName, attributes: [.font : UIFont.boldSystemFont(ofSize: 14)])
         
-        title.append(NSAttributedString(string: " @\(user.username)",
-                                        attributes: [.font : UIFont.boldSystemFont(ofSize: 14),
-                                                     .foregroundColor: UIColor.lightGray]))
-        
+//        title.append(NSAttributedString(string: " @\(user.username)",
+//                                        attributes: [.font : UIFont.boldSystemFont(ofSize: 14),
+//                                                     .foregroundColor: UIColor.lightGray]))
+//        
         title.append(NSAttributedString(string: " ・ \(timestamp)",
                                         attributes: [.font : UIFont.boldSystemFont(ofSize: 14),
                                                      .foregroundColor: UIColor.lightGray]))
