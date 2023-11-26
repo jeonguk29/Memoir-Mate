@@ -135,7 +135,7 @@ class CommunityDiarySelectController: UIViewController{
             present(commentFeedVC, animated: true, completion: nil)
         
         commentFeedVC.selectDiary = userSelectDiary
-     
+        
     }
     
     @objc func handleRetweetTapped(){

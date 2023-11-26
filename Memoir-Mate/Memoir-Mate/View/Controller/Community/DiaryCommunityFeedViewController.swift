@@ -189,6 +189,19 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     }
     
     
+    @objc func handleProfileImageTap() {
+        guard let user = user else { return }
+        
+        let controller = ProfileController(user: user)
+        controller.navigationItem.setHidesBackButton(true, animated: false) // "Back" 버튼 숨김
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.modalPresentationStyle = .fullScreen // 모달 스타일을 Full Screen으로 설정
+        
+        present(navigationController, animated: true, completion: nil)
+    }
+    
+    
     private func setupAutoLayout() {
         
         // 비디오 파일 경로를 가져옵니다.
@@ -266,7 +279,11 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         profileImageView.layer.cornerRadius = 32 / 2
         profileImageView.layer.masksToBounds = true
         profileImageView.sd_setImage(with: user!.photoURLString , completed: nil)
+        // 피드에서 자신의 프로파일 이미지 누를시 사용자 프로필로 이동
+        profileImageView.isUserInteractionEnabled = true // 이미지 뷰는 기본으로 false로 설정이라 해줘야함 터치 인식 가능하게
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleProfileImageTap))
+        profileImageView.addGestureRecognizer(tap)
           
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)

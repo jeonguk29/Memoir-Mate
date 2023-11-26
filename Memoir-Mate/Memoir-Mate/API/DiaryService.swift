@@ -149,22 +149,44 @@ struct DiaryService {
     }
 
     // 일기 댓글 남기는 메서드
-    func diaryComment(diary: Diary?, caption: String, completion: @escaping(DatabaseCompletion)){
+    func diaryComment(user : User? ,diary: Diary?, type: UploadDiaryConfiguration ,caption: String, completion: @escaping(DatabaseCompletion)){
         
-//        guard let uid = Auth.auth().currentUser?.uid else {return}
+        //        guard let uid = Auth.auth().currentUser?.uid else {return}
         guard let diary = diary else {return}
         let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
         guard let uid = Auth.auth().currentUser?.uid else {return}
         // 누가 트윗을 남겼는지 uid를 저장해줘야함
-        
+        var replyingTo = diary.user.username
         let values = ["uid": uid, "timestamp" : Int(NSDate().timeIntervalSince1970),
-                      "likes": 0, "retweets": 0, "caption": caption] as [String: Any]
-    
+                      "likes": 0, "retweets": 0, "caption": caption, "replyingTo" : replyingTo] as [String: Any]
         
-        REF_DIARY_Comments.child(diaryID).childByAutoId().updateChildValues(values)
+     
+        guard let user = user else {return}
+        
+        REF_DIARY_Comments.child(diaryID).childByAutoId().updateChildValues(values){ (err, ref) in
+            guard let replyKey = ref.key else { return }
+            // 사용자가 답글을 단 트윗을 저장하기 위함
+            // 트윗 남길때 현제 사용자 uid를 id 값으로 하위 구조는 상대방 트윗 id가 키 : 그의 대한 값으로 답글 남긴 트윗 id를 전달
+            
+            REF_USER_Comments.child(uid).updateChildValues([diary.diaryID: replyKey],
+                                                           withCompletionBlock: completion)
+            
+         
+            //현제 사용자가 남기는 댓글이 아닐때만 댓글 알림 보내기
+       
+            if diary.user.userID != user.userID{
+                NotificationService.shared.uploadNotification(toUser: diary.user,
+                                                              type: .reply,
+                                                              diaryID: diary.diaryID)
+            }
+           
+            
+            
+        }
     }
       
-    // 일기 댓글 가져오는 메서드
+               
+
     
     func fetchDiaryComment(with diaryID: String, completion: @escaping([Diary]) -> Void) {
         var diarys = [Diary]()
@@ -230,9 +252,9 @@ struct DiaryService {
             guard let uid = dictionary["uid"] as? String else { return }
             
             UserService.shared.fetchUser(uid: uid) { user in
-                print("fetchDiary 일기 \(user)")
+                //print("fetchDiary 일기 \(user)")
                 let diary = Diary(user: user, DiaryID: diaryID, dictionary: dictionary)
-                print("fetchDiary 일기 \(diary)")
+                //print("fetchDiary 일기 \(diary)")
                 completion(diary)
             }
         }

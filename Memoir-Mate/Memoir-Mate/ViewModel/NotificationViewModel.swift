@@ -29,8 +29,8 @@ struct NotificationViewModel {
         switch type {
 
         case .follow: return "님이 당신을 팔로우 하기 시작했습니다."
-        case .like: return "님이 당신의 트윗을 좋아합니다."
-        case .reply: return "님이 당신의 트윗에 답장했습니다."
+        case .like: return "님이 당신의 일기을 좋아합니다."
+        case .reply: return "님이 당신의 일기에 댓글을 남겼습니다."
         case .retweet: return "님이 당신의 트윗을 리트윗했습니다"
         case .mention: return "님이 트윗에서 당신을 언급했습니다"
         }
@@ -40,7 +40,7 @@ struct NotificationViewModel {
     var notificationText: NSAttributedString? {
         guard let timestamp = timestampString else { return nil}
 
-        let attributedText = NSMutableAttributedString(string: user.username,
+        let attributedText = NSMutableAttributedString(string: user.userNickName,
                                                        attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 12)])
         attributedText.append(NSAttributedString(string: notificationMessage,
                                                  attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)]))

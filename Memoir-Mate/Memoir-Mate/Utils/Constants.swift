@@ -19,6 +19,7 @@ let REF_DIARYS = DB_REF.child("diarys")
 let REF_USER_DIARYS = DB_REF.child("user-diarys")
 let REF_USER_SHAREDIARYS = DB_REF.child("user-share-diarys")
 let REF_DIARY_Comments = DB_REF.child("diary-comments")
+let REF_USER_Comments = DB_REF.child("user-comments")
 
 // likes
 let REF_USER_LIKES = DB_REF.child("user-likes") // 유저가 좋아요 누른 일기를 파악

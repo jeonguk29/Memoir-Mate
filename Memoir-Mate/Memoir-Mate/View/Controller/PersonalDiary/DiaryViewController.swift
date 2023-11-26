@@ -604,7 +604,7 @@ extension DiaryViewController: DiaryCellDelegate {
                 button.addTarget(self, action: #selector(squareButtonTapped(sharedCell:)), for: .touchUpInside)
                 
                 // 크기 및 색상 설정
-                button.backgroundColor = .mainColor // 빨간색 배경
+                button.backgroundColor = .systemGray3
                 button.tintColor = .white // 아이콘 색상
                 
                 // 아이콘 크기 조정 (예시로 30으로 설정)

@@ -34,6 +34,8 @@ class CommentFeedViewController: UICollectionViewController{
         }
     }
     
+    private let config: UploadDiaryConfiguration = .diary
+    
     var comments = [Diary?]() {
         didSet {
             print("comments값 받음")
@@ -110,11 +112,12 @@ class CommentFeedViewController: UICollectionViewController{
         
         // 메인 스레드에서 실행되도록 DispatchQueue를 사용
         DispatchQueue.main.async {
-            DiaryService.shared.diaryComment(diary: self.selectDiary, caption: caption){ (error, ref) in
+            DiaryService.shared.diaryComment(user : self.user ,diary: self.selectDiary, type: self.config ,caption: caption){ (error, ref) in
                 if let error = error {
                     print("DEBUG: 댓글 업로드에 실패했습니다. error \(error.localizedDescription)")
                     return
                 }
+              
             }
         }
         
@@ -299,8 +302,17 @@ extension CommentFeedViewController {
 }
 
 extension CommentFeedViewController : commentCellDelegate{
+  
     func handelProfileImageTapped(_ cell: CommentCell) {
-        print()
+        guard let user = cell.comment?.user else { return }
+        
+        let controller = ProfileController(user: user)
+        controller.navigationItem.setHidesBackButton(true, animated: false) // "Back" 버튼 숨김
+        
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.modalPresentationStyle = .fullScreen // 모달 스타일을 Full Screen으로 설정
+        
+        present(navigationController, animated: true, completion: nil)
     }
     
     func handleReplyTapped(_ cell: CommentCell) {
