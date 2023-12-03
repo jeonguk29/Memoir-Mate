@@ -6,6 +6,7 @@ protocol DiaryCellDelegate: class {
     func handelProfileImageTapped(_ cell: DiaryCell) // 컨트롤러에게 위임할 작업을 명시
     func handleFetchUser(withUsername username: String) // 사용자 이름에 대하여 uid를 가져오는 메서드
     func handleLongPress(_ cell: DiaryCell) // 셀을 길게 눌렀을 때 호출될 메서드
+    func handleFeedback(_ cell: DiaryCell)
 }
 
 class DiaryCell:UICollectionViewCell {
@@ -141,11 +142,11 @@ class DiaryCell:UICollectionViewCell {
 
     
     // 추가: 삭제 버튼을 나타내는 UIButton
-    private let declarationButton: UIButton = {
+    private let feedbackButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .systemGray5
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        button.addTarget(self, action: #selector(declarationButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(feedbackButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -203,18 +204,18 @@ class DiaryCell:UICollectionViewCell {
     
         titleView.addSubview(profileImageView)
         titleView.addSubview(userNickNameLabel)
-        titleView.addSubview(declarationButton)
+        titleView.addSubview(feedbackButton)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         userNickNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        declarationButton.translatesAutoresizingMaskIntoConstraints = false
+        feedbackButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             profileImageView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
             profileImageView.leadingAnchor.constraint(equalTo: titleView.leadingAnchor, constant: 17),
             userNickNameLabel.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
             userNickNameLabel.leadingAnchor.constraint(equalTo: titleView.leadingAnchor, constant: 75),
             userNickNameLabel.rightAnchor.constraint(equalTo: titleView.rightAnchor, constant: -30),
-            declarationButton.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
-            declarationButton.rightAnchor.constraint(equalTo: titleView.rightAnchor, constant: -20),
+            feedbackButton.centerYAnchor.constraint(equalTo: titleView.centerYAnchor),
+            feedbackButton.rightAnchor.constraint(equalTo: titleView.rightAnchor, constant: -20),
             //세로크기를 100
         ])
         
@@ -295,8 +296,8 @@ class DiaryCell:UICollectionViewCell {
         delegate?.handelProfileImageTapped(self)
     }
     
-    @objc func declarationButtonTapped() {
-        
+    @objc func feedbackButtonTapped() {
+        delegate?.handleFeedback(self)
     }
     
     

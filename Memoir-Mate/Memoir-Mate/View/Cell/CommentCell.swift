@@ -14,6 +14,7 @@ protocol commentCellDelegate: class {
     func handleReplyTapped(_ cell: CommentCell)
     func handleLikeTapped(_ cell: CommentCell) // 트윗 좋아요 동작처리를 위임할 메서드
     func handleFetchUser(withUsername username: String) // 사용자 이름에 대하여 uid를 가져오는 메서드
+    func handleDeclaration(_ cell: CommentCell)
 }
 
 class CommentCell:UICollectionViewCell {
@@ -188,7 +189,7 @@ class CommentCell:UICollectionViewCell {
     }
     
     @objc func declarationButtonTapped() {
-        
+        delegate?.handleDeclaration(self)
     }
     
     

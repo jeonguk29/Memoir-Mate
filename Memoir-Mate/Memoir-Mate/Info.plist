@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIAppFonts</key>
-	<array>
-		<string>나눔손글씨 무궁화.ttf</string>
-	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -24,6 +20,10 @@
 				<string>com.googleusercontent.apps.895480304477-3a6trfttflrjggtrlf06nuo6qictpiii</string>
 			</array>
 		</dict>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>나눔손글씨 무궁화.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

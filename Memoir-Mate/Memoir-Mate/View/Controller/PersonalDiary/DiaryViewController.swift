@@ -8,6 +8,7 @@
 import UIKit
 import FSCalendar
 import AVKit
+import MessageUI
 
 
 
@@ -526,7 +527,86 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
 
 
 // MARK: - TweetCellDelegate
-extension DiaryViewController: DiaryCellDelegate {
+extension DiaryViewController: DiaryCellDelegate, MFMailComposeViewControllerDelegate {
+    
+    enum ReportReason: String, CaseIterable {
+        case inappropriateLanguage = "서비스 개선 사항"
+        case explicitContent = "광고 문의"
+        // 추가적인 이유를 필요에 따라 열거형에 추가할 수 있습니다.
+    }
+
+    func handleFeedback(_ cell: DiaryCell) {
+        guard let userUid = cell.diary?.user.uid else { return }
+        guard let userName = cell.diary?.user.userNickName else { return }
+        guard let userCellID = cell.diary?.diaryID else { return }
+        
+        let alertController = UIAlertController(title: "피드백 보내기", message: nil, preferredStyle: .actionSheet)
+        
+        // Enum의 모든 케이스를 액션으로 추가
+        for reason in ReportReason.allCases {
+            let action = UIAlertAction(title: reason.rawValue, style: .default) { _ in
+                // sendEmail 함수 호출
+                self.sendEmail(reason: reason.rawValue, userUid: userUid, userName: userName, userCellID: userCellID)
+            }
+            alertController.addAction(action)
+        }
+        
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
+    
+ 
+    
+    func sendEmail(reason: String, userUid: String, userName: String, userCellID: String) {
+        if MFMailComposeViewController.canSendMail() {
+            
+            let composeVC = MFMailComposeViewController()
+            composeVC.mailComposeDelegate = self
+            
+            
+            let bodyString = """
+                피드백 내용: \(reason)
+                사용자 UID: \(userUid)
+                사용자 이름: \(userName)
+                해당 부분은 수정 하시면 안 됩니다.
+                
+                피드백 내용을 아래에 적어주세요.
+                
+                """
+            
+            // 받는 사람 이메일, 제목, 본문
+            composeVC.setToRecipients(["jeonguk29@naver.com"])
+            composeVC.setSubject("피드백")
+            composeVC.setMessageBody(bodyString, isHTML: false)
+            
+            self.present(composeVC, animated: true)
+        } else {
+            // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+            let alertController = UIAlertController(title: "메일 계정 활성화 필요",
+                                                    message: "Mail 앱에서 사용자의 Email을 계정을 설정해 주세요.",
+                                                    preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                
+                if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                    UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                }
+            }
+            alertController.addAction(alertAction)
+            
+            self.present(alertController, animated: true)
+        }
+    }
+    
+    // 해당 코드가 있어야 메일 전송후 앱 화면으로 돌아 오게 가능함
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+
+ 
+    
     
     // DiaryCellDelegate 메서드를 추가하여 셀을 길게 누를 때 호출됩니다.
     // 이 메서드에서 centerSelectedCell 메서드를 호출합니다.

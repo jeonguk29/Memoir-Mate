@@ -10,6 +10,7 @@ import UIKit
 import FSCalendar
 import AVKit
 import Foundation
+import MessageUI
 
 
 private let reuseIdentifier = "CommentCell"
@@ -96,7 +97,7 @@ class CommentFeedViewController: UICollectionViewController{
         
         configureLeftBarButton()
         
-        
+      
         
         // 키보드 올라올 때의 Notification을 등록
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -106,18 +107,22 @@ class CommentFeedViewController: UICollectionViewController{
     }
     
     // MARK: - Selectors
-    @objc func handlePost(){
-        
+    @objc func handlePost() {
         guard let caption = customView.text else { return }
+        
+        // 최소 10자, 최대 180자 검증
+        guard customView.validateText() else {
+            customView.showAlert(message: "댓글은 최소 10자, 최대 180자여야 합니다.")
+            return
+        }
         
         // 메인 스레드에서 실행되도록 DispatchQueue를 사용
         DispatchQueue.main.async {
-            DiaryService.shared.diaryComment(user : self.user ,diary: self.selectDiary, type: self.config ,caption: caption){ (error, ref) in
+            DiaryService.shared.diaryComment(user: self.user, diary: self.selectDiary, type: self.config, caption: caption) { (error, ref) in
                 if let error = error {
                     print("DEBUG: 댓글 업로드에 실패했습니다. error \(error.localizedDescription)")
                     return
                 }
-              
             }
         }
         
@@ -129,19 +134,18 @@ class CommentFeedViewController: UICollectionViewController{
                 constraint.constant = 50
             }
         }
-
-
+        
         // 업데이트된 제약을 적용
         view.layoutIfNeeded()
         
-        // 현제 일기, 접속중인 사용자 값 전달하기
+        // 현재 일기, 접속 중인 사용자 값 전달하기
         
-        // 댓글 작성후 전달 버튼 누를때
-        // 공유중인 현제 일기 밑에 댓글 id 순서대로 달기
-        // 그리고 컬랙션뷰 리로드
+        // 댓글 작성 후 전달 버튼 누를 때
+        // 공유 중인 현재 일기 아래에 댓글 ID 순서대로 달기
+        // 그리고 컬렉션 뷰 리로드
         fetchDiarys()
     }
-    
+
     
     
     // MARK: - Helpers
@@ -301,8 +305,92 @@ extension CommentFeedViewController {
     
 }
 
-extension CommentFeedViewController : commentCellDelegate{
-  
+extension CommentFeedViewController : commentCellDelegate,MFMailComposeViewControllerDelegate{
+    
+    enum ReportReason: String, CaseIterable {
+        case inappropriateLanguage = "부적절한 언어 사용"
+        case explicitContent = "성적인 콘텐츠"
+        case harassment = "괴롭힘"
+        case privacyInvasion = "개인정보 침해"
+        case copyrightInfringement = "저작권 침해"
+        case spamOrStalking = "스팸 또는 스토킹"
+        // 추가적인 이유를 필요에 따라 열거형에 추가할 수 있습니다.
+    }
+
+    func handleDeclaration(_ cell: CommentCell) {
+        guard let userUid = cell.comment?.user.uid else { return }
+        guard let userName = cell.comment?.user.userNickName else { return }
+        guard let userCellID = cell.comment?.diaryID else { return }
+        
+        let alertController = UIAlertController(title: "신고 이유", message: nil, preferredStyle: .actionSheet)
+        
+        // Enum의 모든 케이스를 액션으로 추가
+        for reason in ReportReason.allCases {
+            let action = UIAlertAction(title: reason.rawValue, style: .default) { _ in
+                // sendEmail 함수 호출
+                self.sendEmail(reason: reason.rawValue, userUid: userUid, userName: userName, userCellID: userCellID)
+            }
+            alertController.addAction(action)
+        }
+        
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
+    
+ 
+    
+    func sendEmail(reason: String, userUid: String, userName: String, userCellID: String) {
+        if MFMailComposeViewController.canSendMail() {
+            
+            let composeVC = MFMailComposeViewController()
+            composeVC.mailComposeDelegate = self
+            
+            
+            let bodyString = """
+                신고 이유: \(reason)
+                신고 사용자 UID: \(userUid)
+                신고 사용자 이름: \(userName)
+                신고 댓글 ID: \(userCellID)
+                해당 부분은 수정 하시면 안 됩니다.
+                
+                "허위 신고로 판명될 경우, 이러한 행위는 심각한 규칙 위반으로 간주됩니다. 이러한 행위는 계정 제한으로 이루어 질 수 있으며, 신고는 신중하게 검토되므로 다시 한번 정당한 이유 없이 허위 신고를 제출하지 않도록 유의해주시기 바랍니다. 감사합니다."
+                
+                앱에서 신고할 내용을 아래에 적어주세요.
+                
+                """
+            
+            // 받는 사람 이메일, 제목, 본문
+            composeVC.setToRecipients(["jeonguk29@naver.com"])
+            composeVC.setSubject("신고 사항")
+            composeVC.setMessageBody(bodyString, isHTML: false)
+            
+            self.present(composeVC, animated: true) 
+        } else {
+            // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+            let alertController = UIAlertController(title: "메일 계정 활성화 필요",
+                                                    message: "Mail 앱에서 사용자의 Email을 계정을 설정해 주세요.",
+                                                    preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                
+                if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                    UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                }
+            }
+            alertController.addAction(alertAction)
+            
+            self.present(alertController, animated: true)
+        }
+    }
+    
+    // 해당 코드가 있어야 메일 전송후 앱 화면으로 돌아 오게 가능함
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+
+    
     func handelProfileImageTapped(_ cell: CommentCell) {
         guard let user = cell.comment?.user else { return }
         

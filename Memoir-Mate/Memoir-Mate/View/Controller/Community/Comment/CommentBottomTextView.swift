@@ -70,10 +70,41 @@ class CommentBottomTextView: UITextView {
         
     }
     
+    func validateText() -> Bool {
+        guard let text = self.text else { return false }
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // 텍스트 길이를 180자로 제한
+        guard trimmedText.count <= 180 else { return false }
+        
+        // 최소 10자 이상이어야 함
+        return trimmedText.count >= 10
+    }
+
+    
+    func showAlert(message: String) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        
+        if let viewController = self.findViewController() {
+            viewController.present(alertController, animated: true, completion: nil)
+        }
+    }
    
     
 }
 
 
+extension UIResponder {
 
+    func findViewController() -> UIViewController? {
+        if let viewController = self as? UIViewController {
+            return viewController
+        } else if let next = self.next {
+            return next.findViewController()
+        } else {
+            return nil
+        }
+    }
+}
 

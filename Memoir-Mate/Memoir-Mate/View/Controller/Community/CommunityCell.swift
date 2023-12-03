@@ -7,6 +7,7 @@
 
 import UIKit
 import ActiveLabel
+import MessageUI
 
 // 프로토콜을 만들어서 현제 내 트윗셀을 내 컨트롤러로 전달할 것임
 protocol CommunityCellDelegate: class {
@@ -14,6 +15,7 @@ protocol CommunityCellDelegate: class {
     func handleReplyTapped(_ cell: CommunityCell)
     func handleLikeTapped(_ cell: CommunityCell) // 트윗 좋아요 동작처리를 위임할 메서드
     func handleFetchUser(withUsername username: String) // 사용자 이름에 대하여 uid를 가져오는 메서드
+    func handleDeclaration(_ cell: CommunityCell)
 }
 
 class CommunityCell:UICollectionViewCell {
@@ -342,7 +344,7 @@ class CommunityCell:UICollectionViewCell {
     }
     
     @objc func declarationButtonTapped() {
-        
+        delegate?.handleDeclaration(self)
     }
     
     
@@ -418,3 +420,6 @@ class CommunityCell:UICollectionViewCell {
     
 }
 
+extension CommunityCell: MFMailComposeViewControllerDelegate{
+    
+}

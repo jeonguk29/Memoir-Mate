@@ -26,7 +26,7 @@ protocol WriteDiaryControllerDelegate: class {
     func didTaphandleUpdate()
 }
 
-class WriteDiaryController: UIViewController{
+class WriteDiaryController: UIViewController, UITextViewDelegate{
     
     private var user: User{ // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
@@ -103,9 +103,30 @@ class WriteDiaryController: UIViewController{
     private lazy var captionTextView: InputTextView = {
         let textView = InputTextView()
         textView.textType = .personal
-           return textView
-       }()
+        textView.delegate = self // TextView의 delegate를 현재 ViewController로 설정
+        return textView
+    }()
     
+    func textViewDidChange(_ textView: UITextView) {
+        // 글자 수 체크
+        let currentTextCount = textView.text.count
+        let maxTextCount = 1500
+        
+        // 1500자 이상이면 글자를 자르고, 알림을 표시
+        if currentTextCount > maxTextCount {
+            let index = textView.text.index(textView.text.startIndex, offsetBy: maxTextCount)
+            textView.text = String(textView.text.prefix(upTo: index))
+            showAlert(message: "글자 수는 1500자까지 입력 가능합니다.")
+        }
+    }
+
+    // 알림 메서드
+    private func showAlert(message: String) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
 
     private lazy var weatherSunButton: UIButton = {
         let button = UIButton(type: .system)
