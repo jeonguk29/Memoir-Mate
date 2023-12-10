@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 import FSCalendar
 import AVKit
 import MessageUI
@@ -19,6 +20,7 @@ protocol DiaryViewControllerDelegate: class {
     func didTaphandleUpdate()
 }
 
+@available(iOS 16.0, *)
 class DiaryViewController: UICollectionViewController{
     
     
@@ -44,7 +46,11 @@ class DiaryViewController: UICollectionViewController{
     }
     
     private var diarys = [Diary]() {
-        didSet {collectionView.reloadData()}
+        didSet {
+            UIView.transition(with: collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
+                self.collectionView.reloadData()
+            }, completion: nil)
+        }
     }
     
     
@@ -103,26 +109,50 @@ class DiaryViewController: UICollectionViewController{
     private var overlayView: UIView?
     var originalCellFrame: CGRect?
     
-    //    // 사용자 지정 작업
-    //
-    //    private let diary: Diary
-    //    private var actionSheetLauncher: ActionSheetLauncher!
-    //
-    //    init(diary: Diary) {
-    //        self.diary = diary
-    //        self.actionSheetLauncher = ActionSheetLauncher(user: diary.user)
-    //        let layout = UICollectionViewFlowLayout()
-    //        super.init(collectionViewLayout: layout)
-    //    }
-    //
-    //    required init?(coder: NSCoder) {
-    //        fatalError("init(coder:) has not been implemented")
-    //    }
-    //
+   
     
+    override func viewWillAppear(_ animated: Bool) {
+        fetchDiarys()
+    }
+    
+    
+    
+    // MARK: - LandingPage
+    var userLandingPageCheck: Bool {
+          get {
+              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
+          }
+          set {
+              UserDefaults.standard.set(newValue, forKey: "userLandingPageCheck")
+          }
+      }
+    
+    // MARK: - LandingPage SWiftUI View Open
+    private func openSwiftUIView() {
+        
+        if userLandingPageCheck == false {
+            let hostingController = UIHostingController(rootView: LandingPageView())
+            hostingController.sizingOptions = .preferredContentSize
+            hostingController.modalPresentationStyle = .fullScreen
+            self.present(hostingController, animated: true)
+        }
+    }
+
+
+      
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+//        userLandingPageCheck = false
+//        print("userLandingPageCheck: \(userLandingPageCheck)")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.openSwiftUIView()
+        }
+        
+        
         
         // 즉, 사용자가 화면을 아래로 스크롤하면 (스와이프하면) 네비게이션 바가 자동으로 사라지고, 다시 위로 스크롤하면 (스와이프하면) 네비게이션 바가 다시 나타납니다.
         navigationController?.hidesBarsOnSwipe = true
@@ -135,6 +165,7 @@ class DiaryViewController: UICollectionViewController{
         calendarView.layer.masksToBounds = true
         calendarView.layer.cornerRadius = 20 // 원하는 라운드 값으로 설정
         calendarView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        calendarView.isHidden = true
         
         // calendarView 보더라인 주기
         //calendarView.layer.borderWidth = 3.0
@@ -160,7 +191,6 @@ class DiaryViewController: UICollectionViewController{
         formatter.dateFormat = "yyyy-MM-dd"
         selectDate = formatter.string(from: currentDate)  // selectDate에 현재 날짜 저장
         
-        fetchDiarys()
         fetchDiaryData()
         
         collectionView.register(DiaryCell.self, forCellWithReuseIdentifier:DiaryCell.reuseIdentifier) // DiaryCell 클래스와 식별자를 등록합니다.
@@ -380,6 +410,7 @@ class DiaryViewController: UICollectionViewController{
     
     
     
+    
     // 다이어리 데이터를 가져와서 diaryData 딕셔너리를 채우는 함수
     private func fetchDiaryData() {
         DiaryService.shared.fatchDiarys { diarys in
@@ -398,6 +429,7 @@ class DiaryViewController: UICollectionViewController{
 
 
 
+@available(iOS 16.0, *)
 extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
     // 모든 날짜의 채워진 색상 지정
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillDefaultColorFor date: Date) -> UIColor? {
@@ -431,6 +463,7 @@ extension DiaryViewController: FSCalendarDelegate, FSCalendarDataSource {
 
 // MARK: - UICollectionViewDelegate/DataSource
 
+@available(iOS 16.0, *)
 extension DiaryViewController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return diarys.count
@@ -483,6 +516,7 @@ extension DiaryViewController {
     
 }
 // MARK: - UICollectionViewDelegateFlowLayout
+@available(iOS 16.0, *)
 extension DiaryViewController: UICollectionViewDelegateFlowLayout {
     
     
@@ -527,6 +561,7 @@ extension DiaryViewController: UICollectionViewDelegateFlowLayout {
 
 
 // MARK: - TweetCellDelegate
+@available(iOS 16.0, *)
 extension DiaryViewController: DiaryCellDelegate, MFMailComposeViewControllerDelegate {
     
     enum ReportReason: String, CaseIterable {
@@ -843,6 +878,7 @@ extension DiaryViewController: DiaryCellDelegate, MFMailComposeViewControllerDel
 
 // MARK: - 스크롤 애니메이션 부분
 // 스크롤 애니메이션 부분 수정
+@available(iOS 16.0, *)
 extension DiaryViewController {
     // scrollViewDidScroll(_:) 메서드를 구현하여 스크롤 이벤트를 처리합니다.
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -878,6 +914,7 @@ extension DiaryViewController {
 }
 
 
+@available(iOS 16.0, *)
 extension DiaryViewController: WriteDiaryControllerDelegate{
     func didTaphandleCancel() {
         collectionView.reloadData()

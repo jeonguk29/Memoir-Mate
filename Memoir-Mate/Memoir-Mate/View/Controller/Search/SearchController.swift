@@ -117,8 +117,8 @@ class SearchController: UITableViewController{
 
 extension SearchController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return inSearchMode ? fileteredUsers.count : users.count
-        // 검색모드면 필터링된 사용자의 계수에 따라 셀을 보여줌 , 그게 아니면 전체 사용자들을 보여줘
+        return inSearchMode ? fileteredUsers.count : 0
+        // 검색모드면 필터링된 사용자의 계수에 따라 셀을 보여줌 , 그게 아니면 아무도 보여주지 않기(정보 보호)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -179,15 +179,8 @@ extension SearchController: UISearchResultsUpdating {
         //print("DEBUG: Search text is \(searchText)")
         
         fileteredUsers = users.filter({ $0.userID.contains(searchText) })
-        // 사용자 이름 검색 필터링
+  
         
-        // 위 문법을 풀어 쓰면
-//        fileteredUsers = users.filter({user -> Bool in
-//            return user.username.contains()
-//        })
-        
-    }// 사용자가 검색하는 것에 대하여 검색컨트롤러를 업데이트
-    // 무언가를 검색창에 입력하거나 삭제할때마다 호출됨 한글자 한글자
-    
+    }
     
 }

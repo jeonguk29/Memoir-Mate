@@ -385,6 +385,7 @@ extension ProfileController: WriteDiaryControllerDelegate{
 
 
 // MARK: - EditProfileControllerDelegate
+@available(iOS 16.0, *)
 extension ProfileController: EditProfileControllerDelegate {
     
     func handleLogout() {// 로그인 처리를 위임받아 처리

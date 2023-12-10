@@ -12,6 +12,7 @@ import FirebaseDatabase
 import UIKit
 import AuthenticationServices
 
+@available(iOS 16.0, *)
 class LoginViewController: UIViewController {
     
     
@@ -37,6 +38,8 @@ class LoginViewController: UIViewController {
     
     
     //애플 로그인
+    
+    
     
     @objc func handleGoogleLogin(){
         print("로그인 버튼 클릭")

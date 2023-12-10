@@ -6,6 +6,7 @@ import UIKit
 import FirebaseAuth
 import GoogleSignIn
 
+@available(iOS 16.0, *)
 class MainTabController: UITabBarController {
 
     

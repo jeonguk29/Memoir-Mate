@@ -11,6 +11,7 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseDatabase
 
+@available(iOS 16.0, *)
 class RegistrationController: UIViewController {
     
     // MARK: - Properties
@@ -171,6 +172,7 @@ class RegistrationController: UIViewController {
 
 
 // MARK: - UIImagePickerControllerDelegate
+@available(iOS 16.0, *)
 extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // 이 기능을 사용하면 선택한 미디어 항목이 사진이든 동영상이든 액세스할 수 있습니다.

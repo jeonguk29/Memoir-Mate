@@ -10,9 +10,11 @@ import UIKit
 import FSCalendar
 import AVFoundation
 import MessageUI
+import SwiftUI
 
 private let reuseIdentifier = "CommunityCell"
 
+@available(iOS 16.0, *)
 class DiaryCommunityFeedViewController: UICollectionViewController{
     // MARK: - Properties
     
@@ -77,9 +79,15 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
     }()
 
 
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+  
+     
+        
+        
         // 즉, 사용자가 화면을 아래로 스크롤하면 (스와이프하면) 네비게이션 바가 자동으로 사라지고, 다시 위로 스크롤하면 (스와이프하면) 네비게이션 바가 다시 나타납니다.
         navigationController?.hidesBarsOnSwipe = true
         
@@ -101,6 +109,7 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
         calendarView.layer.masksToBounds = true
         calendarView.layer.cornerRadius = 20 // 원하는 라운드 값으로 설정
         calendarView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        calendarView.isHidden = true
         
         // calendarView 보더라인 주기
         //calendarView.layer.borderWidth = 3.0
@@ -358,7 +367,7 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
 }
     
 
-
+@available(iOS 16.0, *)
 extension DiaryCommunityFeedViewController: FSCalendarDelegate, FSCalendarDataSource {
     // 모든 날짜의 채워진 색상 지정
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillDefaultColorFor date: Date) -> UIColor? {
@@ -385,6 +394,7 @@ extension DiaryCommunityFeedViewController: FSCalendarDelegate, FSCalendarDataSo
 
 // MARK: - UICollectionViewDelegate/DataSource
 
+@available(iOS 16.0, *)
 extension DiaryCommunityFeedViewController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return diarys.count
@@ -431,6 +441,7 @@ extension DiaryCommunityFeedViewController {
     
 }
 // MARK: - UICollectionViewDelegateFlowLayout
+@available(iOS 16.0, *)
 extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
     
     
@@ -469,6 +480,7 @@ extension DiaryCommunityFeedViewController: UICollectionViewDelegateFlowLayout {
 
 
 // MARK: - TweetCellDelegate
+@available(iOS 16.0, *)
 extension DiaryCommunityFeedViewController: CommunityCellDelegate, MFMailComposeViewControllerDelegate {
     
     enum ReportReason: String, CaseIterable {
@@ -607,6 +619,7 @@ extension DiaryCommunityFeedViewController: CommunityCellDelegate, MFMailCompose
 
 // MARK: - CommunityDiarySelectControllerDelegate
 
+@available(iOS 16.0, *)
 extension DiaryCommunityFeedViewController: CommunityDiarySelectControllerDelegate {
     func didTaphandleCancel() {
         print("")
@@ -619,6 +632,7 @@ extension DiaryCommunityFeedViewController: CommunityDiarySelectControllerDelega
 
 // MARK: - 스크롤 애니메이션 부분
 // 스크롤 애니메이션 부분 수정
+@available(iOS 16.0, *)
 extension DiaryCommunityFeedViewController {
     // scrollViewDidScroll(_:) 메서드를 구현하여 스크롤 이벤트를 처리합니다.
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {

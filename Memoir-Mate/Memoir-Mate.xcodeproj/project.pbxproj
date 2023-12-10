@@ -48,6 +48,8 @@
 		649D948C2AB448B80092BF0D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D948B2AB448B80092BF0D /* Constants.swift */; };
 		649D948E2AB6EF4A0092BF0D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D948D2AB6EF4A0092BF0D /* User.swift */; };
 		649D94912AB6EFFD0092BF0D /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D94902AB6EFFD0092BF0D /* UserService.swift */; };
+		64BDAA2C2B24990600928E98 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BDAA2B2B24990600928E98 /* LandingPageView.swift */; };
+		64BDAA2E2B24B0AC00928E98 /* LandingPageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */; };
 		64BE8E372ACFE97D00703410 /* CommunityDiarySelectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */; };
 		64E0F5362AF9F6DF00122E4A /* ActionSheetLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */; };
 		64E0F5382AF9F73F00122E4A /* DiaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5372AF9F73F00122E4A /* DiaryHeader.swift */; };
@@ -113,6 +115,8 @@
 		64AC742E2B0C5274004C4BBD /* tab2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = tab2.mp4; sourceTree = "<group>"; };
 		64AC742F2B0C5277004C4BBD /* tab2-3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "tab2-3.mp4"; sourceTree = "<group>"; };
 		64AC74302B0C527B004C4BBD /* tab2-2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "tab2-2.mp4"; sourceTree = "<group>"; };
+		64BDAA2B2B24990600928E98 /* LandingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageView.swift; sourceTree = "<group>"; };
+		64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageCell.swift; sourceTree = "<group>"; };
 		64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityDiarySelectController.swift; sourceTree = "<group>"; };
 		64BE8E3A2AD2E67800703410 /* Launch.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Launch.mp4; sourceTree = "<group>"; };
 		64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetLauncher.swift; sourceTree = "<group>"; };
@@ -286,6 +290,7 @@
 		649D94772AB19D340092BF0D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				64BDAA2A2B2498D300928E98 /* LandingPage */,
 				6401686E2AF20A9900CBE131 /* Cell */,
 				649D94782AB19D4D0092BF0D /* Controller */,
 			);
@@ -336,6 +341,15 @@
 				645A21B62AFDEA7F0001D701 /* AuthService.swift */,
 			);
 			path = API;
+			sourceTree = "<group>";
+		};
+		64BDAA2A2B2498D300928E98 /* LandingPage */ = {
+			isa = PBXGroup;
+			children = (
+				64BDAA2B2B24990600928E98 /* LandingPageView.swift */,
+				64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */,
+			);
+			path = LandingPage;
 			sourceTree = "<group>";
 		};
 		64BE8E382ACFE98500703410 /* Community */ = {
@@ -525,6 +539,7 @@
 				64BE8E372ACFE97D00703410 /* CommunityDiarySelectController.swift in Sources */,
 				645A21B72AFDEA7F0001D701 /* AuthService.swift in Sources */,
 				645A21B92AFDF9520001D701 /* Utilities.swift in Sources */,
+				64BDAA2E2B24B0AC00928E98 /* LandingPageCell.swift in Sources */,
 				64E0F53A2AF9F9B100122E4A /* ActionSheetCell.swift in Sources */,
 				649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */,
 				649D94812AB1A0EA0092BF0D /* DiaryCommunityFeedViewController.swift in Sources */,
@@ -532,6 +547,7 @@
 				649D947F2AB19F200092BF0D /* DiaryViewController.swift in Sources */,
 				649D94912AB6EFFD0092BF0D /* UserService.swift in Sources */,
 				649D94852AB416A00092BF0D /* WriteDiaryController.swift in Sources */,
+				64BDAA2C2B24990600928E98 /* LandingPageView.swift in Sources */,
 				649D948A2AB41D7B0092BF0D /* InputTextView.swift in Sources */,
 				64E0F5382AF9F73F00122E4A /* DiaryHeader.swift in Sources */,
 				641BDDAB2B00AEFA003F81B9 /* EditProfileHeader.swift in Sources */,
@@ -706,6 +722,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Memoir-Mate/Memoir-Mate.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -737,6 +754,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Memoir-Mate/Memoir-Mate.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

@@ -8,7 +8,8 @@
 import UIKit
 private let reuseIdentifier = "NotificationCell"
 
-class NotificationsController: UITableViewController { 
+@available(iOS 16.0, *)
+class NotificationsController: UITableViewController {
     
     // MARK: - Properties
     private var notifications = [Notification]() {
@@ -104,7 +105,7 @@ class NotificationsController: UITableViewController {
 
 
 // MARK: - UITableViewDataSource
-
+@available(iOS 16.0, *)
 extension NotificationsController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return notifications.count
@@ -121,6 +122,7 @@ extension NotificationsController {
 }
 
 // MARK: - UITableViewDelegate
+@available(iOS 16.0, *)
 extension NotificationsController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -149,6 +151,7 @@ extension NotificationsController {
 }
 
 // MARK: - NotificationCellDelegate
+@available(iOS 16.0, *)
 extension NotificationsController: NotificationCellDelegate {
 
     
