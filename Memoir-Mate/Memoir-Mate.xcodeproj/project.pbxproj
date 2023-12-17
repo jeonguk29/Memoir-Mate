@@ -37,7 +37,6 @@
 		649D94632AB0A5590092BF0D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 649D94612AB0A5590092BF0D /* Main.storyboard */; };
 		649D94652AB0A55B0092BF0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 649D94642AB0A55B0092BF0D /* Assets.xcassets */; };
 		649D94682AB0A55B0092BF0D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 649D94662AB0A55B0092BF0D /* LaunchScreen.storyboard */; };
-		649D94742AB192210092BF0D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 649D94732AB192210092BF0D /* GoogleService-Info.plist */; };
 		649D947B2AB19E5E0092BF0D /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D947A2AB19E5E0092BF0D /* LoginViewController.swift */; };
 		649D947D2AB19E840092BF0D /* MainTabController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D947C2AB19E840092BF0D /* MainTabController.swift */; };
 		649D947F2AB19F200092BF0D /* DiaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D947E2AB19F200092BF0D /* DiaryViewController.swift */; };
@@ -51,6 +50,7 @@
 		64BDAA2C2B24990600928E98 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BDAA2B2B24990600928E98 /* LandingPageView.swift */; };
 		64BDAA2E2B24B0AC00928E98 /* LandingPageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */; };
 		64BE8E372ACFE97D00703410 /* CommunityDiarySelectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */; };
+		64D64F7B2B2EDA1B00189DFE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 64D64F7A2B2EDA1B00189DFE /* GoogleService-Info.plist */; };
 		64E0F5362AF9F6DF00122E4A /* ActionSheetLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */; };
 		64E0F5382AF9F73F00122E4A /* DiaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5372AF9F73F00122E4A /* DiaryHeader.swift */; };
 		64E0F53A2AF9F9B100122E4A /* ActionSheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5392AF9F9B100122E4A /* ActionSheetCell.swift */; };
@@ -100,7 +100,6 @@
 		649D94642AB0A55B0092BF0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		649D94672AB0A55B0092BF0D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		649D94692AB0A55B0092BF0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		649D94732AB192210092BF0D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		649D947A2AB19E5E0092BF0D /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		649D947C2AB19E840092BF0D /* MainTabController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabController.swift; sourceTree = "<group>"; };
 		649D947E2AB19F200092BF0D /* DiaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryViewController.swift; sourceTree = "<group>"; };
@@ -119,6 +118,7 @@
 		64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageCell.swift; sourceTree = "<group>"; };
 		64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityDiarySelectController.swift; sourceTree = "<group>"; };
 		64BE8E3A2AD2E67800703410 /* Launch.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Launch.mp4; sourceTree = "<group>"; };
+		64D64F7A2B2EDA1B00189DFE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Utils/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetLauncher.swift; sourceTree = "<group>"; };
 		64E0F5372AF9F73F00122E4A /* DiaryHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryHeader.swift; sourceTree = "<group>"; };
 		64E0F5392AF9F9B100122E4A /* ActionSheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetCell.swift; sourceTree = "<group>"; };
@@ -257,7 +257,7 @@
 				649D94762AB19D220092BF0D /* ViewModel */,
 				649D94752AB19C280092BF0D /* Model */,
 				649D94692AB0A55B0092BF0D /* Info.plist */,
-				649D94732AB192210092BF0D /* GoogleService-Info.plist */,
+				64D64F7A2B2EDA1B00189DFE /* GoogleService-Info.plist */,
 				649D948F2AB6EFD30092BF0D /* API */,
 				649D94862AB41C9F0092BF0D /* Utils */,
 			);
@@ -473,8 +473,8 @@
 				6448F86D2B0C6B7E00C73009 /* backmain.mp4 in Resources */,
 				6448F86E2B0C6B7E00C73009 /* sky.mp4 in Resources */,
 				649D94682AB0A55B0092BF0D /* LaunchScreen.storyboard in Resources */,
-				649D94742AB192210092BF0D /* GoogleService-Info.plist in Resources */,
 				649D94652AB0A55B0092BF0D /* Assets.xcassets in Resources */,
+				64D64F7B2B2EDA1B00189DFE /* GoogleService-Info.plist in Resources */,
 				649D94632AB0A5590092BF0D /* Main.storyboard in Resources */,
 				64FA49FF2AB83F4A0007A263 /* 나눔손글씨 무궁화.ttf in Resources */,
 			);
@@ -726,7 +726,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5KA6J79S24;
+				DEVELOPMENT_TEAM = 9S8KMMC3YH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Memoir-Mate/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -758,7 +758,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5KA6J79S24;
+				DEVELOPMENT_TEAM = 9S8KMMC3YH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Memoir-Mate/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
