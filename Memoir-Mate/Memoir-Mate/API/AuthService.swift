@@ -62,7 +62,7 @@ struct AuthService {
                 let values = [
                               "username": name,
                               "email": email,
-                              "userNickname": userNickName,
+                              "userNickName": userNickName,
                               "userID": userID,
                               "photoURLString": profileImageUrl,
                               "userSetting" : userSetting,

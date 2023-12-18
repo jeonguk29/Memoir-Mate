@@ -155,7 +155,7 @@ struct UserService {
     func saveUserData(user: User, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        let values = ["userNickname": user.userNickName,
+        let values = ["userNickName": user.userNickName,
                       "userID": user.userID,
                       "bio": user.bio ?? ""]
         

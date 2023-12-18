@@ -308,12 +308,64 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
                     return
                 }
                 // User is signed in to Firebase with Apple.
-                // ...
-                ///Main 화면으로 보내기
-                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-                let mainViewController = storyboard.instantiateViewController(identifier: "MainViewController")
-                mainViewController.modalPresentationStyle = .fullScreen
-                self.navigationController?.show(mainViewController, sender: nil)
+                print("apple Login Test \(authResult?.user.uid)")
+                UserService.shared.LoginfetchUser(uid: authResult?.user.uid ?? "deleteUser") { fetchedUser in
+                              let uid = authResult?.user.uid
+                              let email: String
+                              let userName: String
+                              let userNickName: String
+                              let photoURLString: String?
+                              let userSetting: Bool
+                              let bio: String
+                              let backgroundCustomImage1: String
+                              let backgroundCustomImage2: String
+
+                              if let user = fetchedUser {
+                                  // 사용자 정보가 이미 있는 경우
+                                  email = user.email
+                                  userName = user.username
+                                  userNickName = user.userNickName
+                                  photoURLString = user.photoURLString?.absoluteString
+                                  userSetting = user.userSetting
+                                  bio = user.bio ?? "Memoir Mate User"
+                                  backgroundCustomImage1 = user.backgroundCustomImage1?.absoluteString ?? ""
+                                  backgroundCustomImage2 = user.backgroundCustomImage2?.absoluteString ?? ""
+                              } else {
+                                  // 처음 로그인하는 사용자의 경우
+                                  email = authResult?.user.email ?? ""
+                                  userName = authResult?.user.displayName ?? ""
+                                  userNickName = ""
+                                  photoURLString = authResult?.user.photoURL?.absoluteString
+                                  userSetting = false
+                                  bio = "Memoir Mate User"
+                                  backgroundCustomImage1 = ""
+                                  backgroundCustomImage2 = ""
+                              }
+
+                              let values: [String: Any] = ["email" : email,
+                                            "username" : userName,
+                                            "userNickName" : userNickName,
+                                            "photoURLString" : photoURLString as Any,
+                                            "userSetting" : userSetting,
+                                            "bio" : bio,
+                                            "backgroundCustomImage1" : backgroundCustomImage1,
+                                            "backgroundCustomImage2" : backgroundCustomImage2
+                              ]
+
+                              // 로그인된 사용자 정보를 업데이트
+                            REF_USERS.child(uid!).updateChildValues(values)
+                            print("apple Login test\(uid!), values\(values)")
+                              // 다시 메인화면 보여주기
+                              guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
+                                  return }
+                              
+                              guard let tab = window.rootViewController as? MainTabController else {return}
+                              
+                              tab.authenticateUserAndConfigureUI()
+                              
+                              self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인
+                          }
+                    
             }
         }
     }
