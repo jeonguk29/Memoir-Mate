@@ -78,9 +78,10 @@ class NotificationCell: UITableViewCell {
         stack.anchor(right: rightAnchor, paddingRight: 12)
         
         
-        addSubview(followButton)
-        followButton.centerY(inView: self)
-        followButton.anchor(right: rightAnchor, paddingRight: 12)
+//        2023-12-18 다음 업데이트 때 적용
+//        addSubview(followButton)
+//        followButton.centerY(inView: self)
+//        followButton.anchor(right: rightAnchor, paddingRight: 12)
             
     }
 

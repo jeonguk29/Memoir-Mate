@@ -12,45 +12,57 @@ import FirebaseDatabase
 import UIKit
 import AuthenticationServices // apple login 관련 라이브러리
 import CryptoKit // 해시 값 추가
+import SwiftUI
+import AVFoundation
+import AVKit
 
 @available(iOS 16.0, *)
 class LoginViewController: UIViewController {
     
     
     
-    let backgroundImage = UIImage(named: "Login3") // 'your_image_name' 대신 실제 이미지 파일 이름 입력
-    
-    // UIImageView 인스턴스 생성 및 설정
-    lazy var backgroundImageView: UIImageView = {
-        let ImageView = UIImageView()
-        ImageView.image = self.backgroundImage
-        ImageView.contentMode = .scaleAspectFill  // 콘텐츠 모드에 따라 변경 가능
-        ImageView.isUserInteractionEnabled = true  // 사용자 상호작용 활성화
-        return ImageView
-    }()
     
     private let googleButton: GIDSignInButton = {
         let button = GIDSignInButton()
         button.colorScheme = .light
+        button.layer.cornerRadius = 8
         button.style = .wide
         button.addTarget(self, action: #selector(handleGoogleLogin), for: .touchUpInside)
         return button
     }()
     
     
+    // 배경 동영상
     
+    
+    @objc func playerDidReachEnd(_ notification: NSNotification) {
+        if let playerItem = notification.object as? AVPlayerItem {
+            playerItem.seek(to: CMTime.zero, completionHandler: nil)
+        }
+    }
     
     //애플 로그인
+    
     
     private let appleButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Sign in with Apple", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 17)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         button.backgroundColor = .black
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 5
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(tapAppleLoginButton), for: .touchUpInside)
+        
+        // 이미지 추가
+        let appleButtonImage = UIImageView(image: UIImage(named: "apple"))
+        appleButtonImage.contentMode = .scaleAspectFit
+        appleButtonImage.frame = CGRect(x: 10, y: 10, width: 20, height: 20)  // 이미지 크기 및 위치 조절
+        button.addSubview(appleButtonImage)
+        
+        // title과 image 간격 조절
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -80, bottom: 0, right: 0)
+        
         return button
     }()
     
@@ -64,29 +76,29 @@ class LoginViewController: UIViewController {
     @objc func handleGoogleLogin(){
         print("로그인 버튼 클릭")
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
-
+        
         // Create Google Sign In configuration object.
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
-
+        
         // Start the sign in flow!
         GIDSignIn.sharedInstance.signIn(withPresenting: self) { [unowned self] result, error in
-          guard error == nil else {
-            // ...
-              
-              return
-          }
-
-          guard let user = result?.user,
-            let idToken = user.idToken?.tokenString
-          else {
-            // ...
-              return
-          }
+            guard error == nil else {
+                // ...
+                
+                return
+            }
             
-
-          let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                         accessToken: user.accessToken.tokenString)
+            guard let user = result?.user,
+                  let idToken = user.idToken?.tokenString
+            else {
+                // ...
+                return
+            }
+            
+            
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                           accessToken: user.accessToken.tokenString)
             Auth.auth().signIn(with: credential) { result, error in
                 if let loginUser = Auth.auth().currentUser {
                     UserService.shared.LoginfetchUser(uid: loginUser.uid) { fetchedUser in
@@ -99,7 +111,7 @@ class LoginViewController: UIViewController {
                         let bio: String
                         let backgroundCustomImage1: String
                         let backgroundCustomImage2: String
-
+                        
                         if let user = fetchedUser {
                             // 사용자 정보가 이미 있는 경우
                             email = user.email ?? loginUser.email!
@@ -121,20 +133,20 @@ class LoginViewController: UIViewController {
                             backgroundCustomImage1 = ""
                             backgroundCustomImage2 = ""
                         }
-
+                        
                         let values: [String: Any] = ["email" : email,
-                                      "username" : userName,
-                                      "userNickName" : userNickName,
-                                      "photoURLString" : photoURLString as Any,
-                                      "userSetting" : userSetting,
-                                      "bio" : bio,
-                                      "backgroundCustomImage1" : backgroundCustomImage1,
-                                      "backgroundCustomImage2" : backgroundCustomImage2
+                                                     "username" : userName,
+                                                     "userNickName" : userNickName,
+                                                     "photoURLString" : photoURLString as Any,
+                                                     "userSetting" : userSetting,
+                                                     "bio" : bio,
+                                                     "backgroundCustomImage1" : backgroundCustomImage1,
+                                                     "backgroundCustomImage2" : backgroundCustomImage2
                         ]
-
+                        
                         // 로그인된 사용자 정보를 업데이트
                         REF_USERS.child(uid).updateChildValues(values)
-
+                        
                         // 다시 메인화면 보여주기
                         guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
                             return }
@@ -147,8 +159,8 @@ class LoginViewController: UIViewController {
                     }
                 }
             }
-
-
+            
+            
         }
         
     }
@@ -158,57 +170,71 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-
-        
-        // UIImageView 인스턴스를 뷰의 서브뷰로 추가
-        view.addSubview(backgroundImageView)
-        
-        // 오토레이아웃 제약조건 설정 (백그라운드 이미지가 화면 전체를 채우도록)
-        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false  // 오토레이아웃 사용을 위해 필요함
-        
-        backgroundImageView.addSubview(googleButton) // 필요한 경우 버튼을 뷰에 추가
-        googleButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        backgroundImageView.addSubview(appleButton) // 필요한 경우 버튼을 뷰에 추가
-        appleButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        //emailInfoLabel.leadingAnchor.constraint(equalTo: emailTextFieldView.leadingAnchor, constant: 8).isActive = true
-             // 이런식으로 .isActive = true 끝에 다 활성화 붙일 필요 없음
-        NSLayoutConstraint.activate([
-
-                // Set height of the button
-                googleButton.heightAnchor.constraint(equalToConstant: 60),
-                
-                backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
-                           backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                           backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                           backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                
-                // Set button's centerXAnchor to be equal to view's centerXAnchor
-                googleButton.centerXAnchor.constraint(equalTo: backgroundImageView.centerXAnchor),
-
-                // Set button's centerYAnchor to be equal to view's centerYAnchor
-                googleButton.centerYAnchor.constraint(equalTo: backgroundImageView.centerYAnchor),
-
-                // Set leading and trailing constraints for the button with 30 points padding from screen edges.
-                googleButton.leadingAnchor.constraint(equalTo: backgroundImageView.leadingAnchor, constant: 40),
-                googleButton.trailingAnchor.constraint(equalTo: backgroundImageView.trailingAnchor, constant: -40),
-                
-                appleButton.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 20),
-                appleButton.leadingAnchor.constraint(equalTo: backgroundImageView.leadingAnchor, constant: 40),
-                appleButton.trailingAnchor.constraint(equalTo: backgroundImageView.trailingAnchor, constant: -40),
-                
-             ])
+        setupAutoLayout()
     }
     
     
-    
-    
+    private func setupAutoLayout() {
+  
+        // 비디오 파일 경로를 가져옵니다.
+        if let videoPath = Bundle.main.path(forResource: "LaunchScreen", ofType: "mp4") {
+            // AVPlayer 인스턴스를 생성합니다.
+            let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
+            
+            // AVPlayerLayer 인스턴스를 생성하고 AVPlayer를 할당합니다.
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.frame = view.bounds
+            playerLayer.videoGravity = .resizeAspectFill
+            
+            // 비디오를 보여줄 뷰를 생성합니다.
+            let videoView = UIView(frame: view.bounds)
+            videoView.layer.addSublayer(playerLayer)
+            
+            // 비디오를 반복 재생합니다.
+            player.actionAtItemEnd = .none
+            
+            // 비디오가 끝났을 때 호출되는 옵저버를 등록합니다.
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: nil) { [weak player] _ in
+                player?.seek(to: CMTime.zero) // 비디오를 처음으로 되감습니다.
+                player?.play() // 비디오를 재생합니다.
+            }
+                   
+            
+            player.isMuted = true
+            // 비디오 재생을 시작합니다.
+            player.play()
+            
+            // collectionView의 배경으로 비디오 뷰를 설정합니다.
+            self.view.addSubview(videoView)
+                    
+            
+            videoView.addSubview(googleButton)
+            googleButton.translatesAutoresizingMaskIntoConstraints = false
+
+            videoView.addSubview(appleButton)
+            appleButton.translatesAutoresizingMaskIntoConstraints = false
+
+            NSLayoutConstraint.activate([
+                // Set height of the button
+                googleButton.heightAnchor.constraint(equalToConstant: 40),
+                appleButton.heightAnchor.constraint(equalToConstant: 40),
+
+                // Center the buttons in the transparentView
+                googleButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 480),
+                googleButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+                googleButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+         
+                // Set vertical spacing between the buttons
+                appleButton.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 20),
+                appleButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 42),
+                appleButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -42),
+            ])
+        }
+        
+
+    }
+
 }
-
-
 
 
 

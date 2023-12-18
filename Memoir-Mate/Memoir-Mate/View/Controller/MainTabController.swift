@@ -131,7 +131,7 @@ class MainTabController: UITabBarController {
           
            if Auth.auth().currentUser == nil {
                print("DEBUG: 사용자가 로그인 하지 않았습니다.")
-               DispatchQueue.main.async {
+               DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                    let nav = UINavigationController(rootViewController: LoginViewController())
                    nav.modalPresentationStyle = .fullScreen
                    self.present(nav, animated: true, completion: nil)
