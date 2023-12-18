@@ -9,13 +9,13 @@
 import Foundation
 
 enum EditProfileOptions: Int, CaseIterable {
-    case userNickname
+    case userNickName
     case userID
     case bio
 
     var description: String {
         switch self {
-        case .userNickname: return "닉네임"
+        case .userNickName: return "닉네임"
         case .userID: return "사용자 ID"
         case .bio: return "소개"
         }
@@ -34,7 +34,7 @@ struct EditProfileViewModel {
     var optionValue: String? {
         switch option {
 
-        case .userNickname: return user.userNickName
+        case .userNickName: return user.userNickName
         case .userID: return user.userID
         case .bio: return user.bio
         }

@@ -10,6 +10,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseCore
 import FirebaseDatabase
+import SwiftUI
 
 @available(iOS 16.0, *)
 class RegistrationController: UIViewController {
@@ -43,7 +44,7 @@ class RegistrationController: UIViewController {
 
     
     private lazy var userNicknameContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_mail_outline_white_2x-1")
+        let image = #imageLiteral(resourceName: "ic_person_outline_white_2x")
         let view = Utilities().inputContaimerView(withImage: image, textField: userNicknameTextField)
         return view
     }()
@@ -65,6 +66,25 @@ class RegistrationController: UIViewController {
         return tf
     }()
     
+    // 텍스트 필드 설정을 구성하는 예제 함수
+    private func configureTextField(_ textField: UITextField, placeholder: String) {
+        textField.placeholder = placeholder
+        // 텍스트 필드에 대한 추가 구성을 원하는대로 추가합니다.
+    }
+
+    // 텍스트 필드에 유효성 검증을 추가하는 예제 함수
+    private func validateTextField(_ textField: UITextField, minLength: Int, maxLength: Int, regex: String? = nil) -> Bool {
+        guard let text = textField.text else { return false }
+        guard text.count >= minLength && text.count <= maxLength else { return false }
+        
+        if let regex = regex {
+            let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
+            return predicate.evaluate(with: text)
+        }
+        
+        return true
+    }
+    
     
     private let registrationButton:UIButton = {
         let button = UIButton(type: .system)
@@ -77,10 +97,41 @@ class RegistrationController: UIViewController {
         return button
     }()
     
+    private func showAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    
+    
+    // MARK: - LandingPage
+    var userLandingPageCheck: Bool {
+          get {
+              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
+          }
+          set {
+              UserDefaults.standard.set(newValue, forKey: "userLandingPageCheck")
+          }
+      }
+    
+    // MARK: - LandingPage SWiftUI View Open
+    private func openSwiftUIView() {
+        
+        if userLandingPageCheck == false {
+            let hostingController = UIHostingController(rootView: LandingPageView())
+            hostingController.sizingOptions = .preferredContentSize
+            hostingController.modalPresentationStyle = .fullScreen
+            self.present(hostingController, animated: true)
+        }
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.openSwiftUIView()
+        }
         configureUI()
     }
     
@@ -100,12 +151,28 @@ class RegistrationController: UIViewController {
             return
         }
         
-        guard let userNickname = userNicknameTextField.text else {return}
+        if validateTextField(userNicknameTextField, minLength: 3, maxLength: 14) {
+            // userNicknameTextField의 입력이 유효합니다.
+        } else {
+            // 유효하지 않은 입력에 대한 오류 메시지 표시
+            showAlert(message: "별명은 3~14자 사이여야 합니다.")
+            return
+        }
+        
+        if validateTextField(userIDTextField, minLength: 3, maxLength: 14, regex: "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{3,14}$") {
+            // userIDTextField의 입력이 유효합니다.
+        } else {
+            // 유효하지 않은 입력에 대한 오류 메시지 표시
+            showAlert(message: "사용자 ID는 3~14자 사이의 영어, 숫자, 특수문자 조합만 가능합니다.")
+            return
+        }
+        
+        guard let userNickName = userNicknameTextField.text else {return}
         guard let userID = userIDTextField.text else {return}
 //        guard let userNickname = userNicknameTextField.text?.lowercased() else {return}
 //        // 사용자의 이름이 항상 소문자인지 확인
         
-        let credentials = AuthCredentials(userID: userID, userNickName: userNickname, photoURLString: profileImage)
+        let credentials = AuthCredentials(userID: userID, userNickName: userNickName, photoURLString: profileImage)
         AuthService.shared.registerUser(user: self.user, credentials: credentials){ (error, ref) in
 //            print("사용자가 성공적으로 가입되었습니다.")
 //            print("사용자의 인터페이스를 업데이트 할 부분입니다.")
@@ -156,7 +223,7 @@ class RegistrationController: UIViewController {
         
         //registrationButton.isHidden = true
         
-        let stack = UIStackView(arrangedSubviews: [userNicknameContainerView, userIDTextField,registrationButton])
+        let stack = UIStackView(arrangedSubviews: [userNicknameContainerView, userIDContainerView,registrationButton])
         stack.axis = .vertical // 세로축 정렬
         stack.spacing = 20
         stack.distribution = .fillEqually

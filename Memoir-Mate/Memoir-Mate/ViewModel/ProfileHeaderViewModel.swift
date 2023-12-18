@@ -41,7 +41,7 @@ struct ProfileHeaderViewModel {
         // 이를 위해 User모델의 속성을 하나 추가했음
         
         if user.isCurrentUser {
-            return "Edit Profile"
+            return "프로필 수정"
         }
         
         if !user.isFollowed && !user.isCurrentUser {

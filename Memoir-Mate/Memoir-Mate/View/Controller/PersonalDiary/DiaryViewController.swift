@@ -117,26 +117,26 @@ class DiaryViewController: UICollectionViewController{
     
     
     
-    // MARK: - LandingPage
-    var userLandingPageCheck: Bool {
-          get {
-              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
-          }
-          set {
-              UserDefaults.standard.set(newValue, forKey: "userLandingPageCheck")
-          }
-      }
-    
-    // MARK: - LandingPage SWiftUI View Open
-    private func openSwiftUIView() {
-        
-        if userLandingPageCheck == false {
-            let hostingController = UIHostingController(rootView: LandingPageView())
-            hostingController.sizingOptions = .preferredContentSize
-            hostingController.modalPresentationStyle = .fullScreen
-            self.present(hostingController, animated: true)
-        }
-    }
+//    // MARK: - LandingPage
+//    var userLandingPageCheck: Bool {
+//          get {
+//              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
+//          }
+//          set {
+//              UserDefaults.standard.set(newValue, forKey: "userLandingPageCheck")
+//          }
+//      }
+//    
+//    // MARK: - LandingPage SWiftUI View Open
+//    private func openSwiftUIView() {
+//        
+//        if userLandingPageCheck == false {
+//            let hostingController = UIHostingController(rootView: LandingPageView())
+//            hostingController.sizingOptions = .preferredContentSize
+//            hostingController.modalPresentationStyle = .fullScreen
+//            self.present(hostingController, animated: true)
+//        }
+//    }
 
 
       
@@ -148,10 +148,10 @@ class DiaryViewController: UICollectionViewController{
 //        userLandingPageCheck = false
 //        print("userLandingPageCheck: \(userLandingPageCheck)")
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.openSwiftUIView()
-        }
-        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//            self.openSwiftUIView()
+//        }
+//        
         
         
         // 즉, 사용자가 화면을 아래로 스크롤하면 (스와이프하면) 네비게이션 바가 자동으로 사라지고, 다시 위로 스크롤하면 (스와이프하면) 네비게이션 바가 다시 나타납니다.

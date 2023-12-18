@@ -393,6 +393,7 @@ extension ProfileController: EditProfileControllerDelegate {
                 try Auth.auth().signOut()
                 GIDSignIn.sharedInstance.signOut()
                 
+                
                 let nav = UINavigationController(rootViewController: LoginViewController())
                 nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: true, completion: nil)

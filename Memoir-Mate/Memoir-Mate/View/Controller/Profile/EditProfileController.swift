@@ -212,33 +212,82 @@ extension EditProfileController: EditProfileHeaderDelegate {
 }
 
 // MARK: - EditProfileCellDelegate
-
 extension EditProfileController: EditProfileCellDelegate {
     
     // 실제 사용자 정보를 업데이트 해주는 부분
     func updateUserInfo(_ cell: EditProfileCell) {
-        
         guard let viewModel = cell.viewModel else { return }
         userInfoChanged = true
-        navigationItem.rightBarButtonItem?.isEnabled = true
+        var validationErrorMessages: [String] = []
         
         switch viewModel.option {
             
-        case .userNickname:
-            guard let fullname = cell.infoTextField.text else { return }
-            user.userNickName = fullname
+        case .userNickName:
+            guard let userNickName = cell.infoTextField.text else {
+                validationErrorMessages.append("UserNickName은 3~14자 사이여야 합니다.")
+                break
+            }
+            // Validate userNickName length
+            guard userNickName.count >= 3 && userNickName.count <= 14 else {
+                validationErrorMessages.append("UserNickName은 3~14자 사이여야 합니다.")
+                break
+            }
+            user.userNickName = userNickName
+            
         case .userID:
-            guard let username = cell.infoTextField.text else { return }
+            guard let username = cell.infoTextField.text else {
+                validationErrorMessages.append("사용자 ID는 3~14자 사이여야 합니다.")
+                break
+            }
+            // Validate username length and that it contains only English letters, numbers, and special characters
+            let usernameRegex = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{3,14}$"
+            guard username.count >= 3 && username.count <= 14, NSPredicate(format: "SELF MATCHES %@", usernameRegex).evaluate(with: username) else {
+                validationErrorMessages.append("사용자 ID는 3~14자 사이의 영어 문자, 숫자, 특수문자 조합만 가능합니다.")
+                break
+            }
             user.userID = username
+            
         case .bio:
-            user.bio = cell.bioTextView.text // 값 자체가 옵셔널이라 그냥 넣으면 됨
+            guard let bioText = cell.bioTextView.text else {
+                validationErrorMessages.append("자기소개는 최대 40자까지 가능합니다.")
+                break
+            }
+            // Validate bioText length
+            guard bioText.count <= 40 else {
+                validationErrorMessages.append("자기소개는 최대 40자까지 가능합니다.")
+                break
+            }
+            user.bio = bioText
+        }
+        
+        if validationErrorMessages.isEmpty {
+            enableDoneButton()
+        } else {
+            disableDoneButton()
+            showAlert(message: validationErrorMessages.joined(separator: "\n"))
         }
         
         print(user.userNickName)
-        print(user.username)
+        print(user.userID)
         print(user.bio)
     }
+
+    private func showAlert(message: String) {
+        let alertController = UIAlertController(title: "검증 오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func enableDoneButton() {
+        navigationItem.rightBarButtonItem?.isEnabled = true
+    }
+    
+    private func disableDoneButton() {
+        navigationItem.rightBarButtonItem?.isEnabled = false
+    }
 }
+
+
 
 // MARK: - EditProfileFooterDelegate
 extension EditProfileController: EditProfileFooterDelegate {

@@ -63,7 +63,7 @@ class MainTabController: UITabBarController {
 //        } catch let error {
 //            print("Couldn't make logout with error \(error.localizedDescription)")
 //        }
-        
+//        
         configureViewControllers()
         tabBar.backgroundColor = .systemGray5
         authenticateUserAndConfigureUI()

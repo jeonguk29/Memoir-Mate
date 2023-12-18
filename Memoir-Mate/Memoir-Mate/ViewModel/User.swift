@@ -46,7 +46,7 @@ struct User {
         self.email = dictionary["email"] as? String ?? ""
         self.username = dictionary["username"] as? String ?? ""
         
-        self.userNickName = dictionary["userNickname"] as? String ?? ""
+        self.userNickName = dictionary["userNickName"] as? String ?? ""
         self.userID = dictionary["userID"] as? String ?? ""
         self.userSetting = dictionary["userSetting"] as? Bool ?? false
         
