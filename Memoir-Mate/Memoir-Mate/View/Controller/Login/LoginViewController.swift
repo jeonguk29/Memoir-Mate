@@ -177,7 +177,7 @@ class LoginViewController: UIViewController {
     private func setupAutoLayout() {
   
         // 비디오 파일 경로를 가져옵니다.
-        if let videoPath = Bundle.main.path(forResource: "LaunchScreen", ofType: "mp4") {
+        if let videoPath = Bundle.main.path(forResource: "LoginView", ofType: "mp4") {
             // AVPlayer 인스턴스를 생성합니다.
             let player = AVPlayer(url: URL(fileURLWithPath: videoPath))
             

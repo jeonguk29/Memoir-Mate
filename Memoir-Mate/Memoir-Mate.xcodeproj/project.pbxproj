@@ -14,6 +14,7 @@
 		6401687C2AF219DE00CBE131 /* ProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401687B2AF219DE00CBE131 /* ProfileHeader.swift */; };
 		6401687E2AF21A0900CBE131 /* ProfileFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401687D2AF21A0900CBE131 /* ProfileFilterView.swift */; };
 		640168802AF21A5300CBE131 /* ProfileFilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6401687F2AF21A5300CBE131 /* ProfileFilterCell.swift */; };
+		640E16262B316156008D9954 /* LoginView.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 640E16252B316156008D9954 /* LoginView.mp4 */; };
 		641BDDA72B00AE0C003F81B9 /* EditProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641BDDA62B00AE0C003F81B9 /* EditProfileController.swift */; };
 		641BDDA92B00AE74003F81B9 /* EditProfileFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641BDDA82B00AE74003F81B9 /* EditProfileFooter.swift */; };
 		641BDDAB2B00AEFA003F81B9 /* EditProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641BDDAA2B00AEFA003F81B9 /* EditProfileHeader.swift */; };
@@ -50,7 +51,6 @@
 		64BDAA2C2B24990600928E98 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BDAA2B2B24990600928E98 /* LandingPageView.swift */; };
 		64BDAA2E2B24B0AC00928E98 /* LandingPageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */; };
 		64BE8E372ACFE97D00703410 /* CommunityDiarySelectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */; };
-		64D5CA3E2B30357B0073EE0F /* LaunchScreen.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 64D5CA3D2B30357B0073EE0F /* LaunchScreen.mp4 */; };
 		64D64F7B2B2EDA1B00189DFE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 64D64F7A2B2EDA1B00189DFE /* GoogleService-Info.plist */; };
 		64E0F5362AF9F6DF00122E4A /* ActionSheetLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */; };
 		64E0F5382AF9F73F00122E4A /* DiaryHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E0F5372AF9F73F00122E4A /* DiaryHeader.swift */; };
@@ -79,6 +79,7 @@
 		6401687B2AF219DE00CBE131 /* ProfileHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeader.swift; sourceTree = "<group>"; };
 		6401687D2AF21A0900CBE131 /* ProfileFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFilterView.swift; sourceTree = "<group>"; };
 		6401687F2AF21A5300CBE131 /* ProfileFilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFilterCell.swift; sourceTree = "<group>"; };
+		640E16252B316156008D9954 /* LoginView.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = LoginView.mp4; sourceTree = "<group>"; };
 		641BDDA62B00AE0C003F81B9 /* EditProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileController.swift; sourceTree = "<group>"; };
 		641BDDA82B00AE74003F81B9 /* EditProfileFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileFooter.swift; sourceTree = "<group>"; };
 		641BDDAA2B00AEFA003F81B9 /* EditProfileHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileHeader.swift; sourceTree = "<group>"; };
@@ -119,7 +120,6 @@
 		64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageCell.swift; sourceTree = "<group>"; };
 		64BE8E362ACFE97D00703410 /* CommunityDiarySelectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityDiarySelectController.swift; sourceTree = "<group>"; };
 		64BE8E3A2AD2E67800703410 /* Launch.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Launch.mp4; sourceTree = "<group>"; };
-		64D5CA3D2B30357B0073EE0F /* LaunchScreen.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = LaunchScreen.mp4; path = ../LaunchScreen.mp4; sourceTree = "<group>"; };
 		64D64F7A2B2EDA1B00189DFE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Utils/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		64E0F5352AF9F6DE00122E4A /* ActionSheetLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetLauncher.swift; sourceTree = "<group>"; };
 		64E0F5372AF9F73F00122E4A /* DiaryHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryHeader.swift; sourceTree = "<group>"; };
@@ -211,7 +211,7 @@
 		6448F8682B0C6AEA00C73009 /* mp4 Background */ = {
 			isa = PBXGroup;
 			children = (
-				64D5CA3D2B30357B0073EE0F /* LaunchScreen.mp4 */,
+				640E16252B316156008D9954 /* LoginView.mp4 */,
 				6448F8662B0C6ABD00C73009 /* oceanback.mp4 */,
 				64AC742E2B0C5274004C4BBD /* tab2.mp4 */,
 				64AC74302B0C527B004C4BBD /* tab2-2.mp4 */,
@@ -469,6 +469,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				640E16262B316156008D9954 /* LoginView.mp4 in Resources */,
 				6448F8692B0C6B7E00C73009 /* oceanback.mp4 in Resources */,
 				6448F86A2B0C6B7E00C73009 /* tab2.mp4 in Resources */,
 				6448F86B2B0C6B7E00C73009 /* tab2-2.mp4 in Resources */,
@@ -480,7 +481,6 @@
 				64D64F7B2B2EDA1B00189DFE /* GoogleService-Info.plist in Resources */,
 				649D94632AB0A5590092BF0D /* Main.storyboard in Resources */,
 				64FA49FF2AB83F4A0007A263 /* 나눔손글씨 무궁화.ttf in Resources */,
-				64D5CA3E2B30357B0073EE0F /* LaunchScreen.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -745,9 +745,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.woogie.Memoir-Mate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -776,9 +779,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.woogie.Memoir-Mate";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
