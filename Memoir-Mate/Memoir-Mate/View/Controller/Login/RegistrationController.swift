@@ -44,20 +44,20 @@ class RegistrationController: UIViewController {
 
     
     private lazy var userNicknameContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_person_outline_white_2x")
+        let image = UIImage(systemName: "person")!.withTintColor(.white, renderingMode: .alwaysOriginal)
         let view = Utilities().inputContaimerView(withImage: image, textField: userNicknameTextField)
         return view
     }()
-    
+
     private lazy var userIDContainerView: UIView = {
-        let image = #imageLiteral(resourceName: "ic_lock_outline_white_2x")
+        let image = UIImage(systemName: "person.badge.shield.checkmark")!.withTintColor(.white, renderingMode: .alwaysOriginal)
         let view = Utilities().inputContaimerView(withImage: image, textField: userIDTextField)
         return view
     }()
 
     
     private let userNicknameTextField: UITextField = {
-        let tf = Utilities().textField(withPlaceholder: "별명을 입력해 주세요")
+        let tf = Utilities().textField(withPlaceholder: "Nickname을 입력해 주세요")
         return tf
     }()
     

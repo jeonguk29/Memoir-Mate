@@ -2,25 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>895480304477-3a6trfttflrjggtrlf06nuo6qictpiii.apps.googleusercontent.com</string>
+				<string>com.googleusercontent.apps.895480304477-3a6trfttflrjggtrlf06nuo6qictpiii</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.895480304477-3a6trfttflrjggtrlf06nuo6qictpiii</string>
-			</array>
+			<array/>
 		</dict>
 	</array>
 	<key>UIAppFonts</key>
