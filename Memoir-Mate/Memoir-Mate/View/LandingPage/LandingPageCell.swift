@@ -19,30 +19,39 @@ struct LandingPageCell: View {
     
     var body: some View {
         VStack {
-            Image(landingImage)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 310)
-                .cornerRadius(20)
-            
-            if landingImage == "Landing5" {
-                Button(action: {
-                    userLandingPageCheck = true
-                    presentationMode.wrappedValue.dismiss() // 버튼을 누르면 현재 화면을 닫음
-                }) {
-                    Text("Memoir Mate 시작하기")
-                }
-                .frame(height: 50)
-                .frame(maxWidth: .infinity)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+            GeometryReader { geometry in
+                Image(landingImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: geometry.size.width * 0.80) // 이미지의 너비를 화면 너비의 80%로 설정
+                    .frame(maxWidth: .infinity)
+                    .cornerRadius(20)
+                    .overlay(
+                        VStack {
+                            if landingImage == "Landing5" {
+                                Button(action: {
+                                    userLandingPageCheck = true
+                                    presentationMode.wrappedValue.dismiss() // 버튼을 누르면 현재 화면을 닫음
+                                }) {
+                                    Text("Memoir Mate 시작하기")
+                                }
+                                .frame(height: 50)
+                                .frame(maxWidth: .infinity)
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.large)
+                                .offset(y: 300) // 이미지를 기준으로 버튼의 위치를 조정
+                            }
+                        }
+                    )
             }
         }
     }
+
+
 }
 
 struct LandingPageCell_Previews: PreviewProvider {
     static var previews: some View {
-        LandingPageCell(landingImage: "Landing1")
+        LandingPageCell(landingImage: "Landing5")
     }
 }
