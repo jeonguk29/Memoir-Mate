@@ -24,15 +24,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    
- 
-    
     // 구글의 인증프로세스가 끝날때 앱이 수신하는 URL을 처리하는 역할
-    func application(_ app: UIApplication,
-                     open url: URL,
-                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-      return GIDSignIn.sharedInstance.handle(url)
-    }
+    func application(
+       _ app: UIApplication,
+       open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+     ) -> Bool {
+       var handled: Bool
+
+       handled = GIDSignIn.sharedInstance.handle(url)
+       if handled {
+           // Handle other custom URL types.
+         return true
+       }
+
+
+       // If not handled by this app, return false.
+       return false
+     }
+ 
+
     
     
     
