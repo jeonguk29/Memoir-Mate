@@ -389,6 +389,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
                               
                               tab.authenticateUserAndConfigureUI()
                               
+                              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
                               self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인
                           }
                     

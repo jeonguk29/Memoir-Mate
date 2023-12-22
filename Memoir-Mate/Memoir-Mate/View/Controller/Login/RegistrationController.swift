@@ -106,24 +106,24 @@ class RegistrationController: UIViewController {
     
     
     // MARK: - LandingPage
-    var userLandingPageCheck: Bool {
-          get {
-              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
-          }
-          set {
-              UserDefaults.standard.set(newValue, forKey: "userLandingPageCheck")
-          }
-      }
+//    var userLandingPageCheck: Bool {
+//          get {
+//              UserDefaults.standard.bool(forKey: "userLandingPageCheck")
+//          }
+//          set {
+//              UserDefaults.standard.set(newValue, forKey: "userLandingPageCheck")
+//          }
+//      }
     
     // MARK: - LandingPage SWiftUI View Open
     private func openSwiftUIView() {
-        
-        if userLandingPageCheck == false {
+        // 해당 컨트롤러로 오면 무조건 신규 사용자라 그냥 보여주면 됨 
+        //if userLandingPageCheck == false {
             let hostingController = UIHostingController(rootView: LandingPageView())
             hostingController.sizingOptions = .preferredContentSize
             hostingController.modalPresentationStyle = .fullScreen
             self.present(hostingController, animated: true)
-        }
+        //}
     }
     
     // MARK: - Lifecycle
