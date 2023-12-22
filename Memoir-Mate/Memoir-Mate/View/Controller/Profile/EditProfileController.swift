@@ -7,8 +7,10 @@
 
 
 import UIKit
+import FirebaseAuth
 
 private let reuseIdentifier = "EditProfileCell"
+@available(iOS 16.0, *)
 protocol EditProfileControllerDelegate: class {
     
     // 데이터 수정후 데이터 베이스 변경은 되지만 피드와 현제 수정후 변환된 값으로 리로드를 하기위한 프로토콜
@@ -16,6 +18,7 @@ protocol EditProfileControllerDelegate: class {
     func handleLogout() // 로그아웃 버튼 클릭시 로그인 화면으로 돌아가기위한 메서드
 }
 
+@available(iOS 16.0, *)
 class EditProfileController: UITableViewController {
     
     // MARK: - Properties
@@ -113,6 +116,8 @@ class EditProfileController: UITableViewController {
         }
     }
         
+  
+
         
         // MARK: - Helpers
         func configureNavigationBar() {
@@ -132,10 +137,20 @@ class EditProfileController: UITableViewController {
                                                                target: self,
                                                                action: #selector(handleCancel))
             
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose,
-                                                                target: self,
-                                                                action: #selector(handleDone))
-            //navigationItem.rightBarButtonItem?.isEnabled = false // 활성화
+            let customButton = UIBarButtonItem(barButtonSystemItem: .compose,
+                                               target: self,
+                                               action: #selector(handleDone))
+            let customButton2 =  UIBarButtonItem(customView: privacySettingsButton)
+        
+            
+//            // 네비게이션 바 아이템 사이에 임의로 간격 설정하기
+//            let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+//            space.width = 32 // 원하는 간격을 설정하세요
+
+            navigationItem.rightBarButtonItems = [customButton, customButton2]
+
+            
+            
         }
         
         func configureTableView() {
@@ -160,6 +175,7 @@ class EditProfileController: UITableViewController {
 }
 
 // MARK: - UITableViewDataSource
+@available(iOS 16.0, *)
 extension EditProfileController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return EditProfileOptions.allCases.count // 3개의 case가 있음
@@ -179,6 +195,7 @@ extension EditProfileController {
 }
 
 // MARK: - UITableViewDelegate
+@available(iOS 16.0, *)
 extension EditProfileController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let option = EditProfileOptions(rawValue: indexPath.row) else { return 0 }
@@ -189,6 +206,7 @@ extension EditProfileController {
 
 
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
+@available(iOS 16.0, *)
 extension EditProfileController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
@@ -205,6 +223,7 @@ extension EditProfileController: UIImagePickerControllerDelegate, UINavigationCo
 
 // MARK: - EditProfileHeaderDelegate
 
+@available(iOS 16.0, *)
 extension EditProfileController: EditProfileHeaderDelegate {
     func didTapChangeProfilePhoto() {
         present(imagePicker, animated: true, completion: nil)
@@ -212,6 +231,7 @@ extension EditProfileController: EditProfileHeaderDelegate {
 }
 
 // MARK: - EditProfileCellDelegate
+@available(iOS 16.0, *)
 extension EditProfileController: EditProfileCellDelegate {
     
     // 실제 사용자 정보를 업데이트 해주는 부분
@@ -290,6 +310,7 @@ extension EditProfileController: EditProfileCellDelegate {
 
 
 // MARK: - EditProfileFooterDelegate
+@available(iOS 16.0, *)
 extension EditProfileController: EditProfileFooterDelegate {
     func handleLogout() {
         
@@ -308,4 +329,115 @@ extension EditProfileController: EditProfileFooterDelegate {
         
         present(alert, animated: true, completion: nil)
     }
+}
+
+
+// MARK: - PrivacySetting
+@available(iOS 16.0, *)
+extension EditProfileController {
+    enum PrivacySettingList: String, CaseIterable {
+        case deleteAccount = "계정 탈퇴"
+        // 추가적인 이유를 필요에 따라 열거형에 추가할 수 있습니다.
+    }
+    
+    var privacySettingsButton: UIButton {
+        let button = UIButton(type: .system)
+        button.tintColor = .systemGray5
+        button.setImage(UIImage(systemName: "gear.badge.questionmark"), for: .normal)
+        button.addTarget(self, action: #selector(privacySettingsTapped), for: .touchUpInside)
+        return button
+    }
+
+    
+    @objc func privacySettingsTapped() {
+
+     
+        let alertController = UIAlertController(title: "개인 정보 설정", message: nil, preferredStyle: .actionSheet)
+
+        // Enum의 모든 케이스를 액션으로 추가
+        for reason in PrivacySettingList.allCases {
+            let action = UIAlertAction(title: reason.rawValue, style: .default) { [weak self] _ in
+                // Handle the selected option
+                self?.handlePrivacySetting(reason)
+            }
+            alertController.addAction(action)
+        }
+
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+
+        present(alertController, animated: true, completion: nil)
+    }
+
+    func handlePrivacySetting(_ setting: PrivacySettingList) {
+        switch setting {
+        case .deleteAccount:
+            showDeleteAccountConfirmation()
+        // Handle additional cases if needed
+        }
+    }
+
+    func showDeleteAccountConfirmation() {
+        let deleteAlertController = UIAlertController(title: "계정 탈퇴", message: "정말로 계정을 탈퇴하시겠습니까? \n모든 데이터가 삭제 되어 복구 하실 수 없습니다.", preferredStyle: .alert)
+
+        let confirmAction = UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+            // Handle the deletion logic here
+            self?.deleteAccount()
+        }
+
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+
+        deleteAlertController.addAction(confirmAction)
+        deleteAlertController.addAction(cancelAction)
+
+        present(deleteAlertController, animated: true, completion: nil)
+    }
+    
+   
+
+    func deleteAccount() {
+        if let user = Auth.auth().currentUser {
+            UserService.shared.deleteAllUserData(user: self.user) 
+            // 로그인 상태 확인
+            if user.isEmailVerified {
+                user.delete { [self] error in
+                    if let error = error {
+                        print("Firebase Error: ", error)
+                        
+                            let deleteAlertController = UIAlertController(title: "계정 탈퇴", message: "계정을 삭제 하기 위해서 로그아웃 이후 재 로그인이 필요 합니다.", preferredStyle: .alert)
+
+                            let confirmAction = UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+                                // Handle the deletion logic here
+//                                let loginViewController = LoginViewController()
+//
+//                                // 로그인 화면을 full screen으로 present
+//                                loginViewController.modalPresentationStyle = .fullScreen
+//                                self?.present(loginViewController, animated: true, completion: nil)
+
+                            }
+
+                            let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+
+                            deleteAlertController.addAction(confirmAction)
+                            deleteAlertController.addAction(cancelAction)
+
+                            present(deleteAlertController, animated: true, completion: nil)
+                    
+    
+                    } else {
+                        print("계정 탈퇴 성공 ")
+                        let loginViewController = LoginViewController()
+                        
+                        // 로그인 화면을 full screen으로 present
+                        loginViewController.modalPresentationStyle = .fullScreen
+                        self.present(loginViewController, animated: true, completion: nil)
+                    
+                    }
+                }
+            }
+        } else {
+            print("로그인 정보가 존재하지 않습니다.")
+        }
+        print("Account deletion requested.")
+    }
+
 }

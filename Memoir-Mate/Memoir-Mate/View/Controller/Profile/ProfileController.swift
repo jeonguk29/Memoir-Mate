@@ -292,6 +292,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 
 
 // MARK: - ProfileHeaderDelegate
+@available(iOS 16.0, *)
 extension ProfileController: ProfileHeaderDelegate {
     func didSelect(filter: ProfileFilterOptions) {
         //print("DEBUG: Did select filter \(filter.description) in profile controller..")

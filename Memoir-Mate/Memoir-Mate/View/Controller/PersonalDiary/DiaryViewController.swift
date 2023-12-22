@@ -31,8 +31,8 @@ class DiaryViewController: UICollectionViewController{
     { // 변경이 일어나면 아래 사용자 이미지 화면에 출력
         didSet {
             configureLeftBarButton() // 해당 함수가 호출 될때는 사용자가 존재한다는 것을 알수 있음
-            print("앱 사작후 DiaryViewController : \(user?.photoURLString)")
-            
+            //print("앱 사작후 DiaryViewController : \(user?.photoURLString)")
+     
             if  user!.userSetting != true  {
                 var controller = RegistrationController(user: self.user!)
                 //controller.user = self.user

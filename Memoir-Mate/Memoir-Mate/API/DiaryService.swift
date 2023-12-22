@@ -100,11 +100,14 @@ struct DiaryService {
         let diaryID = diary.diaryID // diary.diaryID를 옵셔널이 아닌 변수로 선언
         let userID = diary.user.uid // diary.diaryID를 옵셔널이 아닌 변수로 선언
         
-    
+        // 1. 일기 삭제
         REF_DIARYS.child(diaryID).removeValue(completionBlock: completion)
+        // 2. 일기 작성기록 삭제
         REF_USER_DIARYS.child(userID).child(diaryID).removeValue(completionBlock: completion)
+        // 3. 공유 했다면 공유 기록 삭제
         REF_USER_SHAREDIARYS.child(diaryID).removeValue(completionBlock: completion)
-       
+        // 4. 공유 했다면 공유 안에 댓글들 삭제
+        REF_DIARY_Comments.child(diaryID).removeValue()
     }
     
     
