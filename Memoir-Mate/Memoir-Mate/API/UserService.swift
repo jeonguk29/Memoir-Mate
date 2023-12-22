@@ -161,4 +161,65 @@ struct UserService {
         
         REF_USERS.child(uid).updateChildValues(values, withCompletionBlock: completion)
     }
+    
+    // 프로필 편집에서 사용자 탈퇴시 모든 정보를 삭제
+    func deleteAllUserData(user: User) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        print("uid \(uid)")
+        
+        // 유저가 쓴 전체 일기 uid 가져오기
+        REF_USER_DIARYS.child(uid).observeSingleEvent(of: .value) { (snapshot) in
+            guard let value = snapshot.value as? [String: Any] else {
+                print("Error: Unable to retrieve data.")
+                return
+            }
+
+            // value는 [String: Any] 형태로 해당 경로의 데이터를 나타냅니다.
+            // 이제 반복문을 사용하여 각 하위 항목을 가져올 수 있습니다.
+
+            for (diaryID, diaryData) in value {
+                
+                // diaryID는 하위 항목의 키, diaryData는 해당 항목의 데이터입니다.
+                //print("Diary ID: \(diaryID), Data: \(diaryData)")
+                
+                // 1. 유저가 작성한 전체 일기 삭제하게
+                REF_DIARYS.child(diaryID).removeValue()
+                
+            
+                // 2. 공유일기에 저장된 일기 uid 삭제
+                REF_USER_SHAREDIARYS.child(diaryID).removeValue()
+                
+                
+                // 3. 유저가 쓴 공유 일기에 누군가 남긴 댓글 및 유저가 작성한 댓글들 삭제 하는 로직
+                REF_USER_Comments.child(uid).observeSingleEvent(of: .value) { (snapshot) in
+                    guard let value = snapshot.value as? [String: Any] else {
+                        print("Error: Unable to retrieve data.")
+                        return
+                    }
+                    
+                    // 4. 일기안에 저장된 댓글 삭제
+                    for (diaryCommentsID, diaryData) in value {
+                        // diaryID는 하위 항목의 키, diaryData는 해당 항목의 데이터입니다.
+                        print("Diary ID: \(diaryID), Data: \(diaryData)")
+                        REF_DIARY_Comments.child(diaryCommentsID).removeValue()
+                        // 여기에서 가져온 데이터를 사용하거나 저장하는 작업을 수행할 수 있습니다.
+                        
+                        // 5. 유저가 남긴 댓길 기록 삭제
+                        REF_USER_Comments.child(uid).removeValue()
+                    }
+                }
+                
+            }
+            
+            
+        }
+        
+        // 5. 유저가 작성한 일기 기록 삭제
+        REF_USER_DIARYS.child(uid).removeValue()
+        
+        
+        // 6. 사용자 삭제
+        REF_USERS.child(uid).removeValue()
+    
+    }
 }
