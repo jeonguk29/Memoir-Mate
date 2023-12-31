@@ -11,6 +11,8 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseDatabase
 import SwiftUI
+import AVFoundation
+import Photos
 
 @available(iOS 16.0, *)
 class RegistrationController: UIViewController {
@@ -93,7 +95,7 @@ class RegistrationController: UIViewController {
         button.backgroundColor = .white
         button.heightAnchor.constraint(equalToConstant: 50).isActive = true
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        button.addTarget(self, action: #selector(handelRegistration), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
         return button
     }()
     
@@ -135,6 +137,15 @@ class RegistrationController: UIViewController {
         configureUI()
     }
     
+    func checkCameraPermission(){
+        AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
+            if granted {
+                print("Camera: 권한 허용")
+            } else {
+                print("Camera: 권한 거부")
+            }
+        })
+     }
     
     // MARK: - Selectors
     @objc func handleShowLogin() {
@@ -142,10 +153,31 @@ class RegistrationController: UIViewController {
     }
     
     @objc func handleAddProfilePhoto(){
-        present(imagePicker, animated: true, completion: nil)
+            PHPhotoLibrary.requestAuthorization { status in
+                switch status {
+                case .authorized:
+                    DispatchQueue.main.async {
+                        self.present(self.imagePicker, animated: true, completion: nil)
+                        // 권한 허용 시 추가적인 작업 수행
+                    }
+                    break
+                case .denied:
+                    print("Album: 권한 거부")
+                    // 권한 거부 시 사용자에게 프로필 등록 필요 메시지 표시
+                    self.showProfileRegistrationAlert()
+                    break
+                case .restricted, .notDetermined:
+                    print("Album: 선택하지 않음")
+                    // 선택하지 않음 시 사용자에게 프로필 등록 필요 메시지 표시
+                    self.showProfileRegistrationAlert()
+                    break
+                @unknown default:
+                    break
+                }
+            }
     }
     
-    @objc func handelRegistration(){
+    @objc func handleRegistration() {
         guard let profileImage = profileImage else {
             print("DEBUG: 프로필 이미지를 선택해주세요")
             return
@@ -179,7 +211,7 @@ class RegistrationController: UIViewController {
             
 //            guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
 //                return }
-//            
+//
 //            guard let tab = window.rootViewController as? MainTabController else {return}
             
             // 사용자 정보 업데이트 완료
@@ -205,8 +237,24 @@ class RegistrationController: UIViewController {
             
         }
         
-    
     }
+
+    func showProfileRegistrationAlert() {
+        let alertController = UIAlertController(title: "프로필 등록 필요", message: "앱을 사용하기 위해서는 프로필 등록이 필요합니다.", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+            // 프로필 등록 화면으로 이동
+            // 필요한 작업 수행
+        }
+        alertController.addAction(okAction)
+        // 필요한 경우 추가적인 액션 및 메시지 설정
+        // alertController.addAction(...)
+        
+        // 현재 화면에 알림창 표시
+        // self.present(alertController, animated: true, completion: nil)
+    }
+
+    
+
     
     
     // MARK: - Helpers
