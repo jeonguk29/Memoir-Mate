@@ -595,45 +595,107 @@ extension DiaryViewController: DiaryCellDelegate, MFMailComposeViewControllerDel
  
     
     func sendEmail(reason: String, userUid: String, userName: String, userCellID: String) {
-        if MFMailComposeViewController.canSendMail() {
+ 
+        let defaults = UserDefaults.standard
             
-            let composeVC = MFMailComposeViewController()
-            composeVC.mailComposeDelegate = self
-            
-            
-            let bodyString = """
-                피드백 내용: \(reason)
-                사용자 UID: \(userUid)
-                사용자 이름: \(userName)
-                해당 부분은 수정 하시면 안 됩니다.
-                
-                피드백 내용을 아래에 적어주세요.
-                
-                """
-            
-            // 받는 사람 이메일, 제목, 본문
-            composeVC.setToRecipients(["jeonguk29@naver.com"])
-            composeVC.setSubject("피드백")
-            composeVC.setMessageBody(bodyString, isHTML: false)
-            
-            self.present(composeVC, animated: true)
-        } else {
-            // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
-            let alertController = UIAlertController(title: "메일 계정 활성화 필요",
-                                                    message: "Mail 앱에서 사용자의 Email을 계정을 설정해 주세요.",
-                                                    preferredStyle: .alert)
-            let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
-                guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
-                
-                if UIApplication.shared.canOpenURL(mailSettingsURL) {
-                    UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+            if defaults.bool(forKey: "mailAppAccess") {
+                // mailAppAccess가 true인 경우, 바로 메일을 보냅니다.
+                    if MFMailComposeViewController.canSendMail() {
+                        let composeVC = MFMailComposeViewController()
+                        composeVC.mailComposeDelegate = self
+                        
+                        let bodyString = """
+                            피드백 내용: \(reason)
+                            사용자 UID: \(userUid)
+                            사용자 이름: \(userName)
+                            해당 부분은 수정 하시면 안 됩니다.
+                            
+                            피드백 내용을 아래에 적어주세요.
+                            """
+                        
+                        // 받는 사람 이메일, 제목, 본문
+                        composeVC.setToRecipients(["jeonguk29@naver.com"])
+                        composeVC.setSubject("피드백")
+                        composeVC.setMessageBody(bodyString, isHTML: false)
+                        
+                        self.present(composeVC, animated: true)
+                        
+                        // mailAppAccess를 true로 저장합니다.
+                        defaults.set(true, forKey: "mailAppAccess")
+                    } else {
+                        // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+                        let alertController = UIAlertController(title: "메일 앱 설치 및 계정 활성화 필요", message: "Mail 앱을 설치 했는지 확인하고 사용자의 Email을, 계정을 설정해 주세요.", preferredStyle: .alert)
+                        let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                            guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                            
+                            if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                                UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                            }
+                        }
+                        alertController.addAction(alertAction)
+                        
+                        self.present(alertController, animated: true)
+                    }
                 }
+            else {
+                // mailAppAccess가 false인 경우, alertController를 보여줍니다.
+                let alertController = UIAlertController(title: "Mail 앱 접근 필요", message: "Memoir Mate에서 Mail 앱에 접근하려고 합니다.", preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+                    // 취소 버튼을 누르면 아무런 작업을 수행하지 않고 함수를 종료합니다.
+                    return
+                }
+                alertController.addAction(cancelAction)
+                
+                let openMailAppAction = UIAlertAction(title: "허용", style: .default) { _ in
+                    if MFMailComposeViewController.canSendMail() {
+                        let composeVC = MFMailComposeViewController()
+                        composeVC.mailComposeDelegate = self
+                        
+                        let bodyString = """
+                            피드백 내용: \(reason)
+                            사용자 UID: \(userUid)
+                            사용자 이름: \(userName)
+                            해당 부분은 수정 하시면 안 됩니다.
+                            
+                            피드백 내용을 아래에 적어주세요.
+                            """
+                        
+                        // 받는 사람 이메일, 제목, 본문
+                        composeVC.setToRecipients(["jeonguk29@naver.com"])
+                        composeVC.setSubject("피드백")
+                        composeVC.setMessageBody(bodyString, isHTML: false)
+                        
+                        self.present(composeVC, animated: true)
+                        
+                        // mailAppAccess를 true로 저장합니다.
+                        defaults.set(true, forKey: "mailAppAccess")
+                    } else {
+                        // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+                        let alertController = UIAlertController(title: "메일 앱 설치 및 계정 활성화 필요", message: "Mail 앱을 설치 했는지 확인하고 사용자의 Email을, 계정을 설정해 주세요.", preferredStyle: .alert)
+                        let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                            guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                            
+                            if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                                UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                            }
+                        }
+                        alertController.addAction(alertAction)
+                        
+                        self.present(alertController, animated: true)
+                    }
+                }
+                alertController.addAction(openMailAppAction)
+                
+                // UIAlertController를 화면에 표시합니다.
+                self.present(alertController, animated: true, completion: nil)
             }
-            alertController.addAction(alertAction)
-            
-            self.present(alertController, animated: true)
-        }
     }
+    
+    func startSendEmail(reason: String, userUid: String, userName: String, userCellID: String) {
+        
+    }
+ 
     
     // 해당 코드가 있어야 메일 전송후 앱 화면으로 돌아 오게 가능함
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
