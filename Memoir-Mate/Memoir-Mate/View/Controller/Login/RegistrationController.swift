@@ -164,12 +164,10 @@ class RegistrationController: UIViewController {
                 case .denied:
                     print("Album: 권한 거부")
                     // 권한 거부 시 사용자에게 프로필 등록 필요 메시지 표시
-                    self.showProfileRegistrationAlert()
                     break
                 case .restricted, .notDetermined:
                     print("Album: 선택하지 않음")
                     // 선택하지 않음 시 사용자에게 프로필 등록 필요 메시지 표시
-                    self.showProfileRegistrationAlert()
                     break
                 @unknown default:
                     break
@@ -179,10 +177,16 @@ class RegistrationController: UIViewController {
     
     @objc func handleRegistration() {
         guard let profileImage = profileImage else {
-            print("DEBUG: 프로필 이미지를 선택해주세요")
+            let randomImageIndex = Int.random(in: 1...6)
+            let imageName = "defultImage\(randomImageIndex)"
+            
+            if let image = UIImage(named: imageName) {
+                profileImage = image
+            }
+            
             return
         }
-        
+
         if validateTextField(userNicknameTextField, minLength: 3, maxLength: 14) {
             // userNicknameTextField의 입력이 유효합니다.
         } else {
@@ -239,23 +243,7 @@ class RegistrationController: UIViewController {
         
     }
 
-    func showProfileRegistrationAlert() {
-        let alertController = UIAlertController(title: "프로필 등록 필요", message: "앱을 사용하기 위해서는 프로필 등록이 필요합니다.", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            // 프로필 등록 화면으로 이동
-            // 필요한 작업 수행
-        }
-        alertController.addAction(okAction)
-        // 필요한 경우 추가적인 액션 및 메시지 설정
-        // alertController.addAction(...)
-        
-        // 현재 화면에 알림창 표시
-        // self.present(alertController, animated: true, completion: nil)
-    }
-
-    
-
-    
+   
     
     // MARK: - Helpers
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseAuth
+import Photos
 
 private let reuseIdentifier = "EditProfileCell"
 @available(iOS 16.0, *)
@@ -208,7 +209,8 @@ extension EditProfileController {
 // MARK: - UIImagePickerControllerDelegate, UINavigationControllerDelegate
 @available(iOS 16.0, *)
 extension EditProfileController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         // 사용자 프로필 이미지를 바꾸는 부분
         guard let image = info[.editedImage] as? UIImage else { return }
@@ -226,7 +228,47 @@ extension EditProfileController: UIImagePickerControllerDelegate, UINavigationCo
 @available(iOS 16.0, *)
 extension EditProfileController: EditProfileHeaderDelegate {
     func didTapChangeProfilePhoto() {
-        present(imagePicker, animated: true, completion: nil)
+        PHPhotoLibrary.requestAuthorization { status in
+            switch status {
+            case .authorized:
+                DispatchQueue.main.async {
+                    self.present(self.imagePicker, animated: true, completion: nil)
+                    // 권한 허용 시 추가적인 작업 수행
+                }
+                break
+            case .denied:
+                print("Album: 권한 거부")
+                // 권한 거부 시 사용자에게 사진 권한을 허용해야 함을 알림
+                let alertController = UIAlertController(title: "사진 권한 필요", message: "앱에서 사진을 사용하려면 사진에 대한 권한을 허용해야 합니다. 설정 -> 개인정보 보호 및 보안 -> 사진에서 권한을 허용해주세요.", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+                alertController.addAction(okAction)
+                
+                // 현재 화면에 알림창 표시
+                DispatchQueue.main.async {
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                break
+
+            case .restricted, .notDetermined:
+                print("Album: 선택하지 않음")
+                // 선택하지 않음 시 사용자에게 사진 권한을 허용해야 함을 알림
+                let alertController = UIAlertController(title: "사진 권한 필요", message: "앱에서 사진을 사용하려면 사진에 대한 권한을 허용해야 합니다. 설정 -> 개인정보 보호 및 보안 -> 사진에서 권한을 허용해주세요.", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+                alertController.addAction(okAction)
+                
+                // 현재 화면에 알림창 표시
+                DispatchQueue.main.async {
+                    self.present(alertController, animated: true, completion: nil)
+                }
+                break
+
+            @unknown default:
+                break
+
+                
+            }
+            
+        }
     }
 }
 
