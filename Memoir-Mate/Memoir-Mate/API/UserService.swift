@@ -94,6 +94,42 @@ struct UserService {
         
     }
     
+    func blockUser(blockUserUid: String, completion: @escaping(DatabaseCompletion)){
+        guard let currentUid = Auth.auth().currentUser?.uid else {return}
+        
+        // 한명이 차단하면 서로의 일기가 안보이게 구현
+        // 일기 목록 확인시 해당일기가 차단 사용자면 배열에서 제거 
+        REF_BLOCK_USER.child(currentUid).updateChildValues([blockUserUid: 1]) { (err, ref) in
+            REF_BLOCK_USER.child(blockUserUid).updateChildValues([currentUid: 1], withCompletionBlock: completion)
+        }
+        
+    }
+    
+    func blockUserFetch(completion: @escaping ([String]?, Error?) -> Void) {
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+        print("블락 유져 테스트 시작")
+        
+        REF_BLOCK_USER.child(currentUid).observe(.value) { snapshot, error in
+            if let error = error {
+                print("블락 유져 에러")
+                completion(nil, error as? Error)
+            } else if let blockDictionary = snapshot.value as? [String: Any] {
+                let blockList = Array(blockDictionary.keys)
+                print("블락 유져 목록")
+                print(blockList)
+                completion(blockList, nil)
+            } else {
+                // 차단 사용자가 없는 경우
+                print("차단 사용자 없음")
+                completion([], nil)
+            }
+        }
+
+    }
+
+
+
+    
     // 사용자 객체는 isFollowed = false로 항상 초기화 되기 때문에 팔로우를 눌러도 다시 나갔다 들어오면 재설정 됨
     // 사용자가 실제로 누군가를 팔로우하는지 여부에 따라 해당 속성을 설정하는 방법이 필요합니다.
     // 이게 그 방법으로 속석을 설정하는 방법임

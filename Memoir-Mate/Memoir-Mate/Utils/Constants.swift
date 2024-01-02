@@ -28,3 +28,5 @@ let REF_DIARY_LIKES = DB_REF.child("diary-likes") // 일기 입장에서 누가 
 let REF_USER_FOLLOWERS = DB_REF.child("user-followers")
 let REF_USER_FOLLOWING = DB_REF.child("user-following")
 let REF_NOTIFICATIONS = DB_REF.child("notifications")
+
+let REF_BLOCK_USER = DB_REF.child("Block_user")

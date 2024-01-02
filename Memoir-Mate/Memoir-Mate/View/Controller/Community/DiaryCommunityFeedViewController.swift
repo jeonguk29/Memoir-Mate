@@ -322,26 +322,47 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
             var communityDiarys = [Diary]() // 공유된 다이어리를 담을 배열 생성
             var selectDiarys = [Diary]() // 선택된 날짜의 다이어리를 담을 배열 생성
             
-            for diary in diarys {
-                if diary.isShare { // isShare가 true인 경우에만 추가
-                    communityDiarys.append(diary)
+            UserService().blockUserFetch { blockList, error in
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                    // 에러 처리
+                } else {
+                    if let blockList = blockList {
+                        print("Block List: \(blockList)")
+                        
+                        for diary in diarys {
+                            if diary.isShare { // isShare가 true인 경우에만 추가
+                                // 차단 사용자일 경우 해당 다이어리 건너뛰기
+                                if blockList.contains(diary.user.uid) {
+                                    continue
+                                }
+                                
+                                communityDiarys.append(diary)
+                            }
+                        }
+                    
+
+                        
+                        // 같은 날짜의 일기만 선택
+                        selectDiarys = communityDiarys.filter {
+                            $0.userSelectDate == self.selectDate
+                        }
+                        
+                        // 좋아요 상태 확인 및 적용
+                        self.checkIfUserLikedDiary(selectDiarys)
+                        
+                        // 날짜 순으로 정렬
+                        selectDiarys.sort(by: { $0.timestamp > $1.timestamp })
+                        
+                        self.diarys = selectDiarys
+                        self.collectionView.refreshControl?.endRefreshing()
+                    }
                 }
+                
             }
-            
-            // 같은 날짜의 일기만 선택
-            selectDiarys = communityDiarys.filter {
-                $0.userSelectDate == self.selectDate
-            }
-            
-            // 좋아요 상태 확인 및 적용
-            self.checkIfUserLikedDiary(selectDiarys)
-            
-            // 날짜 순으로 정렬
-            selectDiarys.sort(by: { $0.timestamp > $1.timestamp })
-            
-            self.diarys = selectDiarys
-            self.collectionView.refreshControl?.endRefreshing()
         }
+        
+        
     }
 
     func checkIfUserLikedDiary(_ diarys: [Diary]) {

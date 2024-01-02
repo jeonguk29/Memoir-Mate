@@ -295,9 +295,8 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 // MARK: - ProfileHeaderDelegate
 @available(iOS 16.0, *)
 extension ProfileController: ProfileHeaderDelegate, MFMailComposeViewControllerDelegate {
-   
-    
-    
+
+
     enum ReportReason: String, CaseIterable {
         case reportUser = "사용자 신고"
         case blockUser = "사용자 차단"
@@ -310,24 +309,57 @@ extension ProfileController: ProfileHeaderDelegate, MFMailComposeViewControllerD
         let userName = user.userNickName
         let userID = user.userID
         
-        let alertController = UIAlertController(title: "부적절한 사용자", message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(
+            title: "부적절한 사용자",
+            message: nil,
+            preferredStyle: .actionSheet
+        )
         
-        // Enum의 모든 케이스를 액션으로 추가
         for reason in ReportReason.allCases {
             let action = UIAlertAction(title: reason.rawValue, style: .default) { _ in
-                // sendEmail 함수 호출
-                self.sendEmail(reason: reason.rawValue, userUid: userUid, userName: userName, userID: userID)
+                // 사용자가 선택한 이유에 따라 처리
+                if reason == .blockUser {
+                    self.blockUser(userUid: userUid, userName: userName, userID: userID)
+                } else {
+                    self.sendEmail(reason: reason.rawValue, userUid: userUid, userName: userName, userID: userID)
+                }
             }
-            action.setValue(UIColor.red, forKey: "titleTextColor") // 액션의 텍스트 색상을 레드로 설정
+            action.setValue(UIColor.red, forKey: "titleTextColor")
             alertController.addAction(action)
         }
         
         alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         
-        present(alertController, animated: true, completion: nil)
+     
+       present(alertController, animated: true, completion: nil)
+      
     }
 
- 
+
+    func blockUser(userUid: String, userName: String, userID: String) {
+        let alertController = UIAlertController(
+            title: "사용자 차단",
+            message: "사용자가 정상적으로 차단되었습니다. 커뮤니티에서 사용자의 일기를 볼 수 없으며 나의 일기 또한 사용자에게 표시되지 않습니다.",
+            preferredStyle: .alert
+        )
+        
+        let okAction = UIAlertAction(title: "확인", style: .default) { (_) in
+            // OK 버튼을 누르면 실행할 동작 추가
+            // 예를 들면 다른 작업 수행이나 화면 전환 등을 여기에 추가
+        }
+        
+        alertController.addAction(okAction)
+        
+        // 현제 사용자 uid를 키로 잡고 값에 차단 사용자 uid를 넣기
+        // 그리고 차단하면 차단 사용자 일기 안보이게, 그리고 차단 된 사용자가 내 일기 안보이게
+        UserService().blockUser(blockUserUid: userUid) { (err, ref) in
+            DispatchQueue.main.async {
+                // 경고 창을 표시
+                self.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+
     
     func sendEmail(reason: String, userUid: String, userName: String, userID: String) {
         
