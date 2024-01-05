@@ -27,7 +27,8 @@ class EditProfileController: UITableViewController {
     private lazy var headerView = EditProfileHeader(user: user)
     private lazy var footerView = EditProfileFooter()
     private let imagePicker = UIImagePickerController()
-    
+    var validationErrorMessages: [String] = []
+
     
     private var userInfoChanged = false
     
@@ -275,23 +276,31 @@ extension EditProfileController: EditProfileHeaderDelegate {
 // MARK: - EditProfileCellDelegate
 @available(iOS 16.0, *)
 extension EditProfileController: EditProfileCellDelegate {
-    
-    // 실제 사용자 정보를 업데이트 해주는 부분
+  
     func updateUserInfo(_ cell: EditProfileCell) {
         guard let viewModel = cell.viewModel else { return }
         userInfoChanged = true
-        var validationErrorMessages: [String] = []
+    
+        // 일단 처음에 사용자 버튼이 눌리지 못하게
+        self.disableDoneButton()
         
+        // 유효성 검증 시작
         switch viewModel.option {
             
         case .userNickName:
             guard let userNickName = cell.infoTextField.text else {
                 validationErrorMessages.append("UserNickName은 3~14자 사이여야 합니다.")
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
                 break
             }
             // Validate userNickName length
             guard userNickName.count >= 3 && userNickName.count <= 14 else {
                 validationErrorMessages.append("UserNickName은 3~14자 사이여야 합니다.")
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
                 break
             }
             user.userNickName = userNickName
@@ -299,46 +308,87 @@ extension EditProfileController: EditProfileCellDelegate {
         case .userID:
             guard let username = cell.infoTextField.text else {
                 validationErrorMessages.append("사용자 ID는 3~14자 사이여야 합니다.")
-                break
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
+                return
             }
+
             // Validate username length and that it contains only English letters, numbers, and special characters
             let usernameRegex = "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{3,14}$"
             guard username.count >= 3 && username.count <= 14, NSPredicate(format: "SELF MATCHES %@", usernameRegex).evaluate(with: username) else {
                 validationErrorMessages.append("사용자 ID는 3~14자 사이의 영어 문자, 숫자, 특수문자 조합만 가능합니다.")
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
                 break
             }
-            user.userID = username
+            // Check for duplicate userID
+            guard let username = cell.infoTextField.text else {
+                validationErrorMessages.append("사용자 ID를 입력하세요.")
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
+                break
+            }
+            
+            UserService.shared.userIdDuplicateCheck(checkUserID: username) { isDuplicate in
+                print("isDuplicate \(isDuplicate)")
+                
+                // 중복 체크가 완료된 후 실행되어야 하는 코드
+                if isDuplicate {
+                    // 중복된 사용자 ID 경고창 보여주기
+                    DispatchQueue.main.async {
+                        // 사용자에게 알림을 보여줄 메서드 또는 함수를 호출하도록 수정
+                        self.validationErrorMessages.append("중복된 사용자 ID입니다. 다시 만들어 주세요.")
+                        self.showAlert(message: self.validationErrorMessages.joined(separator: "\n"))
+                        self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                        self.disableDoneButton()
+                        return
+                    }
+                } else {
+                    // duplicateCheck 값이 false인 경우에만 아래 코드가 실행됨
+                    self.user.userID = username
+                }
+            }
             
         case .bio:
             guard let bioText = cell.bioTextView.text else {
                 validationErrorMessages.append("자기소개는 최대 40자까지 가능합니다.")
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
                 break
             }
             // Validate bioText length
             guard bioText.count <= 40 else {
                 validationErrorMessages.append("자기소개는 최대 40자까지 가능합니다.")
+                showAlert(message: validationErrorMessages.joined(separator: "\n"))
+                self.validationErrorMessages = []  // 경고창이 닫힐 때 초기화
+                self.disableDoneButton()
                 break
             }
             user.bio = bioText
         }
         
-        if validationErrorMessages.isEmpty {
-            enableDoneButton()
-        } else {
-            disableDoneButton()
-            showAlert(message: validationErrorMessages.joined(separator: "\n"))
-        }
-        
-        print(user.userNickName)
-        print(user.userID)
-        print(user.bio)
+        // 유효성 검증 끝 (무사 통과)
+        self.enableDoneButton() // 업데이트 가능한 버튼 누를수 있게
     }
 
     private func showAlert(message: String) {
         let alertController = UIAlertController(title: "검증 오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        alertController.addAction(UIAlertAction(title: "확인", style: .default) { _ in
+            // 확인 버튼이 눌렸을 때 실행되는 핸들러
+            print("최종확인 \(self.validationErrorMessages)")
+            if self.validationErrorMessages.isEmpty {
+                self.disableDoneButton()
+            } else {
+                self.enableDoneButton()
+            }
+        })
         present(alertController, animated: true, completion: nil)
     }
+
     
     private func enableDoneButton() {
         navigationItem.rightBarButtonItem?.isEnabled = true
@@ -438,7 +488,7 @@ extension EditProfileController {
 
     func deleteAccount() {
         if let user = Auth.auth().currentUser {
-            UserService.shared.deleteAllUserData(user: self.user) 
+            UserService.shared.deleteAllUserData(user: self.user)
             // 로그인 상태 확인
             if user.isEmailVerified {
                 user.delete { [self] error in

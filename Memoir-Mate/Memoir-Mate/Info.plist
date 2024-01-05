@@ -7,11 +7,12 @@
 	<key>NSFileProviderDomainUsageDescription</key>
 	<string></string>
 	<key>NSUserNotificationsUsageDescription</key>
-	<string>Memoir Mate에서 사용자에게 알림을 보내려고 합니다.</string>
+	<string>Memoir Mate에서 사용자가 작성하고 공유한 일기에 대한 반응, 중요 공지 사항을 위해 사용자에게 알림을 보내려고 합니다.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Memoir Mate에서 Face ID를 사용하려고 합니다.</string>
+	<string>Memoir Mate에서 더 간편한 로그인을 위하여 Face ID를 사용하려고 합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Memoir Mate에서 사진에 접근하려고 합니다.</string>
+	<string>Memoir Mate에서 사용자의 프로필 이미지를 선택하기 위해 사진에 접근하려고 합니다.
+프로필 사진을 설정하면 사용자들 서로를 더 쉽게 식별할 수 있습니다. 또한 다른 사용자와 상호작용할 때 신원을 확인하기 쉽기 때문에 커뮤니케이션의 신뢰도가 향상됩니다.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

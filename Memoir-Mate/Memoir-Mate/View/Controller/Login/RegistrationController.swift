@@ -193,7 +193,8 @@ class RegistrationController: UIViewController {
             
             return
         }
-
+        
+    
         if validateTextField(userNicknameTextField, minLength: 3, maxLength: 14) {
             // userNicknameTextField의 입력이 유효합니다.
         } else {
@@ -212,42 +213,31 @@ class RegistrationController: UIViewController {
         
         guard let userNickName = userNicknameTextField.text else {return}
         guard let userID = userIDTextField.text else {return}
-//        guard let userNickname = userNicknameTextField.text?.lowercased() else {return}
-//        // 사용자의 이름이 항상 소문자인지 확인
-        
-        let credentials = AuthCredentials(userID: userID, userNickName: userNickName, photoURLString: profileImage)
-        AuthService.shared.registerUser(user: self.user, credentials: credentials){ (error, ref) in
-//            print("사용자가 성공적으로 가입되었습니다.")
-//            print("사용자의 인터페이스를 업데이트 할 부분입니다.")
-            
-//            guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else {
-//                return }
-//
-//            guard let tab = window.rootViewController as? MainTabController else {return}
-            
-            // 사용자 정보 업데이트 완료
-            UserService.shared.fetchUser(uid: self.user.uid) { (user) in
-                guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }),
-                      let tab = window.rootViewController as? MainTabController else { return }
-                print("RegistrationController 에서 이미지 등록후 \(user.photoURLString)")
-                tab.user = user
-                //tab.fetchUser()
-                
-                
-                //tab.authenticateUserAndConfigureUI()
-                
-                self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인 컨트롤러를 닫고
+
+        UserService.shared.userIdDuplicateCheck(checkUserID: userID) { bool in
+            if bool == true {
+                DispatchQueue.main.async {
+                    self.showAlert(message: "중복된 사용자 ID입니다. 다시 만들어 주세요.")
+                    return
+                }
+            } else { // 중복되지 않은 ID인 경우
+                let credentials = AuthCredentials(userID: userID, userNickName: userNickName, photoURLString: profileImage)
+                AuthService.shared.registerUser(user: self.user, credentials: credentials){ (error, ref) in
+                    
+                    UserService.shared.fetchUser(uid: self.user.uid) { (user) in
+                        guard let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }),
+                              let tab = window.rootViewController as? MainTabController else { return }
+                        print("RegistrationController 에서 이미지 등록후 \(user.photoURLString)")
+                        tab.user = user
+                        
+                        self.dismiss(animated: true, completion: nil) // 현제 present되어있는 로그인 컨트롤러를 닫고
+                    }
+                }
             }
-            
-           
-            /*
-             이 코드는 사용자 인증(authentication)을 하고, UI(user interface)를 설정합니다. 먼저, guard let 키워드를 사용해서 현재 앱에서 가장 위에 올려져있는 화면, 즉 키 윈도우(key window)를 찾습니다. 그 다음에는, 이 화면에서 rootViewController로 설정된 컨트롤러(MainTabController)가 있는지 확인합니다. 만약 없다면, 해당 메서드는 실행되지 않고 종료됩니다. 하지만 MainTabController가 발견된다면, 해당 컨트롤러의 메서드인 authenticateUserAndConfigureUI()를 실행합니다. 이 메서드는 사용자 인증 과정을 거치고, UI를 설정합니다. 마지막으로, dismiss 메서드를 호출하여 현재 present되어 있는 로그인 컨트롤러를 닫습니다. 이러한 과정을 통해 사용자는 로그인 컨트롤러를 명확하게 닫고, MainTabController로 이동할 수 있습니다.
-             */
-            
-            
-            
         }
-        
+
+
+
     }
 
    

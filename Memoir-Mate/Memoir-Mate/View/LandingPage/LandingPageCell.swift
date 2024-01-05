@@ -11,6 +11,8 @@ struct LandingPageCell: View {
     }
     
     @State private var showAlert = false
+
+    
     
     var body: some View {
         VStack {
