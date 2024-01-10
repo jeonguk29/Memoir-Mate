@@ -69,6 +69,42 @@ struct UserService {
         }
     }
     
+//    UserService.shared.checkIfUserIsFollowd(uid: user.uid) { isFollowed in
+//        if let index = self.notifications.firstIndex(where: { $0.user.uid == notification.user.uid }) {
+//            self.notifications[index].user.isFollowed = isFollowed
+//        }
+//        
+//    }
+    // 사용자 중복 아이디 체크
+    func userIdDuplicateCheck(checkUserID: String, completion: @escaping (Bool) -> Void) {
+        REF_USERS.observeSingleEvent(of: .value, with: { snapshot in
+            var isDuplicate = false
+            
+            // 전체 User를 하나씩 가져와 userID를 비교
+            for child in snapshot.children {
+                if let childSnapshot = child as? DataSnapshot,
+                   let userData = childSnapshot.value as? [String: Any] {
+                    if let userID = userData["userID"] as? String {
+                        print("isDuplicate userID \(userID), checkUserID \(checkUserID)")
+                        if checkUserID == userID {
+                            // 중복된 사용자 ID를 찾았을 때
+                            isDuplicate = true
+                            break
+                        }
+                    }
+                }
+            }
+
+            // 결과를 completion 핸들러에 전달
+            completion(isDuplicate)
+        }) { error in
+            print("Error fetching user data: \(error.localizedDescription)")
+            // 오류 발생 시 기본적으로 중복이 있는 것으로 간주
+            completion(false)
+        }
+    }
+
+    
     func followUser(uid: String, completion: @escaping(DatabaseCompletion)){
         // 사용자 A가 B를 팔로우 하면 B사용자 밑에 A, C ... 등등을 연결하고
         // 사용자 A가 누구를 팔로우 하는지 A밑에 B를 추가 해서 각각 관리하는 구조임
@@ -93,6 +129,42 @@ struct UserService {
         }
         
     }
+    
+    func blockUser(blockUserUid: String, completion: @escaping(DatabaseCompletion)){
+        guard let currentUid = Auth.auth().currentUser?.uid else {return}
+        
+        // 한명이 차단하면 서로의 일기가 안보이게 구현
+        // 일기 목록 확인시 해당일기가 차단 사용자면 배열에서 제거 
+        REF_BLOCK_USER.child(currentUid).updateChildValues([blockUserUid: 1]) { (err, ref) in
+            REF_BLOCK_USER.child(blockUserUid).updateChildValues([currentUid: 1], withCompletionBlock: completion)
+        }
+        
+    }
+    
+    func blockUserFetch(completion: @escaping ([String]?, Error?) -> Void) {
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+        print("블락 유져 테스트 시작")
+        
+        REF_BLOCK_USER.child(currentUid).observe(.value) { snapshot, error in
+            if let error = error {
+                print("블락 유져 에러")
+                completion(nil, error as? Error)
+            } else if let blockDictionary = snapshot.value as? [String: Any] {
+                let blockList = Array(blockDictionary.keys)
+                print("블락 유져 목록")
+                print(blockList)
+                completion(blockList, nil)
+            } else {
+                // 차단 사용자가 없는 경우
+                print("차단 사용자 없음")
+                completion([], nil)
+            }
+        }
+
+    }
+
+
+
     
     // 사용자 객체는 isFollowed = false로 항상 초기화 되기 때문에 팔로우를 눌러도 다시 나갔다 들어오면 재설정 됨
     // 사용자가 실제로 누군가를 팔로우하는지 여부에 따라 해당 속성을 설정하는 방법이 필요합니다.

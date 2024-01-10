@@ -41,7 +41,7 @@ struct LandingPageView: View {
                 }
                 .tag(3)// 2번 화면
             
-            LandingPageCell(landingImage: "Landing5")
+            TermsOfAgreementView()
                 .tabItem {
                     Image(systemName: "exclamationmark.triangle.fill")
             

@@ -322,26 +322,47 @@ class DiaryCommunityFeedViewController: UICollectionViewController{
             var communityDiarys = [Diary]() // 공유된 다이어리를 담을 배열 생성
             var selectDiarys = [Diary]() // 선택된 날짜의 다이어리를 담을 배열 생성
             
-            for diary in diarys {
-                if diary.isShare { // isShare가 true인 경우에만 추가
-                    communityDiarys.append(diary)
+            UserService().blockUserFetch { blockList, error in
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                    // 에러 처리
+                } else {
+                    if let blockList = blockList {
+                        print("Block List: \(blockList)")
+                        
+                        for diary in diarys {
+                            if diary.isShare { // isShare가 true인 경우에만 추가
+                                // 차단 사용자일 경우 해당 다이어리 건너뛰기
+                                if blockList.contains(diary.user.uid) {
+                                    continue
+                                }
+                                
+                                communityDiarys.append(diary)
+                            }
+                        }
+                    
+
+                        
+                        // 같은 날짜의 일기만 선택
+                        selectDiarys = communityDiarys.filter {
+                            $0.userSelectDate == self.selectDate
+                        }
+                        
+                        // 좋아요 상태 확인 및 적용
+                        self.checkIfUserLikedDiary(selectDiarys)
+                        
+                        // 날짜 순으로 정렬
+                        selectDiarys.sort(by: { $0.timestamp > $1.timestamp })
+                        
+                        self.diarys = selectDiarys
+                        self.collectionView.refreshControl?.endRefreshing()
+                    }
                 }
+                
             }
-            
-            // 같은 날짜의 일기만 선택
-            selectDiarys = communityDiarys.filter {
-                $0.userSelectDate == self.selectDate
-            }
-            
-            // 좋아요 상태 확인 및 적용
-            self.checkIfUserLikedDiary(selectDiarys)
-            
-            // 날짜 순으로 정렬
-            selectDiarys.sort(by: { $0.timestamp > $1.timestamp })
-            
-            self.diarys = selectDiarys
-            self.collectionView.refreshControl?.endRefreshing()
         }
+        
+        
     }
 
     func checkIfUserLikedDiary(_ diarys: [Diary]) {
@@ -518,48 +539,119 @@ extension DiaryCommunityFeedViewController: CommunityCellDelegate, MFMailCompose
  
     
     func sendEmail(reason: String, userUid: String, userName: String, userCellID: String) {
-        if MFMailComposeViewController.canSendMail() {
+        
+        let defaults = UserDefaults.standard
             
-            let composeVC = MFMailComposeViewController()
-            composeVC.mailComposeDelegate = self
+        if defaults.bool(forKey: "mailAppAccess") {
             
-            
-            let bodyString = """
-                신고 이유: \(reason)
-                신고 사용자 UID: \(userUid)
-                신고 사용자 이름: \(userName)
-                신고 일기 ID: \(userCellID)
-                해당 부분은 수정 하시면 안 됩니다.
+            if MFMailComposeViewController.canSendMail() {
                 
-                "허위 신고로 판명될 경우, 이러한 행위는 심각한 규칙 위반으로 간주됩니다. 이러한 행위는 계정 제한으로 이루어 질 수 있으며, 신고는 신중하게 검토되므로 다시 한번 정당한 이유 없이 허위 신고를 제출하지 않도록 유의해주시기 바랍니다. 감사합니다."
+                let composeVC = MFMailComposeViewController()
+                composeVC.mailComposeDelegate = self
                 
-                앱에서 신고할 내용을 아래에 적어주세요.
                 
-                """
-            
-            // 받는 사람 이메일, 제목, 본문
-            composeVC.setToRecipients(["jeonguk29@naver.com"])
-            composeVC.setSubject("신고 사항")
-            composeVC.setMessageBody(bodyString, isHTML: false)
-            
-            self.present(composeVC, animated: true)
+                let bodyString = """
+                    신고 이유: \(reason)
+                    신고 사용자 UID: \(userUid)
+                    신고 사용자 이름: \(userName)
+                    신고 일기 ID: \(userCellID)
+                    해당 부분은 수정 하시면 안 됩니다.
+                    
+                    "허위 신고로 판명될 경우, 이러한 행위는 심각한 규칙 위반으로 간주됩니다. 이러한 행위는 계정 제한으로 이루어 질 수 있으며, 신고는 신중하게 검토되므로 다시 한번 정당한 이유 없이 허위 신고를 제출하지 않도록 유의해주시기 바랍니다. 감사합니다."
+                    
+                    앱에서 신고할 내용을 아래에 적어주세요.
+                    
+                    """
+                
+                // 받는 사람 이메일, 제목, 본문
+                composeVC.setToRecipients(["jeonguk29@naver.com"])
+                composeVC.setSubject("신고 사항")
+                composeVC.setMessageBody(bodyString, isHTML: false)
+                
+                self.present(composeVC, animated: true)
+                // mailAppAccess를 true로 저장합니다.
+                defaults.set(true, forKey: "mailAppAccess")
+            } else {
+                // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+                let alertController = UIAlertController(title: "메일 앱 설치 및 계정 활성화 필요",
+                                                        message: "Mail 앱을 설치 했는지 확인하고 사용자의 Email을, 계정을 설정해 주세요.",
+                                                        preferredStyle: .alert)
+                let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                    guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                    
+                    if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                        UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                    }
+                }
+                alertController.addAction(alertAction)
+                
+                self.present(alertController, animated: true)
+            }
         } else {
-            // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
-            let alertController = UIAlertController(title: "메일 계정 활성화 필요",
-                                                    message: "Mail 앱에서 사용자의 Email을 계정을 설정해 주세요.",
+            let alertController = UIAlertController(title: "Mail 앱 접근 필요",
+                                                    message: "Memoir Mate에서 Mail 앱에 접근하려고 합니다.",
                                                     preferredStyle: .alert)
-            let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
-                guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
-                
-                if UIApplication.shared.canOpenURL(mailSettingsURL) {
-                    UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+                // 취소 버튼을 누르면 아무런 작업을 수행하지 않고 함수를 종료합니다.
+                return
+            }
+            alertController.addAction(cancelAction)
+            
+            let openMailAppAction = UIAlertAction(title: "허용", style: .default) { _ in
+                if MFMailComposeViewController.canSendMail() {
+                    
+                    let composeVC = MFMailComposeViewController()
+                    composeVC.mailComposeDelegate = self
+                    
+                    
+                    let bodyString = """
+                    신고 이유: \(reason)
+                    신고 사용자 UID: \(userUid)
+                    신고 사용자 이름: \(userName)
+                    신고 일기 ID: \(userCellID)
+                    해당 부분은 수정 하시면 안 됩니다.
+                    
+                    "허위 신고로 판명될 경우, 이러한 행위는 심각한 규칙 위반으로 간주됩니다. 이러한 행위는 계정 제한으로 이루어 질 수 있으며, 신고는 신중하게 검토되므로 다시 한번 정당한 이유 없이 허위 신고를 제출하지 않도록 유의해주시기 바랍니다. 감사합니다."
+                    
+                    앱에서 신고할 내용을 아래에 적어주세요.
+                    
+                    """
+                    
+                    // 받는 사람 이메일, 제목, 본문
+                    composeVC.setToRecipients(["jeonguk29@naver.com"])
+                    composeVC.setSubject("신고 사항")
+                    composeVC.setMessageBody(bodyString, isHTML: false)
+
+                    self.present(composeVC, animated: true)
+                    // mailAppAccess를 true로 저장합니다.
+                    defaults.set(true, forKey: "mailAppAccess")
+                } else {
+                    // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+                    let alertController = UIAlertController(title: "메일 앱 설치 및 계정 활성화 필요",
+                                                            message: "Mail 앱을 설치 했는지 확인하고 사용자의 Email을, 계정을 설정해 주세요.",
+                                                            preferredStyle: .alert)
+                    let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                        guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                        
+                        if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                            UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                        }
+                    }
+                    alertController.addAction(alertAction)
+                    
+                    self.present(alertController, animated: true)
                 }
             }
-            alertController.addAction(alertAction)
-            
-            self.present(alertController, animated: true)
+            alertController.addAction(openMailAppAction)
+
+            // UIAlertController를 화면에 표시합니다.
+            self.present(alertController, animated: true, completion: nil)
         }
     }
+                
+                
+        
     
 
     // MARK: - MFMailComposeViewControllerDelegate

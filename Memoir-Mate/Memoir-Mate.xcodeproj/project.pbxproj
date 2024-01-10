@@ -33,6 +33,7 @@
 		645A21B92AFDF9520001D701 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645A21B82AFDF9520001D701 /* Utilities.swift */; };
 		646255862ADAC5270057D835 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646255852ADAC5270057D835 /* CommentCell.swift */; };
 		646255892ADADCF30057D835 /* CommentFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 646255882ADADCF30057D835 /* CommentFeedViewController.swift */; };
+		64813BD52B444D660080EFEC /* TermsOfAgreementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64813BD42B444D660080EFEC /* TermsOfAgreementView.swift */; };
 		649D945C2AB0A5590092BF0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945B2AB0A5590092BF0D /* AppDelegate.swift */; };
 		649D945E2AB0A5590092BF0D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649D945D2AB0A5590092BF0D /* SceneDelegate.swift */; };
 		649D94632AB0A5590092BF0D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 649D94612AB0A5590092BF0D /* Main.storyboard */; };
@@ -96,6 +97,7 @@
 		645A21B82AFDF9520001D701 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		646255852ADAC5270057D835 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		646255882ADADCF30057D835 /* CommentFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFeedViewController.swift; sourceTree = "<group>"; };
+		64813BD42B444D660080EFEC /* TermsOfAgreementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfAgreementView.swift; sourceTree = "<group>"; };
 		649D94582AB0A5590092BF0D /* Memoir-Mate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Memoir-Mate.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		649D945B2AB0A5590092BF0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		649D945D2AB0A5590092BF0D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 			children = (
 				64BDAA2B2B24990600928E98 /* LandingPageView.swift */,
 				64BDAA2D2B24B0AC00928E98 /* LandingPageCell.swift */,
+				64813BD42B444D660080EFEC /* TermsOfAgreementView.swift */,
 			);
 			path = LandingPage;
 			sourceTree = "<group>";
@@ -565,6 +568,7 @@
 				641BDDA72B00AE0C003F81B9 /* EditProfileController.swift in Sources */,
 				646255862ADAC5270057D835 /* CommentCell.swift in Sources */,
 				649D948E2AB6EF4A0092BF0D /* User.swift in Sources */,
+				64813BD52B444D660080EFEC /* TermsOfAgreementView.swift in Sources */,
 				64E0F5402AF9FFE200122E4A /* NotificationService.swift in Sources */,
 				64FA49ED2AB7DDD90007A263 /* UploadDiaryViewModel.swift in Sources */,
 				645A21B52AFDEA440001D701 /* RegistrationController.swift in Sources */,
@@ -658,7 +662,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Memoir Mate";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -712,7 +717,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "Memoir Mate";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -740,6 +746,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -779,6 +786,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

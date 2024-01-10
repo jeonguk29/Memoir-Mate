@@ -12,6 +12,7 @@ protocol ProfileHeaderDelegate: class {
     func handleEditProfileFollow(_ header: ProfileHeader) // 팔로우를 처리할 프로토콜 메서드 만들기
     func didSelect(filter: ProfileFilterOptions) // 프로필 필터가 옵션이 될 수 있는 선택이 될 것입니다.
     // 리팩토링 이후 하위 보기, 즉 필터 표시줄에서 헤더로 작업을 다시 위임합니다.그런 다음 해당 작업을 헤더에서 컨트롤러로 다시 위임해야 합니다.
+    func handleFeedback(user: User)
 }
 
 // 컬렉션뷰의 재사용 가능한 뷰로 만듬
@@ -68,6 +69,19 @@ class ProfileHeader: UICollectionReusableView {
         
         return button
     }()
+    
+    // 추가: 삭제 버튼을 나타내는 UIButton
+    private let feedbackButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = .systemGray
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.addTarget(self, action: #selector(feedbackButtonTapped), for: .touchUpInside)
+        
+        button.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 2) // 버튼을 90도로 회전시킵니다.
+        
+        return button
+    }()
+
     
     private let fullnameLabel: UILabel = {
         let label = UILabel()
@@ -136,24 +150,12 @@ class ProfileHeader: UICollectionReusableView {
         
         // 바텀에 고정한후 -라서 위로 24올라가는 것임
         profileImageView.anchor(top: containerView.bottomAnchor, left: leftAnchor, paddingTop: -24, paddingLeft: 8)
-//        profileImageView.translatesAutoresizingMaskIntoConstraints = false
-//        profileImageView.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -24).isActive
-//        profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive
+
         profileImageView.setDimensions(width: 80, height: 80)
         profileImageView.layer.cornerRadius = 80 / 2
         
-        
-        addSubview(editProfileFollowButton)
-        editProfileFollowButton.anchor(top: containerView.bottomAnchor,
-                                       right: rightAnchor, paddingTop: 12,
-                                       paddingRight: 12)
-//        editProfileFollowButton.translatesAutoresizingMaskIntoConstraints = false
-//        editProfileFollowButton.topAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 12).isActive
-//        editProfileFollowButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 12).isActive
-        editProfileFollowButton.setDimensions(width: 80, height: 80)
-        editProfileFollowButton.setDimensions(width: 100, height: 36)
-        editProfileFollowButton.layer.cornerRadius = 36 / 2
-        
+        addSubview(self.editProfileFollowButton)
+        addSubview(self.feedbackButton)
         let userDetailsStack = UIStackView(arrangedSubviews: [fullnameLabel,
                                                               usernameLabel,
                                                               bioLabel])
@@ -164,11 +166,6 @@ class ProfileHeader: UICollectionReusableView {
         addSubview(userDetailsStack)
         userDetailsStack.anchor(top: profileImageView.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 8, paddingLeft: 12, paddingRight: 12)
         
-//        
-//        userDetailsStack.translatesAutoresizingMaskIntoConstraints = false
-//        userDetailsStack.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8).isActive
-//        userDetailsStack.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 12).isActive
-//        userDetailsStack.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 12).isActive
 
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followersLabel])
         followStack.axis = .horizontal // 수직
@@ -177,18 +174,10 @@ class ProfileHeader: UICollectionReusableView {
         
         addSubview(followStack)
          followStack.anchor(top: userDetailsStack.bottomAnchor, left: leftAnchor, paddingTop: 8, paddingLeft: 12)
-//        followStack.translatesAutoresizingMaskIntoConstraints = false
-//        followStack.topAnchor.constraint(equalTo: userDetailsStack.bottomAnchor, constant: 8).isActive
-//        followStack.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 12).isActive
-//        
+
         addSubview(filterBar)
         filterBar.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, height: 50)
-//        filterBar.translatesAutoresizingMaskIntoConstraints = false
-//        filterBar.leftAnchor.constraint(equalTo: self.leftAnchor).isActive
-//        filterBar.rightAnchor.constraint(equalTo: self.rightAnchor).isActive
-//        filterBar.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive
-//        filterBar.heightAnchor.constraint(equalToConstant: 50).isActive
-//        
+        
     }
     
     required init?(coder: NSCoder) {
@@ -215,9 +204,12 @@ class ProfileHeader: UICollectionReusableView {
         
     }
     
+    @objc func feedbackButtonTapped() {
+        delegate?.handleFeedback(user: user!)
+    }
     
+
     // MARK: - Helpers
-    
     func configure() {
         //여기에서 ViewModel을 구성할 것입니다.
         //사용자를 전달해야 합니다.
@@ -232,6 +224,29 @@ class ProfileHeader: UICollectionReusableView {
         profileImageView.sd_setImage(with: user.photoURLString)
             
         editProfileFollowButton.setTitle(viewModel.actionButtonTitle, for: .normal)
+        
+        DispatchQueue.main.async {
+            if viewModel.actionButtonTitle == "프로필 수정" {
+                self.editProfileFollowButton.anchor(top: self.containerView.bottomAnchor,
+                                                    right: self.rightAnchor, paddingTop: 12,
+                                                    paddingRight: 12)
+                self.editProfileFollowButton.setDimensions(width: 100, height: 36)
+                self.editProfileFollowButton.layer.cornerRadius = 36 / 2
+            } else {
+            
+                self.editProfileFollowButton.anchor(top: self.containerView.bottomAnchor,
+                                               right: self.rightAnchor, paddingTop: 12,
+                                               paddingRight: 42)
+                
+                self.editProfileFollowButton.setDimensions(width: 100, height: 36)
+                self.editProfileFollowButton.layer.cornerRadius = 36 / 2
+                self.feedbackButton.anchor(top: self.containerView.bottomAnchor,
+                                           right: self.rightAnchor, paddingTop: 15,
+                                      paddingRight: 12)
+                self.feedbackButton.setDimensions(width: 30, height: 30)
+            }
+        }
+        
         followingLabel.attributedText = viewModel.followingString
         followersLabel.attributedText = viewModel.followersString
         

@@ -12,6 +12,7 @@ import FirebaseCore
 import FirebaseDatabase
 import GoogleSignIn
 import AVFoundation
+import MessageUI
 
 private let reuseIdentifier = "DiaryCell"
 private let headerIdentifier = "ProfileHeader"
@@ -293,7 +294,190 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - ProfileHeaderDelegate
 @available(iOS 16.0, *)
-extension ProfileController: ProfileHeaderDelegate {
+extension ProfileController: ProfileHeaderDelegate, MFMailComposeViewControllerDelegate {
+
+
+    enum ReportReason: String, CaseIterable {
+        case reportUser = "사용자 신고"
+        case blockUser = "사용자 차단"
+        // 추가적인 이유를 필요에 따라 열거형에 추가할 수 있습니다.
+    }
+
+
+    func handleFeedback(user: User) {
+        let userUid = user.uid
+        let userName = user.userNickName
+        let userID = user.userID
+        
+        let alertController = UIAlertController(
+            title: "부적절한 사용자",
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        
+        for reason in ReportReason.allCases {
+            let action = UIAlertAction(title: reason.rawValue, style: .default) { _ in
+                // 사용자가 선택한 이유에 따라 처리
+                if reason == .blockUser {
+                    self.blockUser(userUid: userUid, userName: userName, userID: userID)
+                } else {
+                    self.sendEmail(reason: reason.rawValue, userUid: userUid, userName: userName, userID: userID)
+                }
+            }
+            action.setValue(UIColor.red, forKey: "titleTextColor")
+            alertController.addAction(action)
+        }
+        
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        
+     
+       present(alertController, animated: true, completion: nil)
+      
+    }
+
+
+    func blockUser(userUid: String, userName: String, userID: String) {
+        let alertController = UIAlertController(
+            title: "사용자 차단",
+            message: "사용자가 정상적으로 차단되었습니다. 커뮤니티에서 사용자의 일기를 볼 수 없으며 나의 일기 또한 사용자에게 표시되지 않습니다.",
+            preferredStyle: .alert
+        )
+        
+        let okAction = UIAlertAction(title: "확인", style: .default) { (_) in
+            // OK 버튼을 누르면 실행할 동작 추가
+            // 예를 들면 다른 작업 수행이나 화면 전환 등을 여기에 추가
+        }
+        
+        alertController.addAction(okAction)
+        
+        // 현제 사용자 uid를 키로 잡고 값에 차단 사용자 uid를 넣기
+        // 그리고 차단하면 차단 사용자 일기 안보이게, 그리고 차단 된 사용자가 내 일기 안보이게
+        UserService().blockUser(blockUserUid: userUid) { (err, ref) in
+            DispatchQueue.main.async {
+                // 경고 창을 표시
+                self.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+
+    
+    func sendEmail(reason: String, userUid: String, userName: String, userID: String) {
+        
+        let defaults = UserDefaults.standard
+            
+        if defaults.bool(forKey: "mailAppAccess") {
+            if MFMailComposeViewController.canSendMail() {
+                
+                let composeVC = MFMailComposeViewController()
+                composeVC.mailComposeDelegate = self
+                
+                
+                let bodyString = """
+                부적절한 사용자 : \(reason)
+                신고 사용자 UID: \(userUid)
+                신고 사용자 이름: \(userName)
+                신고 사용자 ID: \(userID)
+                해당 부분은 수정 하시면 안 됩니다.
+                
+                "허위 신고로 판명될 경우, 이러한 행위는 심각한 규칙 위반으로 간주됩니다. 이러한 행위는 계정 제한으로 이루어 질 수 있으며, 신고는 신중하게 검토되므로 다시 한번 정당한 이유 없이 허위 신고를 제출하지 않도록 유의해주시기 바랍니다. 감사합니다."
+                
+                앱에서 신고할 내용을 아래에 적어주세요.
+                
+                """
+                
+                // 받는 사람 이메일, 제목, 본문
+                composeVC.setToRecipients(["jeonguk29@naver.com"])
+                composeVC.setSubject("신고 사항")
+                composeVC.setMessageBody(bodyString, isHTML: false)
+                
+                self.present(composeVC, animated: true)
+                // mailAppAccess를 true로 저장합니다.
+                defaults.set(true, forKey: "mailAppAccess")
+            } else {
+                // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+                let alertController = UIAlertController(title: "메일 계정 활성화 필요",
+                                                        message: "Mail 앱에서 사용자의 Email을 계정을 설정해 주세요.",
+                                                        preferredStyle: .alert)
+                let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                    guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                    
+                    if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                        UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                    }
+                }
+                alertController.addAction(alertAction)
+                
+                self.present(alertController, animated: true)
+            }
+        }else {
+            let alertController = UIAlertController(title: "Mail 앱 접근 필요",
+                                                    message: "Memoir Mate에서 Mail 앱에 접근하려고 합니다.",
+                                                    preferredStyle: .alert)
+
+            let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+                // 취소 버튼을 누르면 아무런 작업을 수행하지 않고 함수를 종료합니다.
+                return
+            }
+            alertController.addAction(cancelAction)
+            if MFMailComposeViewController.canSendMail() {
+                
+                let composeVC = MFMailComposeViewController()
+                composeVC.mailComposeDelegate = self
+                
+                
+                let bodyString = """
+                부적절한 사용자 : \(reason)
+                신고 사용자 UID: \(userUid)
+                신고 사용자 이름: \(userName)
+                신고 사용자 ID: \(userID)
+                해당 부분은 수정 하시면 안 됩니다.
+                
+                "허위 신고로 판명될 경우, 이러한 행위는 심각한 규칙 위반으로 간주됩니다. 이러한 행위는 계정 제한으로 이루어 질 수 있으며, 신고는 신중하게 검토되므로 다시 한번 정당한 이유 없이 허위 신고를 제출하지 않도록 유의해주시기 바랍니다. 감사합니다."
+                
+                앱에서 신고할 내용을 아래에 적어주세요.
+                
+                """
+                
+                // 받는 사람 이메일, 제목, 본문
+                composeVC.setToRecipients(["jeonguk29@naver.com"])
+                composeVC.setSubject("신고 사항")
+                composeVC.setMessageBody(bodyString, isHTML: false)
+                
+                self.present(composeVC, animated: true)
+                // mailAppAccess를 true로 저장합니다.
+                defaults.set(true, forKey: "mailAppAccess")
+            } else {
+                // 만약, 디바이스에 email 기능이 비활성화 일 때, 사용자에게 알림
+                let alertController = UIAlertController(title: "메일 계정 활성화 필요",
+                                                        message: "Mail 앱에서 사용자의 Email을 계정을 설정해 주세요.",
+                                                        preferredStyle: .alert)
+                let alertAction = UIAlertAction(title: "확인", style: .default) { _ in
+                    guard let mailSettingsURL = URL(string: UIApplication.openSettingsURLString + "&&path=MAIL") else { return }
+                    
+                    if UIApplication.shared.canOpenURL(mailSettingsURL) {
+                        UIApplication.shared.open(mailSettingsURL, options: [:], completionHandler: nil)
+                    }
+                }
+                alertController.addAction(alertAction)
+                
+                self.present(alertController, animated: true)
+            }
+         
+       
+        }
+    }
+    
+
+    // MARK: - MFMailComposeViewControllerDelegate
+    // 해당 코드가 있어야 메일 전송후 앱 화면으로 돌아 오게 가능함
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+
+    
+    
+   
+    
     func didSelect(filter: ProfileFilterOptions) {
         //print("DEBUG: Did select filter \(filter.description) in profile controller..")
         self.selectedFilter = filter
